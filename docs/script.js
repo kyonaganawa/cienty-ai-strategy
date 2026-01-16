@@ -40,7 +40,22 @@ const respondents = {
 document.addEventListener('DOMContentLoaded', function() {
     initCharts();
     animateOnScroll();
+    initTooltips();
 });
+
+// Initialize custom tooltips for HTML elements
+function initTooltips() {
+    const tooltipElements = document.querySelectorAll('.has-tooltip');
+
+    tooltipElements.forEach(el => {
+        const users = el.getAttribute('data-users');
+        const tooltip = el.querySelector('.tooltip');
+
+        if (users && tooltip) {
+            tooltip.textContent = users;
+        }
+    });
+}
 
 // Custom tooltip that shows users
 function createUserTooltip(dataMap) {
