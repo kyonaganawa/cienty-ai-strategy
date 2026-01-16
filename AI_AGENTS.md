@@ -342,6 +342,472 @@ Would you like a detailed breakdown by region or customer segment?"
 
 ---
 
+## BigQuery Analytics Agent
+
+### Purpose
+Provide natural language access to Cienty's data warehouse, enabling team members to query data, generate reports, and derive insights without SQL knowledge.
+
+### Target Users
+- Management and executives
+- Sales team
+- Operations team
+- Any team member needing data insights
+
+### Core Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              User Interface                             │
+│  (Chat, Slack, Web Dashboard, Voice)                    │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         Natural Language Query Parser                   │
+│  - Intent classification                                │
+│  - Entity extraction (dates, products, customers)       │
+│  - Query validation                                     │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         Context & Schema Retrieval                      │
+│  - Fetch relevant table schemas                         │
+│  - Retrieve business logic rules                        │
+│  - Get metric definitions                               │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         SQL Generation (LLM-Powered)                    │
+│  - Convert natural language to SQL                      │
+│  - Apply filters and aggregations                       │
+│  - Include business rules                               │
+│  - Optimize for BigQuery                                │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         SQL Validation & Safety Layer                   │
+│  - Check for destructive operations (DROP, DELETE)      │
+│  - Validate permissions                                 │
+│  - Estimate query cost                                  │
+│  - Apply row limits for safety                          │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         BigQuery Execution                              │
+│  - Execute query with timeout                           │
+│  - Handle errors and retries                            │
+│  - Log query for auditing                               │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         Result Processing & Formatting                  │
+│  - Format data for presentation                         │
+│  - Generate visualizations                              │
+│  - Create natural language summary                      │
+│  - Suggest follow-up questions                          │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│         Response Delivery                               │
+│  - Tables, charts, summaries                            │
+│  - Export options (CSV, Excel, PDF)                     │
+│  - Share/save functionality                             │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Key Capabilities
+
+#### 1. Natural Language to SQL (NL2SQL)
+
+**Supported Query Types:**
+- **Simple aggregations**: "What was total revenue last month?"
+- **Time-series analysis**: "Show monthly sales for the past year"
+- **Comparisons**: "Compare Q4 2025 to Q4 2024"
+- **Filtering**: "Which customers ordered more than R$50K in December?"
+- **Rankings**: "Top 10 products by revenue"
+- **Multi-table joins**: "Customer lifetime value by region"
+
+**Example Interactions:**
+```
+User: "Quais clientes não fizeram pedidos nos últimos 2 meses?"
+
+Agent: "Encontrei 23 clientes sem pedidos nos últimos 60 dias:
+
+[Tabela com: Nome, Último Pedido, Valor Total Histórico, Região]
+
+SQL gerado:
+SELECT
+  c.customer_name,
+  MAX(o.order_date) as last_order_date,
+  SUM(o.total_amount) as total_lifetime_value,
+  c.region
+FROM dim_customers c
+LEFT JOIN fact_orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.customer_name, c.region
+HAVING DATE_DIFF(CURRENT_DATE(), MAX(o.order_date), DAY) > 60
+ORDER BY total_lifetime_value DESC
+
+Gostaria que eu criasse uma lista de contatos para follow-up?"
+```
+
+```
+User: "What's the inventory turnover rate for our top 20 products?"
+
+Agent: "Inventory Turnover Analysis - Top 20 Products (Last 90 Days):
+
+Average Turnover Rate: 4.2x per quarter
+[Chart showing turnover by product]
+
+Top performers (>6x turnover):
+1. Dipirona 500mg - 8.3x
+2. Paracetamol 750mg - 7.1x
+3. Ibuprofeno 600mg - 6.5x
+
+Slow movers (<2x turnover):
+18. Product XYZ - 1.8x
+19. Product ABC - 1.5x
+20. Product DEF - 1.2x
+
+Recommendation: Consider reducing stock for slow movers."
+```
+
+#### 2. Automated Report Generation
+
+**Pre-built Report Templates:**
+- Daily sales summary
+- Weekly inventory status
+- Monthly customer acquisition
+- Quarterly performance review
+- Supplier performance scorecard
+
+**Custom Report Builder:**
+- Define metrics and dimensions
+- Set filters and timeframes
+- Schedule automatic delivery
+- Share with team members
+
+**Example:**
+```
+User: "Create a weekly report showing sales by region, top 5 products, and new customers"
+
+Agent: "Report criado! 📊
+
+Relatório: Resumo Semanal de Vendas
+Frequência: Toda segunda-feira às 8h
+Destinatários: [Equipe de Vendas]
+
+Conteúdo:
+1. Vendas por região (tabela + gráfico)
+2. Top 5 produtos da semana
+3. Novos clientes cadastrados
+4. Comparativo com semana anterior
+
+Primeiro envio: Segunda, 13 de Janeiro às 8h
+
+Deseja ajustar alguma configuração?"
+```
+
+#### 3. Intelligent Data Exploration
+
+**Capabilities:**
+- Automatic anomaly detection
+- Trend identification
+- Pattern recognition
+- Outlier highlighting
+- Correlation discovery
+
+**Example:**
+```
+User: "Are there any unusual patterns in our sales data?"
+
+Agent: "Análise de anomalias - Últimas 4 semanas:
+
+⚠️ Anomalias detectadas:
+
+1. SPIKE em vendas de antibióticos (+340% vs média)
+   - Data: 20-25 de Dezembro
+   - Região: Sudeste
+   - Possível causa: Surto de gripe regional
+
+2. QUEDA em pedidos - Farmácia São Paulo
+   - Última compra: 45 dias atrás (padrão: a cada 15 dias)
+   - Cliente tier: Gold
+   - Ação sugerida: Contato urgente
+
+3. CRESCIMENTO consistente - Genéricos
+   - +15% por mês nos últimos 3 meses
+   - Todas as regiões
+   - Tendência de mercado
+
+Deseja investigar alguma anomalia em detalhe?"
+```
+
+#### 4. Conversational Context & Follow-ups
+
+**Multi-turn Conversations:**
+```
+User: "How much did we sell last month?"
+Agent: "R$ 2.4M em Dezembro 2025 (+8% vs Novembro)"
+
+User: "Break it down by category"
+Agent: "[Detailed breakdown by category with charts]"
+
+User: "Which region had the highest growth?"
+Agent: "Sul: +18% (R$ 420K → R$ 495K). Destaque para Curitiba (+25%)"
+
+User: "Show me the top customers in that region"
+Agent: "[Table of top customers in Sul region with metrics]"
+```
+
+**Context Retention:**
+- Remember previous queries in session
+- Reference earlier results
+- Build on previous analysis
+- Suggest related queries
+
+### Technical Implementation
+
+#### NL2SQL Framework
+
+**Approach: Few-Shot Prompting + Schema Injection**
+
+```python
+# Example prompt structure
+system_prompt = """
+You are a SQL expert for Cienty's BigQuery data warehouse.
+
+Available tables and schemas:
+{schema_context}
+
+Business rules:
+- Revenue excludes cancelled orders
+- Customer tier: Bronze (<R$10K/month), Silver (R$10-50K), Gold (R$50-100K), Platinum (>R$100K)
+- Active customers: ordered in last 90 days
+
+Generate valid BigQuery SQL based on natural language queries.
+Always:
+- Use proper date functions (DATE_DIFF, CURRENT_DATE)
+- Include appropriate LIMIT clauses
+- Filter out cancelled orders unless specified
+- Use appropriate aggregations
+"""
+
+# Few-shot examples
+examples = [
+    {
+        "query": "Total revenue last month",
+        "sql": """
+        SELECT SUM(total_amount) as revenue
+        FROM fact_orders
+        WHERE DATE_TRUNC(order_date, MONTH) = DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
+        AND order_status != 'cancelled'
+        """
+    },
+    # More examples...
+]
+```
+
+**Schema Context Retrieval:**
+```python
+def get_relevant_schema(query):
+    """
+    Use semantic search to find relevant tables/columns
+    """
+    # Embed the query
+    query_embedding = embed_text(query)
+
+    # Search schema documentation in vector DB
+    relevant_schemas = vector_db.search(
+        query_embedding,
+        filter={"type": "schema"},
+        top_k=5
+    )
+
+    return relevant_schemas
+```
+
+#### Query Validation & Safety
+
+**Safety Checks:**
+```python
+def validate_sql(sql_query, user_role):
+    """
+    Validate SQL for safety and permissions
+    """
+    # Check for destructive operations
+    forbidden_keywords = ['DROP', 'DELETE', 'TRUNCATE', 'UPDATE', 'INSERT']
+    for keyword in forbidden_keywords:
+        if keyword in sql_query.upper():
+            raise SecurityError(f"Operation not allowed: {keyword}")
+
+    # Estimate query cost
+    cost_estimate = bigquery_client.estimate_query_cost(sql_query)
+    if cost_estimate > COST_THRESHOLD:
+        return {
+            "approved": False,
+            "reason": f"Query estimated to scan {cost_estimate}GB. Please refine.",
+            "suggestion": "Try adding date filters or limiting results"
+        }
+
+    # Check table permissions
+    tables_accessed = extract_tables(sql_query)
+    for table in tables_accessed:
+        if not has_permission(user_role, table):
+            raise PermissionError(f"No access to table: {table}")
+
+    # Add safety LIMIT if not present
+    if 'LIMIT' not in sql_query.upper():
+        sql_query += " LIMIT 1000"
+
+    return {
+        "approved": True,
+        "sql": sql_query,
+        "estimated_cost": cost_estimate
+    }
+```
+
+#### Result Formatting & Visualization
+
+**Auto-Visualization:**
+```python
+def auto_visualize(query_result, query_intent):
+    """
+    Automatically choose appropriate visualization
+    """
+    if query_intent == "time_series":
+        return create_line_chart(query_result)
+
+    elif query_intent == "comparison":
+        return create_bar_chart(query_result)
+
+    elif query_intent == "distribution":
+        return create_pie_chart(query_result)
+
+    elif query_intent == "ranking":
+        return create_horizontal_bar_chart(query_result)
+
+    else:
+        return create_table(query_result)
+```
+
+**Natural Language Summary:**
+```python
+def generate_summary(query_result, original_query):
+    """
+    Create human-readable summary of results
+    """
+    summary_prompt = f"""
+    User asked: {original_query}
+    Query returned: {query_result}
+
+    Provide a concise 2-3 sentence summary highlighting:
+    - Key findings
+    - Notable trends
+    - Actionable insights
+    """
+
+    return llm.generate(summary_prompt)
+```
+
+### Security & Permissions
+
+#### Row-Level Security
+```sql
+-- Example: Sales team only sees their region
+CREATE ROW ACCESS POLICY sales_region_filter
+ON fact_orders
+GRANT TO ('sales_team')
+FILTER USING (region = SESSION_USER_REGION())
+```
+
+#### Query Auditing
+```python
+# Log all queries for compliance
+audit_log = {
+    "user_id": user.id,
+    "query": natural_language_query,
+    "generated_sql": sql_query,
+    "tables_accessed": tables,
+    "timestamp": datetime.now(),
+    "cost": query_cost,
+    "row_count": len(results)
+}
+```
+
+### Cost Optimization
+
+**Query Caching:**
+- Cache results for common queries (24 hours)
+- Use BigQuery's native caching
+- Semantic similarity for cache hits
+
+**Query Optimization:**
+- Automatic partitioning/clustering suggestions
+- Materialized view recommendations
+- Query rewriting for efficiency
+
+**Budget Controls:**
+- Per-user daily query limits
+- Team-level monthly budgets
+- Alerts at 80% of budget
+
+### Performance Metrics
+
+**Agent Performance:**
+- SQL accuracy rate (% of queries that run successfully)
+- Result relevance (user satisfaction rating)
+- Response time (median, p95)
+- Cost per query
+
+**Business Impact:**
+- Hours saved vs manual SQL writing
+- Number of insights generated
+- Decision-making speed improvement
+- Adoption rate by team
+
+### Integration Points
+
+#### Slack Integration
+```
+User in Slack: @cienty-analytics What's our conversion rate this week?
+Agent: "Conversion rate: 24.3% (1,156 orders / 4,758 visitors)
+↑ +2.1% vs last week
+[Chart] Would you like to see by traffic source?"
+```
+
+#### Dashboard Embedding
+- Embed agent in existing BI tools
+- Natural language interface for dashboards
+- Automatic dashboard creation from queries
+
+#### API Access
+```python
+POST /api/analytics/query
+{
+  "query": "Top customers by revenue last quarter",
+  "user_id": "user123",
+  "format": "json",  # or "csv", "excel"
+  "visualization": true
+}
+```
+
+### Future Enhancements
+
+#### Advanced Analytics
+- Predictive queries: "Forecast next month's revenue"
+- What-if analysis: "What if we increase prices by 10%?"
+- Cohort analysis: "Customer retention by signup month"
+
+#### Multi-Modal Interaction
+- Voice queries: "Alexa, ask Cienty about today's sales"
+- Chart-based queries: Upload a chart, ask for similar analysis
+
+#### Automated Insights
+- Proactive alerts: "Sales down 15% this week"
+- Anomaly notifications
+- Personalized daily digest
+
+---
+
 ## RAG (Retrieval-Augmented Generation) System
 
 ### Knowledge Base Components

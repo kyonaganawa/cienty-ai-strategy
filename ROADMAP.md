@@ -223,19 +223,44 @@ This roadmap outlines the phased approach to building Cienty's AI-powered system
 - Tool integrations
 - Training documentation
 
-#### 4.3 Advanced Analytics Access
-**Priority: Medium**
+#### 4.3 BigQuery Analytics Agent
+**Priority: High**
 
-- Natural language to SQL
-- Report generation
-- Data visualization
-- Predictive insights
+Build an AI agent that provides natural language access to BigQuery data warehouse, enabling team members to query data, generate reports, and derive insights without SQL knowledge.
+
+**Core Capabilities:**
+- Natural language to SQL (NL2SQL) conversion
+- Automated report generation with scheduling
+- Intelligent data exploration and anomaly detection
+- Conversational analytics with context retention
+- Auto-visualization of query results
+- SQL validation and cost estimation
+- Query caching and optimization
+
+**Technical Components:**
+- LLM-powered query parser and SQL generator
+- Schema context retrieval from vector database
+- Safety layer (permission checks, cost limits, destructive operation blocking)
+- BigQuery connector with audit logging
+- Result formatter with natural language summaries
+- Integration with Slack, web dashboard, and API
+
+**Security Features:**
+- Row-level security based on user roles
+- Query auditing and compliance logging
+- Budget controls and usage limits
+- Permission-based table access
 
 **Deliverables:**
-- NL2SQL interface
-- Report templates
-- Visualization engine
-- Insight generation
+- NL2SQL query engine with few-shot prompting
+- BigQuery connector with safety validations
+- Report builder with templates (daily sales, weekly inventory, etc.)
+- Auto-visualization system (charts, tables, graphs)
+- Slack bot integration for conversational analytics
+- Web dashboard with chat interface
+- API endpoints for programmatic access
+- User documentation and training materials
+- Query performance and cost monitoring dashboard
 
 ---
 

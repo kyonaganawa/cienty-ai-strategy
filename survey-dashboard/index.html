@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Uso de IA - Cienty</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Uso de IA na Cienty</h1>
+            <p class="subtitle">Resultados da Pesquisa - Janeiro 2026</p>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <span class="stat-number">16</span>
+                    <span class="stat-label">Respostas</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">8</span>
+                    <span class="stat-label">Departamentos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">94%</span>
+                    <span class="stat-label">Interessados em Treinamento</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Departments Section -->
+        <section class="section">
+            <h2>Participantes por Departamento</h2>
+            <p class="section-note">Tivemos respostas focadas nos times de Tecnologia e Produto. Demais áreas da empresa tiveram pouca resposta, mostrando que não estavam confortáveis para responder ou não têm interesse no assunto.</p>
+            <div class="departments-grid">
+                <div class="dept-card">
+                    <span class="dept-count">7</span>
+                    <span class="dept-name">Tecnologia</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">3</span>
+                    <span class="dept-name">Produto</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Dados</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Design</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Cienty Pay</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Vendas</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Marketing</span>
+                </div>
+                <div class="dept-card">
+                    <span class="dept-count">1</span>
+                    <span class="dept-name">Suporte</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Insights Section -->
+        <section class="section insights-section">
+            <h2>Principais Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-card positive">
+                    <div class="insight-icon">&#10003;</div>
+                    <h3>Alta Adoção</h3>
+                    <p>100% dos respondentes usam pelo menos uma ferramenta de IA. ChatGPT lidera com 75% de adoção.</p>
+                </div>
+                <div class="insight-card warning">
+                    <div class="insight-icon">!</div>
+                    <h3>Barreira Principal</h3>
+                    <p>Falta de tempo para aprender (44%) e não saber quais ferramentas estão disponíveis (31%) são os principais obstáculos.</p>
+                </div>
+                <div class="insight-card opportunity">
+                    <div class="insight-icon">&#9733;</div>
+                    <h3>Oportunidade</h3>
+                    <p>Alto interesse em treinamento (94%) indica abertura para expandir uso de IA na empresa.</p>
+                </div>
+                <div class="insight-card concern">
+                    <div class="insight-icon">&#9888;</div>
+                    <h3>Preocupações</h3>
+                    <p>Privacidade de dados (44%) e IA tomando decisões sem supervisão (44%) são as maiores preocupações.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="section">
+            <h2>Ferramentas de IA Utilizadas</h2>
+            <div class="chart-container">
+                <canvas id="toolsChart"></canvas>
+            </div>
+            <div class="tools-detail">
+                <div class="tool-item">
+                    <span class="tool-name">ChatGPT</span>
+                    <div class="tool-bar">
+                        <div class="tool-progress" style="width: 75%"></div>
+                    </div>
+                    <span class="tool-percent">75%</span>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-name">Google Gemini</span>
+                    <div class="tool-bar">
+                        <div class="tool-progress" style="width: 50%"></div>
+                    </div>
+                    <span class="tool-percent">50%</span>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-name">Cursor</span>
+                    <div class="tool-bar">
+                        <div class="tool-progress" style="width: 44%"></div>
+                    </div>
+                    <span class="tool-percent">44%</span>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-name">Claude (Anthropic)</span>
+                    <div class="tool-bar">
+                        <div class="tool-progress" style="width: 25%"></div>
+                    </div>
+                    <span class="tool-percent">25%</span>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-name">Microsoft Copilot</span>
+                    <div class="tool-bar">
+                        <div class="tool-progress" style="width: 6%"></div>
+                    </div>
+                    <span class="tool-percent">6%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comfort Level & Time Spent -->
+        <section class="section two-charts">
+            <div class="chart-half">
+                <h2>Nível de Conforto com IA</h2>
+                <canvas id="comfortChart"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #2ecc71"></span>
+                        <span>Muito confortável (38%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #3498db"></span>
+                        <span>Confortável (56%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #f39c12"></span>
+                        <span>Neutro (6%)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-half">
+                <h2>Tempo Semanal com IA</h2>
+                <canvas id="timeChart"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #9b59b6"></span>
+                        <span>+10 horas (25%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #3498db"></span>
+                        <span>3-5 horas (25%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #2ecc71"></span>
+                        <span>1-3 horas (38%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #e74c3c"></span>
+                        <span>Menos de 1 hora (12%)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Barriers Section -->
+        <section class="section">
+            <h2>Barreiras para Maior Uso de IA</h2>
+            <div class="barriers-container">
+                <canvas id="barriersChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Concerns Section -->
+        <section class="section">
+            <h2>Preocupações sobre IA</h2>
+            <div class="concerns-grid">
+                <div class="concern-item">
+                    <div class="concern-percent">44%</div>
+                    <div class="concern-text">Riscos de privacidade e segurança de dados</div>
+                </div>
+                <div class="concern-item">
+                    <div class="concern-percent">44%</div>
+                    <div class="concern-text">IA tomando decisões importantes sem supervisão</div>
+                </div>
+                <div class="concern-item">
+                    <div class="concern-percent">38%</div>
+                    <div class="concern-text">IA pode dar informações incorretas aos clientes</div>
+                </div>
+                <div class="concern-item">
+                    <div class="concern-percent">31%</div>
+                    <div class="concern-text">Perda do toque pessoal nos relacionamentos</div>
+                </div>
+                <div class="concern-item">
+                    <div class="concern-percent">25%</div>
+                    <div class="concern-text">Dependência excessiva da tecnologia</div>
+                </div>
+                <div class="concern-item">
+                    <div class="concern-percent">19%</div>
+                    <div class="concern-text">Não tenho grandes preocupações</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section class="section">
+            <h2>Principais Casos de Uso</h2>
+            <div class="usecases-grid">
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#128187;</div>
+                    <h3>Desenvolvimento</h3>
+                    <p>Programação, correção de bugs, code completion, criação de testes automatizados</p>
+                </div>
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#128196;</div>
+                    <h3>Documentação</h3>
+                    <p>Criar documentos, escrever histórias de usuário, organização de tarefas</p>
+                </div>
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#128202;</div>
+                    <h3>Dados & Queries</h3>
+                    <p>Criar queries SQL, análise de dados, fórmulas de Excel, dashboards</p>
+                </div>
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#128218;</div>
+                    <h3>Aprendizado</h3>
+                    <p>Pesquisar temas técnicos, entender conceitos, tirar dúvidas específicas</p>
+                </div>
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#9997;</div>
+                    <h3>Conteúdo</h3>
+                    <p>Redigir textos, criar conteúdo para redes sociais, traduções</p>
+                </div>
+                <div class="usecase-card">
+                    <div class="usecase-icon">&#128161;</div>
+                    <h3>Soluções</h3>
+                    <p>Sugestão de soluções técnicas, estruturação de planos de implementação</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Wishes Section -->
+        <section class="section">
+            <h2>Funcionalidades de IA Desejadas</h2>
+            <p class="section-intro">Os colaboradores foram perguntados: "Se você pudesse criar UM recurso de IA para facilitar seu trabalho, o que ele faria?"</p>
+            <div class="wishes-grid">
+                <div class="wish-card">
+                    <div class="wish-quote">"Um agente que analise os dados da empresa e dê respostas de forma conversacional"</div>
+                    <div class="wish-author">- Luciano (Tecnologia)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"IA que adicione a um checklist todas as tarefas solicitadas a mim, com subtasks quebrando processos maiores"</div>
+                    <div class="wish-author">- Mara (Produto)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"IA que responde questionamentos e gera relatório a partir dos dados do BigQuery além de proativamente dar alertas"</div>
+                    <div class="wish-author">- Lucas (Produto)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"Investigador automático de status de pedidos e bloqueios na distribuidora"</div>
+                    <div class="wish-author">- Gustavo (Suporte)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"IA que revisa o sistema e dá sugestões de melhorias de produto, UX ou UI"</div>
+                    <div class="wish-author">- Diego (Design)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"Chatbot que seja uma enciclopédia das informações de integração das distribuidoras"</div>
+                    <div class="wish-author">- Bernardo (Tecnologia)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"Assistente de voz que criasse indicadores personalizados para cada cliente"</div>
+                    <div class="wish-author">- Edson (Vendas)</div>
+                </div>
+                <div class="wish-card">
+                    <div class="wish-quote">"Uma IA que sabe e entende a cabeça do dono de farmácia e sabe qual conteúdo esse público valoriza"</div>
+                    <div class="wish-author">- Luiza (Marketing)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Repetitive Tasks Section -->
+        <section class="section">
+            <h2>Tarefas Repetitivas Identificadas</h2>
+            <p class="section-intro">Oportunidades de automação com IA</p>
+            <div class="tasks-list">
+                <div class="task-item">
+                    <span class="task-dept">Produto</span>
+                    <span class="task-desc">Processo de CR/merge/deploy/teste (~2 horas/PR)</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Produto</span>
+                    <span class="task-desc">Retorno de alterações solicitadas para backend (~3 horas/alteração)</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Cienty Pay</span>
+                    <span class="task-desc">Geração de boletos manuais (~3 minutos/boleto)</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Cienty Pay</span>
+                    <span class="task-desc">Conciliação de recebíveis e repasses (~1h/semana)</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Tecnologia</span>
+                    <span class="task-desc">Criação de queries e dashboards</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Suporte</span>
+                    <span class="task-desc">Responder chamados sobre status (~10+ mensagens/dia, ~10 min cada)</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Produto</span>
+                    <span class="task-desc">Documentação e preparação de materiais</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-dept">Vendas</span>
+                    <span class="task-desc">Adequar itens de proposta para cada cliente</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notable Quotes Section -->
+        <section class="section">
+            <h2>Comentários Notáveis</h2>
+            <div class="quotes-grid">
+                <blockquote class="quote-card">
+                    <p>"Acho que para a adoção de AI temos que ter um problema claro a ser melhorado. Adotar AI só para falar que estamos usando talvez não dê resultado prático."</p>
+                    <cite>- Lucas Coelho (Produto)</cite>
+                </blockquote>
+                <blockquote class="quote-card">
+                    <p>"Importante ter um uso claro e não usar pelo hype. O melhor uso de IA é em processamento de muita informação, conferir muitos dados, dar insights."</p>
+                    <cite>- Diego Rodrigues (Design)</cite>
+                </blockquote>
+                <blockquote class="quote-card">
+                    <p>"Gostaria de ter mais tempo de me aventurar com as ferramentas, mas vejo pouca abertura. Adoraria um workshop com as ferramentas que já temos usado."</p>
+                    <cite>- Mara Oliveira (Produto)</cite>
+                </blockquote>
+                <blockquote class="quote-card">
+                    <p>"Sempre que mexi com IA, ela trazia um trade-off de qualidade vs. escala. Minha maior preocupação é de perda de qualidade da entrega."</p>
+                    <cite>- Bernardo Souza (Tecnologia)</cite>
+                </blockquote>
+            </div>
+        </section>
+
+        <!-- Next Steps Section -->
+        <section class="section next-steps">
+            <h2>Próximos Passos Recomendados</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Workshop de Ferramentas</h3>
+                    <p>Realizar treinamentos práticos sobre ChatGPT, Cursor e outras ferramentas já utilizadas. 94% dos respondentes demonstraram interesse.</p>
+                    <span class="step-priority high">Alta Prioridade</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Catálogo de Ferramentas</h3>
+                    <p>Criar documentação clara sobre quais ferramentas de IA estão disponíveis na empresa e casos de uso aprovados.</p>
+                    <span class="step-priority high">Alta Prioridade</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Política de Dados</h3>
+                    <p>Estabelecer diretrizes claras sobre uso seguro de IA, endereçando preocupações de privacidade e segurança de dados.</p>
+                    <span class="step-priority high">Alta Prioridade</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Agente de Dados</h3>
+                    <p>Desenvolver um assistente de IA conversacional para análise de dados da empresa (BigQuery) - funcionalidade mais solicitada.</p>
+                    <span class="step-priority medium">Média Prioridade</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Automação de Suporte</h3>
+                    <p>Implementar chatbot para status de pedidos e informações de distribuidoras, reduzindo carga do time de suporte.</p>
+                    <span class="step-priority medium">Média Prioridade</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h3>Métricas de Impacto</h3>
+                    <p>Estabelecer KPIs para medir economia de tempo e aumento de produtividade com uso de IA.</p>
+                    <span class="step-priority medium">Média Prioridade</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Training Interest -->
+        <section class="section">
+            <h2>Interesse em Treinamento</h2>
+            <div class="training-stats">
+                <div class="training-bar">
+                    <div class="training-segment very-interested" style="width: 75%">
+                        <span>Muito Interessado (75%)</span>
+                    </div>
+                    <div class="training-segment somewhat-interested" style="width: 19%">
+                        <span>Um Pouco (19%)</span>
+                    </div>
+                    <div class="training-segment depends" style="width: 6%">
+                        <span>6%</span>
+                    </div>
+                </div>
+                <p class="training-conclusion">
+                    <strong>94% dos colaboradores</strong> demonstraram interesse em treinamento sobre ferramentas de IA.
+                    Esta é uma oportunidade clara para investir em capacitação.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Pesquisa realizada em Janeiro de 2026 | 16 respondentes</p>
+            <p>Cienty - Estratégia de IA</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

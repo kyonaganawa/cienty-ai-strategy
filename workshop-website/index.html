@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Workshop - Cienty</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/theme/white.css">
+
+    <!-- Syntax highlighting for code -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/plugin/highlight/monokai.css">
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- TITLE SLIDE -->
+            <section data-background-gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                <h1 class="title-main">Claude Code</h1>
+                <h2 class="title-sub">10x Your Productivity</h2>
+                <p class="title-byline">From AI Basics to Production Workflows</p>
+                <p class="title-meta">Cienty Engineering • 2026</p>
+            </section>
+
+            <!-- OPENING POLL -->
+            <section>
+                <h2>Quick Poll</h2>
+                <h3 class="poll-question">Who has used AI tools for work?</h3>
+                <div class="poll-options">
+                    <div class="poll-option">🙋 Raise your hand</div>
+                    <div class="poll-option">💬 Type in chat</div>
+                </div>
+                <aside class="notes">
+                    Get audience participation immediately. Gauge current AI familiarity.
+                    Set stage for "you're not alone" or "you're ahead of curve".
+                    Transition: "Today we'll show you how to go from casual use to 10x productivity"
+                </aside>
+            </section>
+
+            <!-- THE BOLD CLAIM -->
+            <section>
+                <h2>The Bold Claim</h2>
+                <div class="highlight-box">
+                    <h1 class="big-number">5-10x</h1>
+                    <h3>Productivity Increase</h3>
+                </div>
+
+                <div class="comparison">
+                    <div class="comparison-item before">
+                        <div class="comparison-label">Traditional Development</div>
+                        <div class="comparison-value">3-4 hours</div>
+                    </div>
+                    <div class="comparison-arrow">→</div>
+                    <div class="comparison-item after">
+                        <div class="comparison-label">AI-Assisted with Claude Code</div>
+                        <div class="comparison-value">35 minutes</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>Feature:</strong> Customer Order History API<br>
+                    Pagination, filtering, tests, documentation<br>
+                    <em>Full production-ready code • Higher quality</em>
+                </div>
+
+                <aside class="notes">
+                    This isn't hype - it's measurable. We'll show you exactly how.
+                    Quality actually improves (counterintuitive). By end of today, you'll know how to achieve this.
+                </aside>
+            </section>
+
+            <!-- AGENDA -->
+            <section>
+                <h2>Today's Agenda</h2>
+
+                <div class="agenda">
+                    <div class="agenda-section">
+                        <h3>Part 1: Everyone (30 min)</h3>
+                        <ul>
+                            <li>✓ AI Fundamentals Demystified</li>
+                            <li>✓ Claude Code Capabilities (Live Demos!)</li>
+                            <li>✓ Use Cases Beyond Coding</li>
+                        </ul>
+                    </div>
+
+                    <div class="agenda-section">
+                        <h3>Part 2: Developers (30 min)</h3>
+                        <ul>
+                            <li>✓ Complete Development Workflow</li>
+                            <li>✓ Prompt Engineering Mastery</li>
+                            <li>✓ Adversarial Code Review</li>
+                            <li>✓ Advanced Techniques</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="takeaways">
+                    <strong>Takeaways:</strong> Quick Reference Card • Prompt Templates • 30-Day Plan
+                </div>
+            </section>
+
+            <!-- SECTION BREAK: AI FUNDAMENTALS -->
+            <section data-background-color="#667eea" class="section-break">
+                <h1>AI Fundamentals</h1>
+                <h3>Demystifying the Technology</h3>
+            </section>
+
+            <!-- CONCEPT 1: LLMs -->
+            <section>
+                <h2>Large Language Models (LLMs)</h2>
+
+                <div class="concept-card">
+                    <div class="analogy">"Autocomplete on steroids"</div>
+
+                    <div class="how-it-works">
+                        <h4>How it works:</h4>
+                        <ul>
+                            <li>Trained on massive amounts of code and text</li>
+                            <li>Predicts what comes next, intelligently</li>
+                            <li>Different models = different capabilities</li>
+                        </ul>
+                    </div>
+
+                    <div class="examples">
+                        <div class="model-comparison">
+                            <div class="model">
+                                <strong>Claude Opus 4.5</strong>
+                                <p>Superior reasoning, complex tasks</p>
+                                <span class="cost">$$$</span>
+                            </div>
+                            <div class="model">
+                                <strong>Claude Sonnet</strong>
+                                <p>Faster, good for simpler tasks</p>
+                                <span class="cost">$$</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Don't need to understand the math. Think of it like really smart autocomplete.
+                    Opus 4.5 is what we use for development (worth the cost).
+                    Demo: Show Claude completing a function.
+                </aside>
+            </section>
+
+            <!-- CONCEPT 2: CONTEXT -->
+            <section>
+                <h2>Context: The AI's Working Memory</h2>
+
+                <div class="concept-card">
+                    <div class="analogy">"Giving a colleague all relevant files before asking for help"</div>
+
+                    <div class="context-visual">
+                        <div class="context-bar">
+                            <div class="context-fill" style="width: 60%">60%</div>
+                        </div>
+                        <div class="context-label">Never exceed 60% context</div>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>Why it matters:</h4>
+                        <ul>
+                            <li>Better context → better code</li>
+                            <li>Too much → AI gets confused</li>
+                            <li>Like trying to remember 100 things at once</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Context is like short-term memory. Show visual of context window filling.
+                    60% rule from production experience. We'll show how to manage this later.
+                </aside>
+            </section>
+
+            <!-- CONCEPT 3: PROMPTS -->
+            <section>
+                <h2>Prompts: Instructions to a Literal Assistant</h2>
+
+                <p class="tagline">Quality of Input = Quality of Output</p>
+
+                <div class="side-by-side">
+                    <div class="bad-example">
+                        <div class="label bad">❌ Bad Prompt</div>
+                        <pre><code class="language-text">"Add login functionality"</code></pre>
+                    </div>
+
+                    <div class="good-example">
+                        <div class="label good">✅ Good Prompt</div>
+                        <pre><code class="language-text">"Implement user authentication with JWT tokens.
+
+Requirements:
+- POST /auth/login (email, password)
+- Password hashing with bcrypt (cost 12)
+- Access token: 15 min expiry
+- Refresh token: 7 days
+- Rate limiting: 5 attempts/15 min
+- Include tests for success/failure
+- Follow our error handling patterns"</code></pre>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Specific = better results. We'll deep dive on prompts in Part 2.
+                    For now: be detailed, be specific. Think "requirements doc" not "vague request".
+                </aside>
+            </section>
+
+            <!-- Continue with more slides... -->
+            <!-- This is a template showing the structure -->
+            <!-- I'll create a separate file with all 66 slides -->
+
+        </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/plugin/markdown/markdown.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/plugin/zoom/zoom.js"></script>
+
+    <!-- Initialize Reveal.js -->
+    <script src="script.js"></script>
+</body>
+</html>
