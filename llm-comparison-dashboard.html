@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Providers & Coding Agents Comparison | 2026</title>
+  <meta name="description" content="Comprehensive comparison of LLM API pricing, models, and coding agents including OpenAI, Anthropic, Google, Mistral, and more.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Dark theme (default) */
+      --bg-primary: #0a0a0b;
+      --bg-secondary: #111113;
+      --bg-tertiary: #18181b;
+      --bg-elevated: #1f1f23;
+      --bg-hover: #27272a;
+
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-tertiary: #71717a;
+      --text-muted: #52525b;
+
+      --accent-warm: #f97316;
+      --accent-warm-soft: rgba(249, 115, 22, 0.15);
+      --accent-cool: #06b6d4;
+      --accent-cool-soft: rgba(6, 182, 212, 0.15);
+      --accent-success: #10b981;
+      --accent-success-soft: rgba(16, 185, 129, 0.12);
+
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-default: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 255, 255, 0.15);
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.6);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #fafafa;
+      --bg-secondary: #f4f4f5;
+      --bg-tertiary: #e4e4e7;
+      --bg-elevated: #ffffff;
+      --bg-hover: #e4e4e7;
+
+      --text-primary: #09090b;
+      --text-secondary: #3f3f46;
+      --text-tertiary: #71717a;
+      --text-muted: #a1a1aa;
+
+      --border-subtle: rgba(0, 0, 0, 0.04);
+      --border-default: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.12);
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-warm);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      z-index: 10000;
+      font-weight: 600;
+      text-decoration: none;
+      transition: top var(--transition-fast);
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    /* Header */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .header-spacer {
+      height: 60px;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .logo h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 8px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--border-strong);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      transition: var(--transition-bounce);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    [data-theme="light"] .theme-toggle-thumb {
+      left: calc(100% - 23px);
+    }
+
+    .theme-toggle-icon {
+      width: 12px;
+      height: 12px;
+      color: var(--bg-primary);
+    }
+
+    /* Navigation */
+    .site-nav {
+      position: sticky;
+      top: 60px;
+      z-index: 999;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .site-nav::-webkit-scrollbar {
+      height: 0;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-link {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 14px 18px;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .nav-link[aria-current="true"] {
+      color: var(--accent-warm);
+      border-bottom-color: var(--accent-warm);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* Section Styles */
+    section {
+      margin-bottom: 80px;
+      scroll-margin-top: 130px;
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+    }
+
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent-warm);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .section-description {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      max-width: 680px;
+    }
+
+    /* Quick Stats Hero */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: var(--transition-smooth);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-default);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .stat-subtext {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Provider Groups */
+    .provider-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .provider-group {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .provider-group:hover {
+      border-color: var(--border-default);
+    }
+
+    .provider-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      border: none;
+      width: 100%;
+      text-align: left;
+      color: var(--text-primary);
+      transition: var(--transition-fast);
+    }
+
+    .provider-group-header:hover {
+      background: var(--bg-hover);
+    }
+
+    .provider-group-header:focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: -2px;
+    }
+
+    .provider-group-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .provider-group-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-warm-soft);
+      color: var(--accent-warm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .provider-group-name {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 400;
+    }
+
+    .provider-group-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .provider-group-count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border-radius: 100px;
+    }
+
+    .provider-group-toggle {
+      width: 24px;
+      height: 24px;
+      color: var(--text-secondary);
+      transition: transform var(--transition-smooth);
+    }
+
+    .provider-group.collapsed .provider-group-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .provider-group-content {
+      max-height: 2000px;
+      overflow: hidden;
+      transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease;
+      opacity: 1;
+    }
+
+    .provider-group.collapsed .provider-group-content {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .provider-group-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .provider-group-table thead {
+      background: var(--bg-primary);
+    }
+
+    .provider-group-table th {
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 16px;
+      color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border-default);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .provider-group-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+
+    .provider-group-table tbody tr {
+      transition: var(--transition-fast);
+    }
+
+    .provider-group-table tbody tr:hover {
+      background: var(--bg-hover);
+    }
+
+    .provider-group-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .expand-all-btn {
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .expand-all-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .expand-all-btn:focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 2px;
+    }
+
+    /* Data Tables */
+    .table-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .table-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+    }
+
+    .table-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Search Input */
+    .search-input {
+      position: relative;
+    }
+
+    .search-input input {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      padding: 10px 16px 10px 40px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      width: 220px;
+      transition: var(--transition-fast);
+    }
+
+    .search-input input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input input:focus {
+      outline: none;
+      border-color: var(--accent-warm);
+      box-shadow: 0 0 0 3px var(--accent-warm-soft);
+    }
+
+    .search-input svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+
+    /* Filter Dropdown */
+    .filter-select {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      padding: 10px 36px 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: var(--transition-fast);
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent-warm);
+      box-shadow: 0 0 0 3px var(--accent-warm-soft);
+    }
+
+    /* Table Styles */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    thead {
+      background: var(--bg-tertiary);
+      position: sticky;
+      top: 0;
+    }
+
+    th {
+      font-weight: 600;
+      text-align: left;
+      padding: 14px 16px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-default);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition-fast);
+    }
+
+    th:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    th[aria-sort] {
+      padding-right: 28px;
+      position: relative;
+    }
+
+    th[aria-sort]::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      opacity: 0.3;
+    }
+
+    th[aria-sort="ascending"]::after {
+      border-bottom: 5px solid currentColor;
+      opacity: 1;
+    }
+
+    th[aria-sort="descending"]::after {
+      border-top: 5px solid currentColor;
+      opacity: 1;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+
+    tbody tr {
+      transition: var(--transition-fast);
+    }
+
+    tbody tr:hover {
+      background: var(--bg-hover);
+    }
+
+    tbody tr:focus-within {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: -2px;
+    }
+
+    .model-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .model-id {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .price-cell {
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .price-input {
+      color: var(--accent-cool);
+    }
+
+    .price-output {
+      color: var(--accent-warm);
+    }
+
+    .context-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      background: var(--accent-cool-soft);
+      color: var(--accent-cool);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Capability Tags */
+    .capabilities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .capability-tag {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .capability-tag.text { background: #3b82f620; color: #60a5fa; }
+    .capability-tag.vision { background: #8b5cf620; color: #a78bfa; }
+    .capability-tag.reasoning { background: #f59e0b20; color: #fbbf24; }
+    .capability-tag.coding { background: #10b98120; color: #34d399; }
+    .capability-tag.audio { background: #ec489920; color: #f472b6; }
+    .capability-tag.multimodal { background: #6366f120; color: #818cf8; }
+    .capability-tag.agentic { background: #ef444420; color: #f87171; }
+    .capability-tag.rag { background: #14b8a620; color: #2dd4bf; }
+    .capability-tag.enterprise { background: #78716c20; color: #a8a29e; }
+
+    /* Tier Badge */
+    .tier-badge {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tier-badge.flagship { background: #f97316; color: white; }
+    .tier-badge.balanced { background: #06b6d4; color: white; }
+    .tier-badge.fast { background: #8b5cf6; color: white; }
+    .tier-badge.economy { background: #10b981; color: white; }
+    .tier-badge.legacy { background: var(--text-muted); color: var(--bg-primary); }
+
+    /* Coding Agents Cards */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .agent-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .agent-card:hover {
+      border-color: var(--border-default);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .agent-card:focus-within {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 2px;
+    }
+
+    .agent-header {
+      padding: 24px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .agent-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .agent-vendor {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+    }
+
+    .agent-type {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      padding: 6px 10px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+    }
+
+    .agent-body {
+      padding: 20px 24px;
+    }
+
+    .agent-description {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .agent-pricing {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .pricing-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .pricing-row:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-tier {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .pricing-amount {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-warm);
+    }
+
+    .agent-features {
+      margin-bottom: 20px;
+    }
+
+    .features-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature-chip {
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      background: var(--accent-success-soft);
+      color: var(--accent-success);
+      border-radius: 100px;
+    }
+
+    .agent-footer {
+      padding: 16px 24px;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .best-for {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .best-for strong {
+      color: var(--text-primary);
+    }
+
+    /* Summary Section */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .summary-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .summary-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .summary-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-warm-soft);
+      color: var(--accent-warm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .summary-list {
+      list-style: none;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-item-name {
+      font-weight: 500;
+    }
+
+    .summary-item-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-cool);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+      padding: 48px 24px;
+      margin-top: 80px;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .footer-info h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .footer-info p {
+      color: var(--text-secondary);
+      max-width: 400px;
+    }
+
+    .footer-sources h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sources-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sources-list a {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 6px 12px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+    }
+
+    .sources-list a:hover {
+      background: var(--bg-hover);
+      color: var(--accent-warm);
+    }
+
+    .footer-bottom {
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-meta {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .footer-date {
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeInUp 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-delay-1 { animation-delay: 100ms; }
+    .animate-delay-2 { animation-delay: 200ms; }
+    .animate-delay-3 { animation-delay: 300ms; }
+    .animate-delay-4 { animation-delay: 400ms; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .agents-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .table-controls {
+        width: 100%;
+      }
+
+      .search-input input {
+        width: 100%;
+      }
+    }
+
+    /* Focus styles for accessibility */
+    :focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 2px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      header, nav, .theme-toggle, .table-controls {
+        display: none;
+      }
+
+      body {
+        background: white;
+        color: black;
+      }
+
+      .table-container, .agent-card, .summary-card {
+        break-inside: avoid;
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      :root {
+        --border-subtle: rgba(255, 255, 255, 0.3);
+        --border-default: rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    /* No results message */
+    .no-results {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-secondary);
+    }
+
+    .no-results-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      color: var(--text-muted);
+    }
+
+    /* Visually hidden (for screen readers) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <h1>LLM Index</h1>
+        <span class="logo-tag">Jan 2026</span>
+      </div>
+      <div class="header-controls">
+        <button
+          class="theme-toggle"
+          id="theme-toggle"
+          aria-label="Toggle dark mode"
+          role="switch"
+          aria-checked="true"
+        >
+          <span class="theme-toggle-thumb">
+            <svg class="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-spacer"></div>
+
+  <nav aria-label="Main navigation" class="site-nav">
+    <div class="nav-inner">
+      <a href="#overview" class="nav-link" aria-current="true">Overview</a>
+      <a href="#providers" class="nav-link">LLM Providers</a>
+      <a href="#models" class="nav-link">All Models</a>
+      <a href="#coding-agents" class="nav-link">Coding Agents</a>
+      <a href="#summary" class="nav-link">Summary</a>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <!-- Overview Section -->
+    <section id="overview" aria-labelledby="overview-title">
+      <div class="section-header animate-in">
+        <p class="section-eyebrow">Market Overview</p>
+        <h2 class="section-title" id="overview-title">AI Model Pricing Landscape</h2>
+        <p class="section-description">
+          A comprehensive comparison of LLM API pricing, subscription options, and coding agents across major providers.
+        </p>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-card animate-in animate-delay-1">
+          <p class="stat-label">Providers Tracked</p>
+          <p class="stat-value">12</p>
+          <p class="stat-subtext">Major LLM providers</p>
+        </div>
+        <div class="stat-card animate-in animate-delay-2">
+          <p class="stat-label">Models Indexed</p>
+          <p class="stat-value">60+</p>
+          <p class="stat-subtext">Across all tiers</p>
+        </div>
+        <div class="stat-card animate-in animate-delay-3">
+          <p class="stat-label">Lowest Input Price</p>
+          <p class="stat-value">$0.02</p>
+          <p class="stat-subtext">Mistral Nemo /1M tokens</p>
+        </div>
+        <div class="stat-card animate-in animate-delay-4">
+          <p class="stat-label">Coding Agents</p>
+          <p class="stat-value">8</p>
+          <p class="stat-subtext">Compared in detail</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Providers Section -->
+    <section id="providers" aria-labelledby="providers-title">
+      <div class="section-header">
+        <p class="section-eyebrow">API Providers</p>
+        <h2 class="section-title" id="providers-title">LLM Providers Overview</h2>
+        <p class="section-description">
+          Compare subscription plans and API pricing across all major providers.
+        </p>
+      </div>
+
+      <div class="table-container">
+        <div class="table-toolbar">
+          <h3 class="table-title">Provider Comparison</h3>
+        </div>
+        <div class="table-scroll">
+          <table id="providers-table" aria-describedby="providers-title">
+            <thead>
+              <tr>
+                <th scope="col">Provider</th>
+                <th scope="col">Flagship Model</th>
+                <th scope="col">Input $/1M</th>
+                <th scope="col">Output $/1M</th>
+                <th scope="col">Free Tier</th>
+                <th scope="col">Consumer Plans</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>OpenAI</strong></td>
+                <td>GPT-5</td>
+                <td class="price-cell price-input">$1.25</td>
+                <td class="price-cell price-output">$10.00</td>
+                <td>Limited</td>
+                <td>Free, Plus ($20), Pro ($200)</td>
+              </tr>
+              <tr>
+                <td><strong>Anthropic</strong></td>
+                <td>Claude Opus 4.5</td>
+                <td class="price-cell price-input">$5.00</td>
+                <td class="price-cell price-output">$25.00</td>
+                <td>Yes</td>
+                <td>Free, Pro ($20), Team ($100), Max ($200)</td>
+              </tr>
+              <tr>
+                <td><strong>Google</strong></td>
+                <td>Gemini 3 Pro</td>
+                <td class="price-cell price-input">$2.00</td>
+                <td class="price-cell price-output">$12.00</td>
+                <td>Yes (generous)</td>
+                <td>Free, AI Premium ($19.99)</td>
+              </tr>
+              <tr>
+                <td><strong>Mistral AI</strong></td>
+                <td>Mistral Large 3</td>
+                <td class="price-cell price-input">$0.50</td>
+                <td class="price-cell price-output">$1.50</td>
+                <td>Yes</td>
+                <td>Free, Le Chat Pro ($14.99)</td>
+              </tr>
+              <tr>
+                <td><strong>xAI</strong></td>
+                <td>Grok 4</td>
+                <td class="price-cell price-input">$3.00</td>
+                <td class="price-cell price-output">$15.00</td>
+                <td>No</td>
+                <td>X Premium ($8), Premium+ ($16)</td>
+              </tr>
+              <tr>
+                <td><strong>DeepSeek</strong></td>
+                <td>V3.2-Exp</td>
+                <td class="price-cell price-input">$0.28</td>
+                <td class="price-cell price-output">$0.42</td>
+                <td>5M tokens</td>
+                <td>API only</td>
+              </tr>
+              <tr>
+                <td><strong>Cohere</strong></td>
+                <td>Command A</td>
+                <td class="price-cell price-input">$2.50</td>
+                <td class="price-cell price-output">$10.00</td>
+                <td>Trial</td>
+                <td>API only (pay-per-use)</td>
+              </tr>
+              <tr>
+                <td><strong>Meta (Llama)</strong></td>
+                <td>Llama 4 Maverick</td>
+                <td class="price-cell price-input">$0.28</td>
+                <td class="price-cell price-output">$0.89</td>
+                <td>Open Source</td>
+                <td>Self-host or via providers</td>
+              </tr>
+              <tr>
+                <td><strong>MiniMax</strong></td>
+                <td>MiniMax-M2</td>
+                <td class="price-cell price-input">$0.30</td>
+                <td class="price-cell price-output">$1.20</td>
+                <td>Free (limited)</td>
+                <td>API only (pay-per-use)</td>
+              </tr>
+              <tr>
+                <td><strong>OpenRouter</strong></td>
+                <td>400+ models</td>
+                <td class="price-cell price-input">Varies</td>
+                <td class="price-cell price-output">Varies</td>
+                <td>50 req/day</td>
+                <td>Pay-as-you-go, BYOK</td>
+              </tr>
+              <tr>
+                <td><strong>Moonshot AI</strong></td>
+                <td>Kimi K2.5</td>
+                <td class="price-cell price-input">$0.60</td>
+                <td class="price-cell price-output">$2.50</td>
+                <td>Yes</td>
+                <td>API only (pay-per-use)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Models Section -->
+    <section id="models" aria-labelledby="models-title">
+      <div class="section-header">
+        <p class="section-eyebrow">Complete Index</p>
+        <h2 class="section-title" id="models-title">All Models & Pricing</h2>
+        <p class="section-description">
+          Browse 45+ models across all providers and tiers. Click each provider to expand or collapse.
+        </p>
+      </div>
+
+      <div class="table-toolbar" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 20px;">
+        <div class="table-controls" style="width: 100%; justify-content: space-between;">
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div class="search-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="search"
+                id="model-search"
+                placeholder="Search models..."
+                aria-label="Search models"
+              >
+            </div>
+            <select id="tier-filter" class="filter-select" aria-label="Filter by tier">
+              <option value="all">All Tiers</option>
+              <option value="flagship">Flagship</option>
+              <option value="balanced">Balanced</option>
+              <option value="fast">Fast</option>
+              <option value="economy">Economy</option>
+              <option value="legacy">Legacy</option>
+            </select>
+          </div>
+          <button id="expand-all-btn" class="expand-all-btn" aria-expanded="true">
+            Collapse All
+          </button>
+        </div>
+      </div>
+
+      <div class="provider-groups" id="provider-groups">
+        <!-- Provider groups will be populated by JavaScript -->
+      </div>
+
+      <div class="no-results" id="no-results" style="display: none;">
+        <svg class="no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <p>No models found matching your criteria.</p>
+      </div>
+    </section>
+
+    <!-- Coding Agents Section -->
+    <section id="coding-agents" aria-labelledby="agents-title">
+      <div class="section-header">
+        <p class="section-eyebrow">Developer Tools</p>
+        <h2 class="section-title" id="agents-title">Coding Agents Comparison</h2>
+        <p class="section-description">
+          Compare AI-powered coding assistants including Claude Code, Cursor, Windsurf, GitHub Copilot, Google Antigravity, Google AI Studio, and OpenCode.
+        </p>
+      </div>
+
+      <div class="agents-grid" id="agents-grid">
+        <!-- Agent cards will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section id="summary" aria-labelledby="summary-title">
+      <div class="section-header">
+        <p class="section-eyebrow">Quick Reference</p>
+        <h2 class="section-title" id="summary-title">Key Takeaways</h2>
+        <p class="section-description">
+          Quick comparisons for common decision points.
+        </p>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <h3 class="summary-title">
+            <span class="summary-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </span>
+            Most Affordable Flagships
+          </h3>
+          <ul class="summary-list">
+            <li class="summary-item">
+              <span class="summary-item-name">Grok 4.1 Fast</span>
+              <span class="summary-item-value">$0.20 / $0.50</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">DeepSeek V3.2</span>
+              <span class="summary-item-value">$0.28 / $0.42</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Mistral Large 3</span>
+              <span class="summary-item-value">$0.50 / $1.50</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Kimi K2.5</span>
+              <span class="summary-item-value">$0.60 / $2.50</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="summary-title">
+            <span class="summary-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </span>
+            Budget Economy Models
+          </h3>
+          <ul class="summary-list">
+            <li class="summary-item">
+              <span class="summary-item-name">Mistral Nemo</span>
+              <span class="summary-item-value">$0.02 / $0.08</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">R1 Distill Llama 70B</span>
+              <span class="summary-item-value">$0.03 / $0.11</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Cohere R7B</span>
+              <span class="summary-item-value">$0.04 / $0.15</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Gemini 1.5 Flash</span>
+              <span class="summary-item-value">$0.08 / $0.30</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="summary-title">
+            <span class="summary-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </span>
+            Coding Agent Pricing
+          </h3>
+          <ul class="summary-list">
+            <li class="summary-item">
+              <span class="summary-item-name">GitHub Copilot Pro</span>
+              <span class="summary-item-value">$10/mo</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Windsurf Pro</span>
+              <span class="summary-item-value">$15/mo</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Claude Pro / Cursor Pro</span>
+              <span class="summary-item-value">$20/mo</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Power User Tiers</span>
+              <span class="summary-item-value">$200/mo</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="summary-title">
+            <span class="summary-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </span>
+            Largest Context Windows
+          </h3>
+          <ul class="summary-list">
+            <li class="summary-item">
+              <span class="summary-item-name">MiniMax-01</span>
+              <span class="summary-item-value">4M tokens</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">xAI Grok 4</span>
+              <span class="summary-item-value">2M tokens</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Google Gemini</span>
+              <span class="summary-item-value">1M tokens</span>
+            </li>
+            <li class="summary-item">
+              <span class="summary-item-name">Kimi K2.5</span>
+              <span class="summary-item-value">256K tokens</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-info">
+          <h2>LLM Index</h2>
+          <p>Comprehensive pricing and comparison data for AI language models and coding assistants, updated January 2026.</p>
+        </div>
+        <div class="footer-sources">
+          <h3>Data Sources</h3>
+          <ul class="sources-list">
+            <li><a href="https://openai.com/api/pricing/" target="_blank" rel="noopener">OpenAI</a></li>
+            <li><a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a></li>
+            <li><a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a></li>
+            <li><a href="https://mistral.ai/pricing" target="_blank" rel="noopener">Mistral</a></li>
+            <li><a href="https://docs.x.ai/docs/models" target="_blank" rel="noopener">xAI</a></li>
+            <li><a href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank" rel="noopener">DeepSeek</a></li>
+            <li><a href="https://cohere.com/pricing" target="_blank" rel="noopener">Cohere</a></li>
+            <li><a href="https://www.minimaxi.com/price" target="_blank" rel="noopener">MiniMax</a></li>
+            <li><a href="https://openrouter.ai/pricing" target="_blank" rel="noopener">OpenRouter</a></li>
+            <li><a href="https://opencode.ai" target="_blank" rel="noopener">OpenCode</a></li>
+            <li><a href="https://platform.moonshot.ai/docs/pricing/chat" target="_blank" rel="noopener">Moonshot AI</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-meta">Data compiled for informational purposes. Always verify with official sources.</p>
+        <p class="footer-date">Last updated: January 28, 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Data from JSON
+    const llmData = {
+      providers: {
+        openai: {
+          name: "OpenAI",
+          models: [
+            { name: "GPT-5", id: "gpt-5", input: 1.25, output: 10.00, context: 128000, capabilities: ["text", "reasoning", "coding", "agentic"], tier: "flagship" },
+            { name: "GPT-5 Mini", id: "gpt-5-mini", input: 0.25, output: 2.00, context: 128000, capabilities: ["text", "reasoning", "coding"], tier: "economy" },
+            { name: "GPT-4o", id: "gpt-4o", input: 2.50, output: 10.00, context: 128000, capabilities: ["text", "vision", "audio"], tier: "balanced" },
+            { name: "GPT-4o Latest", id: "chatgpt-4o-latest", input: 5.00, output: 15.00, context: 128000, capabilities: ["text", "vision", "audio"], tier: "balanced" },
+            { name: "GPT-4.1", id: "gpt-4.1", input: 20.00, output: 20.00, context: 128000, capabilities: ["text", "reasoning"], tier: "legacy" },
+            { name: "GPT-4 Turbo", id: "gpt-4-turbo", input: 10.00, output: 30.00, context: 128000, capabilities: ["text", "vision"], tier: "legacy" },
+            { name: "GPT-4", id: "gpt-4", input: 30.00, output: 60.00, context: 8192, capabilities: ["text"], tier: "legacy" }
+          ]
+        },
+        anthropic: {
+          name: "Anthropic",
+          models: [
+            { name: "Claude Opus 4.5", id: "claude-opus-4-5", input: 5.00, output: 25.00, context: 200000, capabilities: ["text", "vision", "reasoning", "coding"], tier: "flagship" },
+            { name: "Claude Sonnet 4.5", id: "claude-sonnet-4-5", input: 3.00, output: 15.00, context: 200000, capabilities: ["text", "vision", "reasoning", "coding"], tier: "balanced" },
+            { name: "Claude Haiku 4.5", id: "claude-haiku-4-5", input: 1.00, output: 5.00, context: 200000, capabilities: ["text", "vision", "reasoning"], tier: "fast" },
+            { name: "Claude Opus 4.1", id: "claude-opus-4-1", input: 15.00, output: 75.00, context: 200000, capabilities: ["text", "vision", "reasoning", "coding"], tier: "legacy" },
+            { name: "Claude 3.5 Sonnet", id: "claude-3-5-sonnet", input: 6.00, output: 30.00, context: 200000, capabilities: ["text", "vision", "reasoning", "coding"], tier: "legacy" },
+            { name: "Claude 3.5 Haiku", id: "claude-3-5-haiku", input: 0.80, output: 4.00, context: 200000, capabilities: ["text", "vision"], tier: "legacy" },
+            { name: "Claude 3 Haiku", id: "claude-3-haiku", input: 0.25, output: 1.25, context: 200000, capabilities: ["text", "vision"], tier: "economy" }
+          ]
+        },
+        google: {
+          name: "Google",
+          models: [
+            { name: "Gemini 3 Pro Preview", id: "gemini-3-pro-preview", input: 2.00, output: 12.00, context: 1000000, capabilities: ["text", "vision", "reasoning", "coding", "multimodal"], tier: "flagship" },
+            { name: "Gemini 2.5 Pro", id: "gemini-2.5-pro", input: 1.25, output: 10.00, context: 1000000, capabilities: ["text", "vision", "reasoning", "coding"], tier: "balanced" },
+            { name: "Gemini 2.5 Flash", id: "gemini-2.5-flash", input: 0.15, output: 0.60, context: 1000000, capabilities: ["text", "vision", "reasoning"], tier: "fast" },
+            { name: "Gemini 2.5 Flash-Lite", id: "gemini-2.5-flash-lite", input: 0.10, output: 0.40, context: 1000000, capabilities: ["text", "vision"], tier: "economy" },
+            { name: "Gemini 1.5 Flash", id: "gemini-1.5-flash", input: 0.075, output: 0.30, context: 1000000, capabilities: ["text", "vision"], tier: "legacy" }
+          ]
+        },
+        mistral: {
+          name: "Mistral AI",
+          models: [
+            { name: "Mistral Large 3", id: "mistral-large-3", input: 0.50, output: 1.50, context: null, capabilities: ["text", "reasoning", "coding"], tier: "flagship" },
+            { name: "Mistral Medium 3.1", id: "mistral-medium-3.1", input: 0.40, output: 2.00, context: null, capabilities: ["text", "reasoning"], tier: "balanced" },
+            { name: "Codestral 2508", id: "codestral-2508", input: 0.30, output: 0.90, context: null, capabilities: ["coding"], tier: "fast" },
+            { name: "Devstral 2 123B", id: "devstral-2", input: 0.40, output: 2.00, context: null, capabilities: ["coding", "reasoning"], tier: "flagship" },
+            { name: "Mistral Small 3.2", id: "mistral-small-3.2", input: 0.06, output: 0.18, context: null, capabilities: ["text"], tier: "fast" },
+            { name: "Mistral Nemo", id: "mistral-nemo", input: 0.02, output: 0.08, context: null, capabilities: ["text"], tier: "economy" }
+          ]
+        },
+        xai: {
+          name: "xAI",
+          models: [
+            { name: "Grok 4", id: "grok-4", input: 3.00, output: 15.00, context: 2000000, capabilities: ["text", "reasoning", "coding", "agentic"], tier: "flagship" },
+            { name: "Grok 4.1 Fast", id: "grok-4.1-fast", input: 0.20, output: 0.50, context: 2000000, capabilities: ["text", "reasoning", "coding"], tier: "fast" },
+            { name: "Grok 3 Beta", id: "grok-3-beta", input: 3.00, output: 15.00, context: 2000000, capabilities: ["text", "reasoning"], tier: "legacy" },
+            { name: "Grok 3 Mini", id: "grok-3-mini", input: 0.30, output: 0.50, context: 2000000, capabilities: ["text", "reasoning"], tier: "economy" }
+          ]
+        },
+        deepseek: {
+          name: "DeepSeek",
+          models: [
+            { name: "DeepSeek V3.2-Exp", id: "deepseek-chat", input: 0.28, output: 0.42, context: null, capabilities: ["text", "reasoning", "coding"], tier: "flagship" },
+            { name: "DeepSeek R1", id: "deepseek-r1", input: 0.70, output: 2.40, context: null, capabilities: ["reasoning"], tier: "balanced" },
+            { name: "DeepSeek R1 0528", id: "deepseek-r1-0528", input: 0.45, output: 2.15, context: null, capabilities: ["reasoning"], tier: "balanced" },
+            { name: "DeepSeek Prover V2", id: "deepseek-prover-v2", input: 0.50, output: 2.18, context: null, capabilities: ["reasoning"], tier: "balanced" },
+            { name: "R1 Distill Llama 70B", id: "deepseek-r1-distill", input: 0.03, output: 0.11, context: null, capabilities: ["text", "reasoning"], tier: "economy" }
+          ]
+        },
+        cohere: {
+          name: "Cohere",
+          models: [
+            { name: "Command A", id: "command-a", input: 2.50, output: 10.00, context: null, capabilities: ["text", "reasoning", "enterprise"], tier: "flagship" },
+            { name: "Command R+", id: "command-r-plus", input: 2.50, output: 10.00, context: null, capabilities: ["text", "reasoning", "rag"], tier: "flagship" },
+            { name: "Command R", id: "command-r", input: 0.15, output: 0.60, context: null, capabilities: ["text", "rag"], tier: "balanced" },
+            { name: "Command R7B", id: "command-r7b", input: 0.0375, output: 0.15, context: null, capabilities: ["text"], tier: "economy" },
+            { name: "Aya Expanse", id: "aya-expanse", input: 0.50, output: 1.50, context: null, capabilities: ["text"], tier: "balanced" }
+          ]
+        },
+        meta: {
+          name: "Meta (Llama)",
+          models: [
+            { name: "Llama 4 Maverick", id: "llama-4-maverick", input: 0.28, output: 0.89, context: null, capabilities: ["text", "reasoning", "coding"], tier: "flagship" },
+            { name: "Llama 4 Scout", id: "llama-4-scout", input: 0.19, output: 0.62, context: null, capabilities: ["text", "reasoning"], tier: "balanced" },
+            { name: "Llama 3.3 70B", id: "llama-3.3-70b", input: 0.10, output: 0.32, context: null, capabilities: ["text", "reasoning"], tier: "legacy" },
+            { name: "Llama 3.2 11B Vision", id: "llama-3.2-11b-vision", input: 0.049, output: 0.049, context: null, capabilities: ["text", "vision"], tier: "economy" }
+          ]
+        },
+        minimax: {
+          name: "MiniMax",
+          models: [
+            { name: "MiniMax-M2", id: "minimax-m2", input: 0.30, output: 1.20, context: null, capabilities: ["text", "coding", "agentic"], tier: "flagship" },
+            { name: "MiniMax-01", id: "minimax-01", input: 0.20, output: 1.10, context: 4000000, capabilities: ["text", "reasoning"], tier: "flagship" },
+            { name: "MiniMax-01 Lite", id: "minimax-01-lite", input: 0.10, output: 0.55, context: 1000000, capabilities: ["text"], tier: "economy" }
+          ]
+        },
+        openrouter: {
+          name: "OpenRouter",
+          models: [
+            { name: "Multi-Provider Access", id: "openrouter-gateway", input: null, output: null, context: null, capabilities: ["text", "vision", "reasoning", "coding", "multimodal"], tier: "balanced" },
+            { name: "Free Models (Rate Limited)", id: "openrouter-free", input: 0, output: 0, context: null, capabilities: ["text"], tier: "economy" }
+          ]
+        },
+        moonshot: {
+          name: "Moonshot AI",
+          models: [
+            { name: "Kimi K2.5", id: "kimi-k2.5", input: 0.60, output: 2.50, context: 256000, capabilities: ["text", "vision", "reasoning", "coding", "agentic", "multimodal"], tier: "flagship" },
+            { name: "Kimi K2.5 Agent Swarm", id: "kimi-k2.5-swarm", input: 0.60, output: 2.50, context: 256000, capabilities: ["text", "reasoning", "coding", "agentic"], tier: "flagship" },
+            { name: "Kimi K2 Thinking", id: "kimi-k2-thinking", input: 0.60, output: 2.50, context: 256000, capabilities: ["text", "reasoning", "coding"], tier: "flagship" },
+            { name: "Kimi K2 Instruct", id: "kimi-k2-instruct", input: 0.60, output: 2.50, context: 256000, capabilities: ["text", "coding"], tier: "balanced" },
+            { name: "Kimi K2 Turbo", id: "kimi-k2-turbo", input: 1.15, output: 8.00, context: 256000, capabilities: ["text", "coding"], tier: "fast" },
+            { name: "Kimi K1.5", id: "kimi-k1.5", input: 0.20, output: 2.00, context: 128000, capabilities: ["text", "reasoning"], tier: "legacy" }
+          ]
+        }
+      },
+      codingAgents: [
+        {
+          name: "Claude Code",
+          vendor: "Anthropic",
+          type: "CLI tool",
+          description: "Terminal-based AI coding assistant powered by Claude with 80.9% SWE-bench score",
+          pricing: [
+            { tier: "Claude Pro", price: "$20/mo", details: "100 tasks/day" },
+            { tier: "Claude Team", price: "$100/mo", details: "500 tasks/day" },
+            { tier: "Claude Max", price: "$200/mo", details: "1000 tasks/day" },
+            { tier: "API", price: "Pay-per-token", details: "Standard API rates" }
+          ],
+          features: ["CLI-based workflow", "200K+ context", "80.9% SWE-bench", "Works with any editor"],
+          bestFor: "Terminal workflow, complex multi-step tasks"
+        },
+        {
+          name: "Cursor",
+          vendor: "Anysphere",
+          type: "IDE (VS Code fork)",
+          description: "AI-first code editor with Composer mode and multi-file awareness",
+          pricing: [
+            { tier: "Hobby", price: "Free", details: "2000 completions" },
+            { tier: "Pro", price: "$20/mo", details: "$20 credit pool" },
+            { tier: "Pro+", price: "$60/mo", details: "3x Pro credits" },
+            { tier: "Ultra", price: "$200/mo", details: "20x Pro pool" }
+          ],
+          features: ["Composer mode", "Multi-file editing", "Agent workflows", "Model selection"],
+          bestFor: "Advanced AI features, multi-file editing"
+        },
+        {
+          name: "Windsurf",
+          vendor: "Cognition AI",
+          type: "IDE (VS Code fork)",
+          description: "AI coding assistant with Cascade Flow agentic architecture",
+          pricing: [
+            { tier: "Free", price: "Free", details: "25 credits/mo" },
+            { tier: "Pro", price: "$15/mo", details: "500 credits/mo" },
+            { tier: "Teams", price: "$30/user/mo", details: "Admin tools" },
+            { tier: "Enterprise", price: "$60/user/mo", details: "SSO, RBAC" }
+          ],
+          features: ["Cascade Flow", "SWE-1 model", "BYOK support", "VS Code compatible"],
+          bestFor: "Cost-conscious teams, VS Code transition"
+        },
+        {
+          name: "GitHub Copilot",
+          vendor: "GitHub/Microsoft",
+          type: "IDE extension",
+          description: "AI pair programmer with deep GitHub ecosystem integration",
+          pricing: [
+            { tier: "Free", price: "Free", details: "50 premium requests" },
+            { tier: "Pro", price: "$10/mo", details: "300 premium requests" },
+            { tier: "Pro+", price: "$39/mo", details: "1500 requests, all models" },
+            { tier: "Business", price: "$19/user/mo", details: "IP indemnity" }
+          ],
+          features: ["Code completions", "Copilot Chat", "Agent mode", "GitHub integration"],
+          bestFor: "GitHub workflows, enterprise compliance"
+        },
+        {
+          name: "Google Antigravity",
+          vendor: "Google",
+          type: "IDE (VS Code fork)",
+          description: "Multi-agent VS Code fork with Manager/Editor surfaces, browser subagents for autonomous end-to-end tasks",
+          pricing: [
+            { tier: "Individual", price: "Free", details: "Rate limited (2-3 hrs/day)" },
+            { tier: "Pro", price: "~$20/mo", details: "Higher limits, priority" },
+            { tier: "Enterprise", price: "~$60/user/mo", details: "SSO, data residency" }
+          ],
+          features: ["Multi-agent collab", "Browser subagents", "Terminal access", "Gemini 3 + Claude models"],
+          bestFor: "Greenfield projects, autonomous multi-agent workflows"
+        },
+        {
+          name: "Google AI Studio",
+          vendor: "Google",
+          type: "Web playground",
+          description: "Browser-based prompt playground for Gemini models with code generation export and multimodal testing",
+          pricing: [
+            { tier: "Free", price: "Free", details: "No credit card required" },
+            { tier: "API (Prod)", price: "Pay-per-token", details: "Gemini API rates apply" }
+          ],
+          features: ["Prompt testing", "Code export", "All Gemini models", "1M token context"],
+          bestFor: "Prototyping, prompt engineering, learning Gemini"
+        },
+        {
+          name: "OpenCode",
+          vendor: "Open Source",
+          type: "CLI / TUI tool",
+          description: "Go-based terminal AI assistant with 45K+ GitHub stars, supporting 75+ LLM providers including local models",
+          pricing: [
+            { tier: "Free", price: "Free", details: "Open source, BYOK" },
+            { tier: "Zen", price: "$20", details: "Pay-as-you-go credits" }
+          ],
+          features: ["75+ providers", "Local models (Ollama)", "LSP integration", "GitHub Actions bot"],
+          bestFor: "Terminal workflows, open source, model flexibility"
+        }
+      ]
+    };
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.setAttribute('aria-checked', savedTheme === 'dark');
+    } else if (!systemPrefersDark) {
+      html.setAttribute('data-theme', 'light');
+      themeToggle.setAttribute('aria-checked', 'false');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+      themeToggle.setAttribute('aria-checked', newTheme === 'dark');
+      localStorage.setItem('theme', newTheme);
+
+      // Update icon
+      const icon = themeToggle.querySelector('.theme-toggle-icon');
+      if (newTheme === 'light') {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+      } else {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      }
+    });
+
+    // Navigation highlighting
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -80% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.setAttribute('aria-current', 'false');
+            if (link.getAttribute('href') === `#${entry.target.id}`) {
+              link.setAttribute('aria-current', 'true');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(section => observer.observe(section));
+
+    // Format context window
+    function formatContext(context) {
+      if (!context) return '—';
+      if (context >= 1000000) return `${(context / 1000000).toFixed(0)}M`;
+      if (context >= 1000) return `${(context / 1000).toFixed(0)}K`;
+      return context.toString();
+    }
+
+    // Format tier for display
+    function formatTier(tier) {
+      const tierMap = {
+        'flagship': 'Flagship',
+        'balanced': 'Balanced',
+        'fast': 'Fast',
+        'economy': 'Economy',
+        'legacy': 'Legacy'
+      };
+      return tierMap[tier.split('-')[0]] || tier;
+    }
+
+    // Get tier class
+    function getTierClass(tier) {
+      if (tier.includes('flagship')) return 'flagship';
+      if (tier.includes('balanced')) return 'balanced';
+      if (tier.includes('fast')) return 'fast';
+      if (tier.includes('economy')) return 'economy';
+      return 'legacy';
+    }
+
+    // Provider icons mapping
+    const providerIcons = {
+      openai: 'OA',
+      anthropic: 'An',
+      google: 'G',
+      mistral: 'Mi',
+      xai: 'xAI',
+      deepseek: 'DS',
+      cohere: 'Co',
+      meta: 'Me',
+      minimax: 'MM',
+      openrouter: 'OR',
+      moonshot: 'Ki'
+    };
+
+    // Track collapsed state
+    let collapsedProviders = new Set();
+
+    // Populate models grouped by provider
+    function populateProviderGroups(filterTier = 'all', searchQuery = '') {
+      const container = document.getElementById('provider-groups');
+      const noResults = document.getElementById('no-results');
+      container.innerHTML = '';
+
+      let hasResults = false;
+
+      Object.entries(llmData.providers).forEach(([providerKey, provider]) => {
+        // Filter models for this provider
+        let filteredModels = provider.models;
+
+        if (filterTier !== 'all') {
+          filteredModels = filteredModels.filter(m => m.tier.includes(filterTier));
+        }
+
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          filteredModels = filteredModels.filter(m =>
+            m.name.toLowerCase().includes(query) ||
+            m.id.toLowerCase().includes(query) ||
+            provider.name.toLowerCase().includes(query)
+          );
+        }
+
+        // Skip provider if no models match
+        if (filteredModels.length === 0) return;
+
+        hasResults = true;
+
+        const isCollapsed = collapsedProviders.has(providerKey);
+        const group = document.createElement('div');
+        group.className = `provider-group ${isCollapsed ? 'collapsed' : ''}`;
+        group.dataset.provider = providerKey;
+
+        group.innerHTML = `
+          <button class="provider-group-header" aria-expanded="${!isCollapsed}" aria-controls="group-content-${providerKey}">
+            <div class="provider-group-info">
+              <span class="provider-group-icon">${providerIcons[providerKey] || providerKey.slice(0, 2).toUpperCase()}</span>
+              <span class="provider-group-name">${provider.name}</span>
+            </div>
+            <div class="provider-group-meta">
+              <span class="provider-group-count">${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''}</span>
+              <svg class="provider-group-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </button>
+          <div class="provider-group-content" id="group-content-${providerKey}">
+            <table class="provider-group-table">
+              <thead>
+                <tr>
+                  <th scope="col">Model</th>
+                  <th scope="col">Input $/1M</th>
+                  <th scope="col">Output $/1M</th>
+                  <th scope="col">Context</th>
+                  <th scope="col">Capabilities</th>
+                  <th scope="col">Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredModels.map(model => `
+                  <tr>
+                    <td>
+                      <div class="model-name">${model.name}</div>
+                      <div class="model-id">${model.id}</div>
+                    </td>
+                    <td class="price-cell price-input">${model.input != null ? '$' + model.input.toFixed(model.input < 0.1 ? 4 : 2) : '—'}</td>
+                    <td class="price-cell price-output">${model.output != null ? '$' + model.output.toFixed(2) : '—'}</td>
+                    <td>${model.context ? `<span class="context-badge">${formatContext(model.context)}</span>` : '—'}</td>
+                    <td>
+                      <div class="capabilities">
+                        ${model.capabilities.map(c => `<span class="capability-tag ${c}">${c}</span>`).join('')}
+                      </div>
+                    </td>
+                    <td><span class="tier-badge ${getTierClass(model.tier)}">${formatTier(model.tier)}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        container.appendChild(group);
+
+        // Add toggle functionality
+        const header = group.querySelector('.provider-group-header');
+        header.addEventListener('click', () => {
+          const isNowCollapsed = group.classList.toggle('collapsed');
+          header.setAttribute('aria-expanded', !isNowCollapsed);
+
+          if (isNowCollapsed) {
+            collapsedProviders.add(providerKey);
+          } else {
+            collapsedProviders.delete(providerKey);
+          }
+
+          updateExpandAllButton();
+        });
+
+        header.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            header.click();
+          }
+        });
+      });
+
+      noResults.style.display = hasResults ? 'none' : 'block';
+      updateExpandAllButton();
+    }
+
+    // Update expand/collapse all button state
+    function updateExpandAllButton() {
+      const btn = document.getElementById('expand-all-btn');
+      const groups = document.querySelectorAll('.provider-group');
+      const allCollapsed = Array.from(groups).every(g => g.classList.contains('collapsed'));
+
+      btn.textContent = allCollapsed ? 'Expand All' : 'Collapse All';
+      btn.setAttribute('aria-expanded', !allCollapsed);
+    }
+
+    // Initialize
+    populateProviderGroups();
+
+    // Search and filter handlers
+    const searchInput = document.getElementById('model-search');
+    const tierFilter = document.getElementById('tier-filter');
+    const expandAllBtn = document.getElementById('expand-all-btn');
+
+    function updateGroups() {
+      populateProviderGroups(tierFilter.value, searchInput.value);
+    }
+
+    searchInput.addEventListener('input', updateGroups);
+    tierFilter.addEventListener('change', updateGroups);
+
+    // Expand/Collapse all
+    expandAllBtn.addEventListener('click', () => {
+      const groups = document.querySelectorAll('.provider-group');
+      const allCollapsed = Array.from(groups).every(g => g.classList.contains('collapsed'));
+
+      groups.forEach(group => {
+        const providerKey = group.dataset.provider;
+        const header = group.querySelector('.provider-group-header');
+
+        if (allCollapsed) {
+          group.classList.remove('collapsed');
+          header.setAttribute('aria-expanded', 'true');
+          collapsedProviders.delete(providerKey);
+        } else {
+          group.classList.add('collapsed');
+          header.setAttribute('aria-expanded', 'false');
+          collapsedProviders.add(providerKey);
+        }
+      });
+
+      updateExpandAllButton();
+    });
+
+    // Populate coding agents
+    function populateAgents() {
+      const grid = document.getElementById('agents-grid');
+
+      llmData.codingAgents.forEach(agent => {
+        const card = document.createElement('article');
+        card.className = 'agent-card';
+        card.innerHTML = `
+          <div class="agent-header">
+            <div>
+              <h3 class="agent-name">${agent.name}</h3>
+              <p class="agent-vendor">${agent.vendor}</p>
+            </div>
+            <span class="agent-type">${agent.type}</span>
+          </div>
+          <div class="agent-body">
+            <p class="agent-description">${agent.description}</p>
+            <div class="agent-pricing">
+              ${agent.pricing.map(p => `
+                <div class="pricing-row">
+                  <span class="pricing-tier">${p.tier}</span>
+                  <span class="pricing-amount">${p.price}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="agent-features">
+              <p class="features-title">Key Features</p>
+              <div class="features-list">
+                ${agent.features.map(f => `<span class="feature-chip">${f}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="agent-footer">
+            <p class="best-for"><strong>Best for:</strong> ${agent.bestFor}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    populateAgents();
+
+    // Smooth scroll for navigation
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>

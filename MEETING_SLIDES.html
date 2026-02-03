@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cienty AI Strategy - Meeting Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Cienty Brand Colors */
+      --black: #000000;
+      --white: #ffffff;
+      --gray: #bbbdc7;
+      --pink: #dc36c0;
+      --yellow: #ffb92a;
+      --light-blue: #eeeff1;
+      --dark-gray: #6d7079;
+      --charcoal: #2f2f32;
+
+      /* Semantic mappings */
+      --bg: var(--white);
+      --card: var(--light-blue);
+      --border: var(--gray);
+      --text: var(--black);
+      --muted: var(--dark-gray);
+      --accent: var(--pink);
+      --accent2: var(--yellow);
+      --success: #10b981;
+      --warning: var(--yellow);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .slide {
+      min-height: 100vh;
+      padding: 60px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+    }
+
+    .slide-number {
+      font-size: 0.7rem;
+      color: var(--pink);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      line-height: 1.2;
+      color: var(--black);
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: var(--pink);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--charcoal);
+    }
+
+    .subtitle {
+      font-size: 1.35rem;
+      color: var(--dark-gray);
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--light-blue);
+      border: none;
+      border-radius: 8px;
+      padding: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .card.highlight {
+      border-left-color: var(--pink);
+      background: linear-gradient(135deg, rgba(220, 54, 192, 0.08) 0%, var(--light-blue) 50%);
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--black);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table th {
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--black);
+      color: var(--white);
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comparison-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray);
+    }
+
+    .comparison-table tr:hover {
+      background: var(--light-blue);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-success { background: var(--black); color: var(--yellow); }
+    .badge-warning { background: var(--yellow); color: var(--black); }
+    .badge-accent { background: var(--pink); color: var(--white); }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 40px 0;
+    }
+
+    .flow-box {
+      background: var(--light-blue);
+      border: none;
+      border-radius: 6px;
+      padding: 18px 24px;
+      text-align: center;
+      border-left: 3px solid var(--gray);
+    }
+
+    .flow-box.ai {
+      border-left-color: var(--pink);
+      background: rgba(220, 54, 192, 0.08);
+    }
+
+    .flow-box.human {
+      border-left-color: var(--yellow);
+      background: rgba(255, 185, 42, 0.1);
+    }
+
+    .flow-arrow {
+      font-size: 1.25rem;
+      color: var(--gray);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--gray);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 24px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -34px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--pink);
+    }
+
+    .timeline-week {
+      font-size: 0.7rem;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      padding: 10px 0;
+      padding-left: 24px;
+      position: relative;
+      color: var(--charcoal);
+    }
+
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .big-number {
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--pink);
+      line-height: 1;
+    }
+
+    .roi-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px;
+      background: var(--black);
+      border-radius: 8px;
+      margin: 24px 0;
+    }
+
+    .roi-item {
+      text-align: center;
+    }
+
+    .roi-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .roi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .roi-equals {
+      font-size: 1.75rem;
+      color: var(--gray);
+    }
+
+    .decision-box {
+      background: var(--light-blue);
+      border: none;
+      border-left: 4px solid var(--pink);
+      border-radius: 8px;
+      padding: 40px;
+      margin: 40px 0;
+    }
+
+    .decision-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--pink);
+    }
+
+    .check-list li::before {
+      content: '☐';
+      color: var(--pink);
+    }
+
+    @media print {
+      .slide {
+        page-break-after: always;
+        min-height: auto;
+        padding: 40px;
+      }
+    }
+
+    /* Cienty logo styling */
+    .cienty-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .cienty-logo span {
+      color: var(--pink);
+    }
+
+    /* Accent text colors */
+    .text-pink { color: var(--pink); }
+    .text-yellow { color: var(--yellow); }
+    .text-success { color: var(--success); }
+    .text-muted { color: var(--dark-gray); }
+
+    /* Warning card */
+    .warning-card {
+      background: var(--black);
+      border-left: 4px solid var(--yellow);
+      border-radius: 8px;
+      padding: 20px 24px;
+    }
+
+    .warning-card p:first-child {
+      color: var(--yellow);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .warning-card p:last-child {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1: Title -->
+  <div class="slide" style="background: var(--black); justify-content: center;">
+    <div style="margin-bottom: 40px;">
+      <div class="cienty-logo" style="color: var(--white);">cienty<span>.</span></div>
+    </div>
+    <h1 style="color: var(--white); font-size: 3.5rem; margin-bottom: 24px;">Estratégia de<br>Ferramentas de IA</h1>
+    <p class="subtitle" style="color: var(--gray); font-size: 1.5rem;">Acelerando Desenvolvimento & Capacitando o Time</p>
+    <div style="margin-top: auto; display: flex; gap: 24px; align-items: center;">
+      <span style="color: var(--gray); font-size: 0.875rem;">Working Session</span>
+      <span style="background: var(--pink); color: white; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Janeiro 2026</span>
+    </div>
+  </div>
+
+  <!-- Slide 2: The Opportunity -->
+  <div class="slide">
+    <div class="slide-number">A Oportunidade</div>
+    <h1>IA está redefinindo o que times pequenos conseguem construir</h1>
+    <div class="grid-4" style="margin-top: 40px;">
+      <div class="card stat-card">
+        <div class="stat-value">3-5x</div>
+        <div class="stat-label">Ganho de Produtividade</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value">45%</div>
+        <div class="stat-label">Compressão do Roadmap</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value">80%</div>
+        <div class="stat-label">Código por AI Agent</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value">3.5x</div>
+        <div class="stat-label">Mais Barato que Hiring</div>
+      </div>
+    </div>
+    <div class="warning-card" style="margin-top: 60px;">
+      <p>A janela está fechando</p>
+      <p>Empresas que adotarem workflows AI-first em 2026 terão 3-5x mais output que as que não adotarem. Em 2027, times sem IA não conseguirão competir.</p>
+    </div>
+  </div>
+
+  <!-- Slide 3: Where We Are -->
+  <div class="slide">
+    <div class="slide-number">Estado Atual</div>
+    <h1>Onde a Cienty está hoje</h1>
+    <div class="grid-2">
+      <div>
+        <h3>Uso atual de IA</h3>
+        <ul>
+          <li>Time técnico: Copilot/Cursor (ad-hoc)</li>
+          <li>Time não-técnico: ChatGPT para conteúdo</li>
+          <li>Sem políticas ou padrões formais</li>
+          <li>Sem tracking de custos ou métricas</li>
+        </ul>
+        <div style="margin-top: 40px;">
+          <span class="badge badge-warning">Nível 1: Ad-hoc</span>
+        </div>
+      </div>
+      <div>
+        <h3>Níveis de Maturidade</h3>
+        <div class="card" style="margin-bottom: 12px; border-left-color: var(--yellow);">
+          <strong>Nível 1: Ad-hoc</strong> <span class="text-pink">← Estamos aqui</span>
+          <p style="color: var(--muted); font-size: 0.875rem;">Uso individual, sem padrões</p>
+        </div>
+        <div class="card" style="margin-bottom: 12px; opacity: 0.7;">
+          <strong>Nível 2: Padronizado</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">Ferramentas empresa, treinamento básico</p>
+        </div>
+        <div class="card" style="margin-bottom: 12px; opacity: 0.5;">
+          <strong>Nível 3: Integrado</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">IA nos workflows, métricas trackeadas</p>
+        </div>
+        <div class="card" style="opacity: 0.35;">
+          <strong>Nível 4: AI-Native</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">Processos AI-first, agentes autônomos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Tool Stack Options -->
+  <div class="slide">
+    <div class="slide-number">Opções de Ferramentas</div>
+    <h1>4 Opções de Stack</h1>
+    <table class="comparison-table" style="margin-top: 30px;">
+      <thead>
+        <tr>
+          <th>Opção</th>
+          <th>Stack</th>
+          <th>Custo Mensal (12 devs)</th>
+          <th>Benchmark</th>
+          <th>Veredito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: rgba(220, 54, 192, 0.1);">
+          <td><strong>1. Claude</strong></td>
+          <td>Claude Code + Max/Pro</td>
+          <td>R$6.240-12.480</td>
+          <td>80.9%</td>
+          <td><span class="badge badge-success">Recomendado</span></td>
+        </tr>
+        <tr>
+          <td><strong>2. Open Source</strong></td>
+          <td>OpenCode + OpenRouter</td>
+          <td>R$8.320-26.000 (variável)</td>
+          <td>72-75%</td>
+          <td><span class="badge badge-accent">Fallback</span></td>
+        </tr>
+        <tr>
+          <td><strong>3. Google</strong></td>
+          <td>Antigravity + AI Studio</td>
+          <td>R$0-9.360 (preview)</td>
+          <td>~70%</td>
+          <td><span class="badge badge-warning">Muito Cedo</span></td>
+        </tr>
+        <tr>
+          <td><strong>4. OpenAI</strong></td>
+          <td>ChatGPT Pro + Copilot</td>
+          <td>R$12.480-14.914</td>
+          <td>70-75%</td>
+          <td>Mais caro, menos perf</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 40px; padding: 20px; background: var(--card); border-radius: 8px;">
+      <p><strong>Recomendação:</strong> Ecossistema Claude como principal + OpenCode/OpenRouter como fallback para flexibilidade e evitar vendor lock-in.</p>
+    </div>
+  </div>
+
+  <!-- Slide 5: The 80/20 Workflow -->
+  <div class="slide">
+    <div class="slide-number">Modelo de Desenvolvimento</div>
+    <h1>Workflow 80/20 com IA</h1>
+    <div class="flow-diagram">
+      <div class="flow-box human">
+        <div style="font-size: 0.75rem; color: var(--accent2); margin-bottom: 4px;">HUMANO (20%)</div>
+        <strong>Planejar</strong>
+        <div style="font-size: 0.75rem; color: var(--muted);">Arquitetura, restrições</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box ai">
+        <div style="font-size: 0.75rem; color: var(--accent); margin-bottom: 4px;">IA (80%)</div>
+        <strong>Implementar</strong>
+        <div style="font-size: 0.75rem; color: var(--muted);">Multi-arquivo, testes, docs</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box human">
+        <div style="font-size: 0.75rem; color: var(--accent2); margin-bottom: 4px;">HUMANO (20%)</div>
+        <strong>Revisar</strong>
+        <div style="font-size: 0.75rem; color: var(--muted);">Pontos críticos, aprovação</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box ai">
+        <div style="font-size: 0.75rem; color: var(--accent); margin-bottom: 4px;">IA (80%)</div>
+        <strong>Refinar</strong>
+        <div style="font-size: 0.75rem; color: var(--muted);">Corrigir, polir</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box human">
+        <div style="font-size: 0.75rem; color: var(--accent2); margin-bottom: 4px;">HUMANO (20%)</div>
+        <strong>Entregar</strong>
+        <div style="font-size: 0.75rem; color: var(--muted);">Merge, deploy, monitorar</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top: 40px;">
+      <div class="card">
+        <h3 style="color: var(--accent);">IA Faz (80%)</h3>
+        <ul>
+          <li>Boilerplate & scaffolding</li>
+          <li>Operações CRUD</li>
+          <li>Escrever testes</li>
+          <li>Refatoração</li>
+          <li>Documentação</li>
+          <li>Bug fixes rotineiros</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent2);">Humano Foca (20%)</h3>
+        <ul>
+          <li>Decisões de arquitetura</li>
+          <li>Lógica de negócio crítica</li>
+          <li>Code review & aprovação</li>
+          <li>Auditoria de segurança</li>
+          <li>Decisões de UX</li>
+          <li>Edge cases</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Build vs Buy -->
+  <div class="slide">
+    <div class="slide-number">Mudança Estratégica</div>
+    <h1>Build vs Buy: Novo Cálculo</h1>
+    <div class="grid-2">
+      <div>
+        <h3>Tradicional (Pré-IA)</h3>
+        <div class="card" style="margin-bottom: 16px;">
+          <strong>Build</strong>
+          <p style="color: var(--muted);">3-6 meses, R$250-750K, manutenção contínua</p>
+        </div>
+        <div class="card">
+          <strong>Buy</strong>
+          <p style="color: var(--muted);">R$2.500-10K/mês SaaS, imediato, customização limitada</p>
+        </div>
+        <p style="margin-top: 20px; color: var(--muted);">→ "Comprar primeiro" fazia sentido</p>
+      </div>
+      <div>
+        <h3>Era da IA (2026)</h3>
+        <div class="card highlight" style="margin-bottom: 16px;">
+          <strong>Build com IA</strong>
+          <p style="color: var(--muted);">1-3 semanas, R$25-75K, manutenção assistida por IA</p>
+        </div>
+        <div class="card">
+          <strong>Buy</strong>
+          <p style="color: var(--muted);">Mesmo custo, mas customização importa mais</p>
+        </div>
+        <p style="margin-top: 20px; color: var(--accent);">→ "Avaliar custo de build com IA"</p>
+      </div>
+    </div>
+    <div style="margin-top: 40px;">
+      <h3>Exemplo Concreto: Dashboard Interno</h3>
+      <div class="roi-box">
+        <div class="roi-item">
+          <div class="roi-label">Comprar (Retool)</div>
+          <div class="roi-value" style="color: var(--warning);">R$7.800/mês</div>
+          <div style="font-size: 0.75rem; color: var(--muted);">Para sempre, custom limitado</div>
+        </div>
+        <div class="roi-equals">vs</div>
+        <div class="roi-item">
+          <div class="roi-label">Build com IA</div>
+          <div class="roi-value" style="color: var(--success);">R$26K único</div>
+          <div style="font-size: 0.75rem; color: var(--muted);">2 semanas, 100% custom</div>
+        </div>
+        <div class="roi-equals">=</div>
+        <div class="roi-item">
+          <div class="roi-label">Break-even</div>
+          <div class="roi-value" style="color: var(--accent);">3.3 meses</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Roadmap Acceleration -->
+  <div class="slide">
+    <div class="slide-number">Impacto no Roadmap</div>
+    <h1>Compressão do Roadmap: 45%</h1>
+    <table class="comparison-table" style="margin-top: 30px;">
+      <thead>
+        <tr>
+          <th>Fase</th>
+          <th>Original</th>
+          <th>Com IA</th>
+          <th>Economia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Fase 1: Fundação</td>
+          <td>12 semanas</td>
+          <td style="color: var(--success);">6 semanas</td>
+          <td>6 semanas</td>
+        </tr>
+        <tr>
+          <td>Fase 2: Infra de IA</td>
+          <td>12 semanas</td>
+          <td style="color: var(--success);">7 semanas</td>
+          <td>5 semanas</td>
+        </tr>
+        <tr>
+          <td>Fase 3: Agente Cliente</td>
+          <td>14 semanas</td>
+          <td style="color: var(--success);">8 semanas</td>
+          <td>6 semanas</td>
+        </tr>
+        <tr>
+          <td>Fase 4: Agente Interno</td>
+          <td>10 semanas</td>
+          <td style="color: var(--success);">6 semanas</td>
+          <td>4 semanas</td>
+        </tr>
+        <tr>
+          <td>Fase 5-6: Backoffice & Escala</td>
+          <td>22 semanas</td>
+          <td style="color: var(--success);">13 semanas</td>
+          <td>9 semanas</td>
+        </tr>
+        <tr style="background: var(--card); font-weight: 600;">
+          <td>TOTAL</td>
+          <td>70 semanas</td>
+          <td style="color: var(--accent);">40 semanas</td>
+          <td style="color: var(--success);">30 semanas</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 40px; text-align: center;">
+      <p style="font-size: 1.5rem; color: var(--accent);">Roadmap de 18 meses → 10-12 meses</p>
+    </div>
+  </div>
+
+  <!-- Slide 8: Team Enablement -->
+  <div class="slide">
+    <div class="slide-number">Capacitação</div>
+    <h1>Rollout do Time em 4 Semanas</h1>
+    <div class="grid-2">
+      <div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-week">Semana 1-2</div>
+            <strong>Fundação</strong>
+            <p style="color: var(--muted); font-size: 0.875rem;">Todo time recebe Claude Pro, workshop de 2h, framework CRAFT de prompts</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-week">Semana 3-4</div>
+            <strong>Treinamento por Função</strong>
+            <p style="color: var(--muted); font-size: 0.875rem;">Técnico: Deep-dive Claude Code. Não-técnico: Casos de uso por função</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-week">Semana 5-8</div>
+            <strong>Avançado & Métricas</strong>
+            <p style="color: var(--muted); font-size: 0.875rem;">Review adversarial, projetos custom, tracking de métricas, compartilhar wins</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>Ferramentas Não-Técnicas</h3>
+        <table class="comparison-table">
+          <tbody>
+            <tr><td>Vendas</td><td>Claude Pro</td><td>Propostas, pesquisa</td></tr>
+            <tr><td>Marketing</td><td>Claude Pro</td><td>Conteúdo, social</td></tr>
+            <tr><td>Operações</td><td>Claude Pro</td><td>Docs de processo, análise</td></tr>
+            <tr><td>Suporte</td><td>Claude Pro</td><td>Rascunhos, base de conhecimento</td></tr>
+            <tr><td>Todos</td><td>Perplexity</td><td>Pesquisa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Budget & ROI -->
+  <div class="slide">
+    <div class="slide-number">Investment</div>
+    <h1>Budget: R$14.456/mês</h1>
+    <div class="grid-2">
+      <div>
+        <h3>Monthly AI Tool Budget (32 pessoas)</h3>
+        <table class="comparison-table">
+          <tbody>
+            <tr><td>Claude Max 5x (12 devs)</td><td style="text-align: right;">R$6.240</td></tr>
+            <tr><td>Claude Pro (20 non-devs)</td><td style="text-align: right;">R$2.080</td></tr>
+            <tr><td>Perplexity Team (32)</td><td style="text-align: right;">R$2.496</td></tr>
+            <tr><td>API Usage (variable)</td><td style="text-align: right;">R$3.640</td></tr>
+            <tr style="font-weight: 600; background: var(--card);"><td>Total</td><td style="text-align: right; color: var(--accent);">R$14.456</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 8px;">R$452/pessoa/mês | Alt c/ SSO: R$17K</p>
+      </div>
+      <div>
+        <h3>Conservative ROI (vs Hiring)</h3>
+        <div class="card" style="margin-bottom: 16px;">
+          <p style="color: var(--muted); font-size: 0.875rem;">Equivalente a contratar 2 devs:</p>
+          <p style="font-size: 1.5rem;">R$50.000 vs <span style="color: var(--success);">R$14.456</span></p>
+        </div>
+        <div class="card">
+          <p style="color: var(--muted); font-size: 0.875rem;">Economia anual:</p>
+          <p style="font-size: 1.5rem;"><span style="color: var(--accent);">R$426.528/ano</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="roi-box" style="margin-top: 40px;">
+      <div class="roi-item">
+        <div class="roi-label">Contratar 2 Devs</div>
+        <div class="roi-value" style="color: var(--warning);">R$50.000/mês</div>
+      </div>
+      <div class="roi-equals">vs</div>
+      <div class="roi-item">
+        <div class="roi-label">AI Tools (32 pessoas)</div>
+        <div class="roi-value" style="color: var(--success);">R$14.456/mês</div>
+      </div>
+      <div class="roi-equals">=</div>
+      <div class="roi-item">
+        <div class="roi-label">Mesmo Output</div>
+        <div class="roi-value" style="color: var(--accent);">3.5x mais barato</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Strategic ROI -->
+  <div class="slide">
+    <div class="slide-number">Strategic Value</div>
+    <h1>ROI Além da Produtividade</h1>
+    <div class="grid-2">
+      <div>
+        <h3>Impacto no Roadmap</h3>
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Timeline</span>
+            <span><span style="text-decoration: line-through; color: var(--muted);">70 sem</span> → <span style="color: var(--success);">40 sem</span></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Features/quarter</span>
+            <span><span style="text-decoration: line-through; color: var(--muted);">~8</span> → <span style="color: var(--success);">~14</span></span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Bug fix cycle</span>
+            <span><span style="text-decoration: line-through; color: var(--muted);">2-4h</span> → <span style="color: var(--success);">30-60min</span></span>
+          </div>
+        </div>
+        <h3>Ciclo de VC Acelerado</h3>
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Seed → Series A</span>
+            <span style="color: var(--success);">6-9 meses mais rápido</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Valuation impact</span>
+            <span style="color: var(--success);">+20% (mais tração)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Menos diluição</span>
+            <span style="color: var(--accent);">R$4M+ em round de R$20M</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>Vantagens Estratégicas</h3>
+        <ul>
+          <li><strong>Go-to-market:</strong> 2x mais rápido para lançar features</li>
+          <li><strong>Defesa competitiva:</strong> Match velocidade de AI-native competitors</li>
+          <li><strong>Qualidade:</strong> Testes auto-gerados, docs completos</li>
+          <li><strong>Talento:</strong> Atrai devs que querem ferramentas modernas</li>
+          <li><strong>Retenção:</strong> Menos trabalho repetitivo, mais criativo</li>
+        </ul>
+        <div class="card" style="margin-top: 24px; border-color: var(--warning);">
+          <p style="color: var(--warning); font-weight: 600; margin-bottom: 8px;">Custo de NÃO adotar</p>
+          <p style="color: var(--muted); font-size: 0.875rem;">Competidores AI-native constroem em meses o que levava anos. Empresas que não adotarem serão adquiridas ou irrelevantes até 2028.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Competitor Context -->
+  <div class="slide">
+    <div class="slide-number">Cenário Competitivo</div>
+    <h1>O Que a Concorrência Está Fazendo</h1>
+    <div class="grid-2">
+      <div>
+        <h3>Tendências Pharma B2B (2026)</h3>
+        <ul>
+          <li><strong>51%</strong> das empresas adotando AI Copilots</li>
+          <li><strong>30-45%</strong> ganhos de produtividade em atendimento</li>
+          <li><strong>80%</strong> menos erros com suporte de IA</li>
+          <li><strong>89%</strong> líderes pharma têm estratégia digital</li>
+        </ul>
+        <div class="card" style="margin-top: 24px;">
+          <p style="font-size: 0.875rem; color: var(--muted);">Exemplo: Chatbot "Fabi" da Pfizer no Brasil gerencia todo portfólio com NLP. Brasil escolhido como "ambiente propício para assistentes digitais" devido ao alto volume de consultas.</p>
+        </div>
+      </div>
+      <div>
+        <h3>Risco de Não Adotar</h3>
+        <div class="card" style="border-left: 4px solid var(--warning); margin-bottom: 16px;">
+          <strong>Gap de Velocidade</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">Competidores AI-native entregam 2-3x mais rápido</p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--warning); margin-bottom: 16px;">
+          <strong>Expectativas de Talentos</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">Top devs esperam ferramentas de IA; contratar fica mais difícil sem elas</p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <strong>Estrutura de Custos</strong>
+          <p style="color: var(--muted); font-size: 0.875rem;">Competidores fazem mais com menos; precisamos de paridade</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Decisions Needed -->
+  <div class="slide">
+    <div class="slide-number">Decisões</div>
+    <h1>Decisões para Hoje</h1>
+    <div class="decision-box">
+      <div class="decision-title">6 Decisões Que Precisamos Tomar</div>
+      <div class="grid-2">
+        <div>
+          <ul class="check-list">
+            <li><strong>Stack:</strong> Ecossistema Claude como principal?</li>
+            <li><strong>Budget:</strong> Aprovar ~R$14.5K/mês?</li>
+            <li><strong>Build vs Buy:</strong> Novo framework de avaliação?</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="check-list">
+            <li><strong>Treinamento:</strong> Plano de rollout de 4 semanas?</li>
+            <li><strong>Roadmap:</strong> Acelerar ou expandir escopo?</li>
+            <li><strong>Política:</strong> Aprovar política de uso de IA?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top: 40px;">
+      <div class="card">
+        <h3>Esta Semana</h3>
+        <ul>
+          <li>Finalizar seleção de ferramentas</li>
+          <li>Configurar contas do time</li>
+          <li>Agendar primeiro workshop</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Próximas 2 Semanas</h3>
+        <ul>
+          <li>Completar treinamento Fase 1</li>
+          <li>Piloto Claude Code (2-3 devs)</li>
+          <li>Elaborar política formal de IA</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Este Trimestre</h3>
+        <ul>
+          <li>Capacitação completa do time</li>
+          <li>Primeiro projeto "build vs buy"</li>
+          <li>Medir & reportar resultados</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Summary -->
+  <div class="slide" style="justify-content: center; text-align: center;">
+    <div class="slide-number">Resumo</div>
+    <h1>Conclusão</h1>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <p class="subtitle">Investir R$14.456/mês para 32 pessoas. Economia de R$426K/ano. Roadmap 30 semanas mais rápido.</p>
+      <div class="grid-3" style="margin-top: 60px;">
+        <div class="card stat-card">
+          <div class="stat-value">R$14.5K</div>
+          <div class="stat-label">Investimento Mensal</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-value">R$426K</div>
+          <div class="stat-label">Economia Anual vs Hiring</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-value">30 sem</div>
+          <div class="stat-label">Roadmap Mais Rápido</div>
+        </div>
+      </div>
+      <p style="margin-top: 60px; font-size: 1.25rem;">A questão não é <em>se</em> devemos adotar ferramentas de IA.<br>É <strong style="color: var(--pink);">quão rápido</strong> conseguimos nos mover.</p>
+    </div>
+  </div>
+
+</body>
+</html>
