@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cienty Agent Sprint — Proposta para Founders</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #111119;
+  --bg-card-hover: #16161f;
+  --surface: #1a1a25;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-dim: #8888a0;
+  --text-muted: #55556a;
+  --accent: #00e5a0;
+  --accent-dim: #00b37d;
+  --accent-glow: rgba(0, 229, 160, 0.15);
+  --hot: #ff6b4a;
+  --warm: #ffb84d;
+  --cool: #4dabff;
+  --purple: #a78bfa;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+
+/* ── Utility ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-bg .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  animation: orbFloat 20s ease-in-out infinite;
+}
+
+.hero-bg .orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
+  top: -200px; left: -100px;
+}
+
+.hero-bg .orb-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(77,171,255,0.08) 0%, transparent 70%);
+  bottom: -150px; right: -100px;
+  animation-delay: -7s;
+}
+
+.hero-bg .orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%);
+  top: 40%; right: 10%;
+  animation-delay: -13s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(42,42,58,0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,42,58,0.3) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  background: var(--accent-glow);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.8s ease-out both;
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.4rem;
+  animation: fadeUp 0.8s ease-out 0.1s both;
+}
+
+.hero-title .line-1 { color: var(--text); }
+.hero-title .line-2 {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--cool) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: var(--text-dim);
+  max-width: 600px;
+  margin: 1.5rem auto 3rem;
+  font-weight: 300;
+  animation: fadeUp 0.8s ease-out 0.2s both;
+}
+
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s ease-out 0.35s both;
+}
+
+.hero-meta-item {
+  text-align: center;
+}
+
+.hero-meta-item .value {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.hero-meta-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.2rem;
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: fadeUp 0.8s ease-out 0.5s both;
+}
+
+.scroll-cue .arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 1.5px solid var(--text-muted);
+  border-bottom: 1.5px solid var(--text-muted);
+  transform: rotate(45deg);
+  animation: bounceDown 2s ease-in-out infinite;
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(6px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION ── */
+section {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.section-label {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-label::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  max-width: 650px;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+/* ── WHY NOW cards ── */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.why-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.why-card:hover {
+  border-color: rgba(0,229,160,0.3);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.why-card .icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.why-card:nth-child(1) .icon { background: rgba(0,229,160,0.1); }
+.why-card:nth-child(2) .icon { background: rgba(77,171,255,0.1); }
+.why-card:nth-child(3) .icon { background: rgba(167,139,250,0.1); }
+
+.why-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+}
+
+.why-card p {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+/* ── OBJECTIVES ── */
+.obj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.obj-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.obj-item:hover {
+  border-color: rgba(0,229,160,0.2);
+  transform: translateY(-1px);
+}
+
+.obj-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--accent);
+  opacity: 0.5;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.obj-item h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.obj-item p {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--cool), var(--purple), var(--warm));
+  border-radius: 2px;
+}
+
+.tl-item {
+  position: relative;
+  padding-left: 64px;
+  padding-bottom: 2rem;
+}
+
+.tl-item:last-child { padding-bottom: 0; }
+
+.tl-dot {
+  position: absolute;
+  left: 14px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  z-index: 1;
+}
+
+.tl-item.break .tl-dot {
+  border-color: var(--warm);
+}
+
+.tl-item.demo .tl-dot {
+  border-color: var(--hot);
+  box-shadow: 0 0 12px rgba(255,107,74,0.3);
+}
+
+.tl-time {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 0.1rem;
+}
+
+.tl-item.break .tl-time { color: var(--warm); }
+.tl-item.demo .tl-time { color: var(--hot); }
+
+.tl-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.tl-desc {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.tl-dur {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: var(--surface);
+  padding: 0.15rem 0.6rem;
+  border-radius: 100px;
+  margin-top: 0.3rem;
+}
+
+/* ── SQUADS ── */
+.squad-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.squad-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.squad-card:hover {
+  border-color: rgba(0,229,160,0.2);
+}
+
+.squad-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.role-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(42,42,58,0.5);
+}
+
+.role-row:last-child { border-bottom: none; }
+
+.role-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.role-badge.tech { background: rgba(0,229,160,0.1); color: var(--accent); }
+.role-badge.po { background: rgba(77,171,255,0.1); color: var(--cool); }
+.role-badge.build { background: rgba(167,139,250,0.1); color: var(--purple); }
+
+.role-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.callout {
+  background: linear-gradient(135deg, rgba(0,229,160,0.06) 0%, rgba(77,171,255,0.04) 100%);
+  border: 1px solid rgba(0,229,160,0.15);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.callout strong {
+  color: var(--accent);
+}
+
+/* ── PROJECTS ── */
+.proj-category {
+  margin-bottom: 2.5rem;
+}
+
+.proj-category h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.proj-category h3 span {
+  font-size: 1.2rem;
+}
+
+.proj-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.proj-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.3rem 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.proj-card:hover {
+  border-color: rgba(0,229,160,0.2);
+  transform: translateY(-1px);
+}
+
+.proj-card .proj-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.proj-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.complexity {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+.complexity.alta { background: rgba(255,107,74,0.15); color: var(--hot); }
+.complexity.media { background: rgba(255,184,77,0.15); color: var(--warm); }
+.complexity.baixa { background: rgba(0,229,160,0.15); color: var(--accent); }
+
+.proj-card p {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+/* ── EVALUATION ── */
+.eval-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.eval-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.eval-row:hover {
+  border-color: rgba(0,229,160,0.2);
+}
+
+.eval-row h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.eval-row p {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+}
+
+.eval-bar-wrap {
+  width: 120px;
+  text-align: right;
+}
+
+.eval-pct {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.eval-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.eval-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--cool));
+  transition: width 1s ease-out;
+}
+
+/* ── BUDGET ── */
+.budget-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .budget-cards { grid-template-columns: 1fr; }
+}
+
+.budget-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.budget-card:hover {
+  transform: translateY(-2px);
+}
+
+.budget-card.recommended {
+  border-color: var(--accent);
+  box-shadow: 0 0 40px rgba(0,229,160,0.08);
+}
+
+.budget-card.recommended::before {
+  content: 'Recomendado';
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.3rem 1rem;
+  border-radius: 0 16px 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.budget-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.budget-price {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.1;
+}
+
+.budget-card.recommended .budget-price {
+  color: var(--accent);
+}
+
+.budget-list {
+  list-style: none;
+}
+
+.budget-list li {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  padding: 0.35rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.budget-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+/* ── DECISIONS ── */
+.decisions-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.decision-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.2rem;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.decision-card:hover {
+  border-color: rgba(255,107,74,0.3);
+}
+
+.decision-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--hot);
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.decision-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.decision-card p {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+}
+
+.decision-tag {
+  font-size: 0.7rem;
+  color: var(--hot);
+  background: rgba(255,107,74,0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── TOGGLE / FULL PLAN ── */
+.full-plan-section {
+  padding: 4rem 0 6rem;
+  border-top: 1px solid var(--border);
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.2rem 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.toggle-btn .chevron {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+.toggle-btn.open .chevron {
+  transform: rotate(-135deg);
+}
+
+.full-plan-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s ease;
+}
+
+.full-plan-content.open {
+  max-height: 20000px;
+}
+
+.full-plan-inner {
+  padding-top: 2.5rem;
+}
+
+.plan-section {
+  margin-bottom: 3rem;
+}
+
+.plan-section h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.plan-section h2 .num {
+  font-size: 0.8rem;
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.plan-section h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.8rem;
+  color: var(--text);
+}
+
+.plan-section p, .plan-section li {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.plan-section ul, .plan-section ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.plan-section li { margin-bottom: 0.4rem; }
+
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.88rem;
+}
+
+.plan-table th {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(42,42,58,0.3);
+  color: var(--text-dim);
+  vertical-align: top;
+}
+
+.plan-table tr:last-child td { border-bottom: none; }
+
+.plan-table td strong {
+  color: var(--text);
+}
+
+.plan-blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  background: var(--accent-glow);
+  border-radius: 0 10px 10px 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.plan-blockquote strong { color: var(--accent); }
+
+.plan-checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.plan-checklist li {
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.plan-checklist li::before {
+  content: '☐';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+/* ── SEPARATOR LINES ── */
+.sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .container { padding: 0 1.2rem; }
+  section { padding: 4rem 0; }
+  .hero-meta { gap: 1.5rem; }
+  .decision-card { grid-template-columns: auto 1fr; }
+  .decision-tag { grid-column: 2; }
+  .eval-row { grid-template-columns: 1fr; }
+  .eval-bar-wrap { width: 100%; }
+  .proj-list { grid-template-columns: 1fr; }
+}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Proposta para Founders</div>
+    <h1 class="hero-title">
+      <span class="line-1">Cienty</span><br>
+      <span class="line-2">Agent Sprint</span>
+    </h1>
+    <p class="hero-subtitle">Hackathon interno de 1 dia. Todo o time construindo com agentes de IA. MVPs reais. Cultura de inovacao.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="value">30</div>
+        <div class="label">Participantes</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="value">6</div>
+        <div class="label">Squads</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="value">1</div>
+        <div class="label">Dia</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="value">15</div>
+        <div class="label">Projetos</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span>Rolar</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ═══════ POR QUE AGORA ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Contexto</div>
+      <h2 class="section-title">Por que agora?</h2>
+      <p class="section-desc">A Cienty precisa viver a cultura de IA agentica — nao apenas construi-la para os clientes.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="icon">⚡</div>
+        <h3>Diferencial Competitivo</h3>
+        <p>A Cienty esta apostando em IA agentica como diferencial. O time precisa viver essa cultura, nao apenas construi-la para clientes.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🛠</div>
+        <h3>Ferramentas Maduras</h3>
+        <p>Agentes de codigo amadureceram a ponto de pessoas nao-tecnicas conseguirem construir software real. Este evento prova isso.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🤝</div>
+        <h3>Inteligencia Coletiva</h3>
+        <p>Colaboracao entre areas desbloqueia ideias que engenharia sozinha nao enxerga — comercial e CS conhecem as dores dos clientes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ OBJETIVOS ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Metas</div>
+      <h2 class="section-title">4 Objetivos Claros</h2>
+    </div>
+    <div class="obj-grid">
+      <div class="obj-item reveal">
+        <div class="obj-num">01</div>
+        <div>
+          <h4>Treinar em Agentes de IA</h4>
+          <p>Todo participante entrega codigo usando Claude Code ou AI Studio</p>
+        </div>
+      </div>
+      <div class="obj-item reveal">
+        <div class="obj-num">02</div>
+        <div>
+          <h4>Integracao entre Areas</h4>
+          <p>Todo squad tem membros de pelo menos 2 areas diferentes</p>
+        </div>
+      </div>
+      <div class="obj-item reveal">
+        <div class="obj-num">03</div>
+        <div>
+          <h4>Construir o que Importa</h4>
+          <p>Projetos ligados ao roadmap, clientes ou operacoes da Cienty</p>
+        </div>
+      </div>
+      <div class="obj-item reveal">
+        <div class="obj-num">04</div>
+        <div>
+          <h4>Mover Rapido</h4>
+          <p>Demos funcionais apresentadas no final do dia</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CRONOGRAMA ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Agenda</div>
+      <h2 class="section-title">Cronograma do Dia</h2>
+      <p class="section-desc">~8,5 horas de evento. De bootcamp a demos, passando por 5,5h de construcao real.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">09:00</div>
+        <div class="tl-title">Abertura & Kickoff</div>
+        <div class="tl-desc">Founders dao o tom. Por que isso importa para a Cienty.</div>
+        <div class="tl-dur">20 min</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">09:20</div>
+        <div class="tl-title">Bootcamp de Ferramentas de IA</div>
+        <div class="tl-desc">Mao na massa: todos constroem algo em 30 min usando Claude Code / AI Studio.</div>
+        <div class="tl-dur">40 min</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:00</div>
+        <div class="tl-title">Formacao dos Squads & Selecao de Projetos</div>
+        <div class="tl-desc">Squads escolhem projetos, definem escopo, distribuem papeis.</div>
+        <div class="tl-dur">30 min</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:30</div>
+        <div class="tl-title">Bloco de Sprint 1</div>
+        <div class="tl-desc">Cabeca baixa. Construir. Founders circulam dando feedback.</div>
+        <div class="tl-dur">2h30</div>
+      </div>
+      <div class="tl-item break reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">13:00</div>
+        <div class="tl-title">Almoco</div>
+        <div class="tl-desc">Comida + networking informal. Time remoto recebe vouchers de delivery.</div>
+        <div class="tl-dur">1h</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">14:00</div>
+        <div class="tl-title">Bloco de Sprint 2</div>
+        <div class="tl-desc">Continuar construindo. Preparar demo.</div>
+        <div class="tl-dur">3h</div>
+      </div>
+      <div class="tl-item demo reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">17:00</div>
+        <div class="tl-title">Hora da Demo</div>
+        <div class="tl-desc">5 min por squad: mostre o que construiu, como usou IA, o que aprendeu.</div>
+        <div class="tl-dur">1h</div>
+      </div>
+      <div class="tl-item demo reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">18:00</div>
+        <div class="tl-title">Avaliacao & Premiacao</div>
+        <div class="tl-desc">Founders avaliam. Premios entregues.</div>
+        <div class="tl-dur">30 min</div>
+      </div>
+      <div class="tl-item break reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-time">18:30</div>
+        <div class="tl-title">Happy Hour / Encerramento</div>
+        <div class="tl-desc">Celebrar. Retro. Conversar sobre proximos passos.</div>
+        <div class="tl-dur">Aberto</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SQUADS ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Organizacao</div>
+      <h2 class="section-title">Squads Multifuncionais</h2>
+      <p class="section-desc">6 squads de 5 pessoas, pre-definidos pela lideranca para garantir diversidade de areas.</p>
+    </div>
+    <div class="squad-info">
+      <div class="squad-card reveal">
+        <h3>👥 Composicao de Cada Squad</h3>
+        <div class="role-row">
+          <span class="role-badge tech">Tech Lead</span>
+          <span class="role-desc">Engenheiro(a) — decisoes de arquitetura, desbloqueia questoes tecnicas</span>
+        </div>
+        <div class="role-row">
+          <span class="role-badge po">Product Owner</span>
+          <span class="role-desc">Comercial / CS / Ops — define escopo, prioriza features, prepara a demo</span>
+        </div>
+        <div class="role-row">
+          <span class="role-badge build">Builders</span>
+          <span class="role-desc">Todos — todos codam usando agentes de IA. Engenheiros mentoram.</span>
+        </div>
+      </div>
+      <div class="squad-card reveal">
+        <h3>🌐 Participacao Hibrida</h3>
+        <div class="role-row">
+          <span class="role-desc">Chamada de video dedicada por squad (Google Meet / Discord)</span>
+        </div>
+        <div class="role-row">
+          <span class="role-desc">Remotos fazem pair com presenciais via compartilhamento de tela</span>
+        </div>
+        <div class="role-row">
+          <span class="role-desc">Workspace compartilhado: repo GitHub + colaboracao em tempo real</span>
+        </div>
+        <div class="role-row">
+          <span class="role-desc">Sistema de buddy: cada remoto tem um buddy presencial</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout reveal">
+      <strong>Regra principal:</strong> Membros nao-tecnicos NAO sao observadores. Eles constroem com agentes de IA junto com os engenheiros. Engenheiros guiam e mentoram, nao fazem tudo sozinhos.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PROJETOS ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Banco de Ideias</div>
+      <h2 class="section-title">15 Projetos Sugeridos</h2>
+      <p class="section-desc">Lista inicial para inspiracao. Lideranca e o time devem adicionar ou modificar antes do evento. Squads escolhem no dia.</p>
+    </div>
+
+    <div class="proj-category reveal">
+      <h3><span>🎯</span> Cliente & Produto</h3>
+      <div class="proj-list">
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Assistente IA no WhatsApp</h4>
+            <span class="complexity alta">Alta</span>
+          </div>
+          <p>IA conversacional que responde perguntas de farmacias sobre pedidos, precos e disponibilidade.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Sugestoes Inteligentes de Pedidos</h4>
+            <span class="complexity alta">Alta</span>
+          </div>
+          <p>Analisa historico e sugere listas de compras otimizadas para farmacias.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Dashboard Comparacao de Fornecedores</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Compara fornecedores por preco, prazo e confiabilidade para uma lista de produtos.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Wizard de Onboarding</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Ferramenta passo a passo para novas farmacias configurarem conta e primeiros pedidos.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Busca com Linguagem Natural</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Farmacias digitam o que precisam em portugues e recebem produtos correspondentes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-category reveal">
+      <h3><span>⚙️</span> Operacoes Internas</h3>
+      <div class="proj-list">
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Auto-Classificador de Tickets</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>IA que categoriza, prioriza e sugere respostas para tickets de CS.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Lead Scoring para Vendas</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Dashboard que ranqueia leads por tamanho, regiao e potencial de compra.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Base de Conhecimento / Chatbot</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Chatbot treinado em documentos e processos da Cienty para uso interno.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Gerador de Dashboard de KPIs</h4>
+            <span class="complexity alta">Alta</span>
+          </div>
+          <p>Descreva um KPI em linguagem natural e receba SQL + visualizacao.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Resumidor de Notas de Reuniao</h4>
+            <span class="complexity baixa">Baixa</span>
+          </div>
+          <p>Gera action items, resumos e follow-ups a partir de gravacoes de reunioes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-category reveal">
+      <h3><span>🚀</span> Criativos / Experimentais</h3>
+      <div class="proj-list">
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Gerador de Pitch da Cienty</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>IA que gera pitch decks personalizados para diferentes segmentos de farmacias.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Monitor de Pulso do Mercado</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Scraper + IA que monitora noticias farma, concorrentes e mudancas regulatorias.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Preditor de Demanda</h4>
+            <span class="complexity alta">Alta</span>
+          </div>
+          <p>Dados historicos + sazonalidade para prever demanda de medicamentos-chave.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Bot de Pulso do Time / Retro</h4>
+            <span class="complexity baixa">Baixa</span>
+          </div>
+          <p>Bot para retrospectivas assincronas e pulse checks do time.</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-head">
+            <h4>Treinamento Gamificado</h4>
+            <span class="complexity media">Media</span>
+          </div>
+          <p>Quiz e desafios interativos para treinar novos colaboradores sobre produto e processos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ AVALIACAO ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Criterios</div>
+      <h2 class="section-title">Como Avaliamos</h2>
+      <p class="section-desc">Founders sao os jurados principais. 5 min de demo por squad + 2 min de perguntas.</p>
+    </div>
+    <div class="eval-grid">
+      <div class="eval-row reveal">
+        <div>
+          <h4>Impacto</h4>
+          <p>Quao valioso e para a Cienty? Usariamos em producao?</p>
+        </div>
+        <div class="eval-bar-wrap">
+          <div class="eval-pct">30%</div>
+          <div class="eval-bar"><div class="eval-bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+      <div class="eval-row reveal">
+        <div>
+          <h4>Execucao & Maturidade</h4>
+          <p>Quao completo e polido esta o prototipo?</p>
+        </div>
+        <div class="eval-bar-wrap">
+          <div class="eval-pct">25%</div>
+          <div class="eval-bar"><div class="eval-bar-fill" style="width:83%"></div></div>
+        </div>
+      </div>
+      <div class="eval-row reveal">
+        <div>
+          <h4>Uso de Agentes de IA</h4>
+          <p>Quao efetivamente usaram agentes de codigo?</p>
+        </div>
+        <div class="eval-bar-wrap">
+          <div class="eval-pct">20%</div>
+          <div class="eval-bar"><div class="eval-bar-fill" style="width:67%"></div></div>
+        </div>
+      </div>
+      <div class="eval-row reveal">
+        <div>
+          <h4>Criatividade</h4>
+          <p>Originalidade da ideia ou abordagem.</p>
+        </div>
+        <div class="eval-bar-wrap">
+          <div class="eval-pct">15%</div>
+          <div class="eval-bar"><div class="eval-bar-fill" style="width:50%"></div></div>
+        </div>
+      </div>
+      <div class="eval-row reveal">
+        <div>
+          <h4>Trabalho em Equipe</h4>
+          <p>Todo o squad contribuiu? Colaboracao entre areas?</p>
+        </div>
+        <div class="eval-bar-wrap">
+          <div class="eval-pct">10%</div>
+          <div class="eval-bar"><div class="eval-bar-fill" style="width:33%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PREMIOS ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Reconhecimento</div>
+      <h2 class="section-title">Premiacoes</h2>
+      <p class="section-desc">Gift cards (iFood, Amazon ou Americanas) + reconhecimento. Projeto vencedor entra em fast-track para producao.</p>
+    </div>
+    <div class="proj-list reveal">
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>🥇 1o Lugar — Melhor Geral</h4>
+          <span class="complexity alta" style="background:rgba(255,184,77,0.15);color:var(--warm)">R$ 1.000</span>
+        </div>
+        <p>Gift cards R$200/pessoa (x5)</p>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>🥈 2o Lugar — Vice</h4>
+          <span class="complexity media">R$ 500</span>
+        </div>
+        <p>Gift cards R$100/pessoa (x5)</p>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>🥉 3o Lugar</h4>
+          <span class="complexity media">R$ 300</span>
+        </div>
+        <p>Gift cards R$60/pessoa (x5)</p>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>⭐ Melhor Uso de IA</h4>
+          <span class="complexity baixa">R$ 250</span>
+        </div>
+        <p>Mencao especial + premio</p>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>💡 Mais Criativo</h4>
+          <span class="complexity baixa">R$ 250</span>
+        </div>
+        <p>Mencao especial + premio</p>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <h4>🎤 Melhor Demo</h4>
+          <span class="complexity baixa">R$ 250</span>
+        </div>
+        <p>Mencao especial + premio</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ORCAMENTO ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Investimento</div>
+      <h2 class="section-title">Orcamento</h2>
+      <p class="section-desc">Tres faixas de investimento. O padrao cobre tudo que importa sem extras desnecessarios.</p>
+    </div>
+    <div class="budget-cards">
+      <div class="budget-card reveal">
+        <h3>Enxuto</h3>
+        <div class="budget-price">R$ 3.800</div>
+        <ul class="budget-list">
+          <li>Almoco presencial + remoto</li>
+          <li>Lanches & cafe</li>
+          <li>Happy hour</li>
+          <li>Premios: 1o, 2o e 3o lugar</li>
+        </ul>
+      </div>
+      <div class="budget-card recommended reveal">
+        <h3>Padrao</h3>
+        <div class="budget-price">R$ 5.350</div>
+        <ul class="budget-list">
+          <li>Tudo do Enxuto</li>
+          <li>Todas as categorias de premios</li>
+          <li>Creditos de API para ferramentas de IA</li>
+        </ul>
+      </div>
+      <div class="budget-card reveal">
+        <h3>Completo</h3>
+        <div class="budget-price">R$ 5.650</div>
+        <ul class="budget-list">
+          <li>Tudo do Padrao</li>
+          <li>Brindes da marca</li>
+          <li>Adesivos personalizados</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ DECISOES DOS FOUNDERS ═══════ -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Acao Necessaria</div>
+      <h2 class="section-title">Decisoes dos Founders</h2>
+      <p class="section-desc">6 pontos que precisam de input para finalizar o plano.</p>
+    </div>
+    <div class="decisions-grid">
+      <div class="decision-card reveal">
+        <div class="decision-num">1</div>
+        <div>
+          <h4>Data do evento</h4>
+          <p>Qual sexta-feira?</p>
+        </div>
+        <span class="decision-tag">Definir</span>
+      </div>
+      <div class="decision-card reveal">
+        <div class="decision-num">2</div>
+        <div>
+          <h4>Faixa de orcamento</h4>
+          <p>Enxuto (R$3,8k) / Padrao (R$5,3k) / Completo (R$5,6k)</p>
+        </div>
+        <span class="decision-tag">Escolher</span>
+      </div>
+      <div class="decision-card reveal">
+        <div class="decision-num">3</div>
+        <div>
+          <h4>Formacao dos squads</h4>
+          <p>Pre-definidos pela lideranca vs. parcialmente auto-selecionados</p>
+        </div>
+        <span class="decision-tag">Escolher</span>
+      </div>
+      <div class="decision-card reveal">
+        <div class="decision-num">4</div>
+        <div>
+          <h4>Estrutura de premios</h4>
+          <p>Gift cards vs. experiencias vs. outros</p>
+        </div>
+        <span class="decision-tag">Escolher</span>
+      </div>
+      <div class="decision-card reveal">
+        <div class="decision-num">5</div>
+        <div>
+          <h4>Continuidade dos projetos</h4>
+          <p>Comprometer-se a colocar em producao os top 1-2 projetos pos-evento?</p>
+        </div>
+        <span class="decision-tag">Decidir</span>
+      </div>
+      <div class="decision-card reveal">
+        <div class="decision-num">6</div>
+        <div>
+          <h4>Evento recorrente</h4>
+          <p>Unica vez ou comprometer-se com trimestral?</p>
+        </div>
+        <span class="decision-tag">Decidir</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FULL PLAN TOGGLE ═══════ -->
+<section class="full-plan-section">
+  <div class="container">
+    <button class="toggle-btn" onclick="togglePlan()">
+      <span id="toggleText">Abrir Plano Completo</span>
+      <span class="chevron"></span>
+    </button>
+    <div class="full-plan-content" id="fullPlan">
+      <div class="full-plan-inner">
+
+        <!-- Visao Geral -->
+        <div class="plan-section">
+          <h2><span class="num">1</span> Visao Geral</h2>
+          <p><strong>Cienty Agent Sprint</strong> e um hackathon interno de um dia onde todo o time da Cienty forma squads multifuncionais para construir MVPs e prototipos usando agentes de codigo com IA (Claude Code, Google AI Studio). O evento combina treinamento pratico em IA, integracao entre times e desenvolvimento acelerado de projetos relevantes para a Cienty.</p>
+
+          <h3>Por que agora?</h3>
+          <ul>
+            <li>A Cienty esta apostando em IA agentica como diferencial competitivo. O time precisa <strong>viver essa cultura</strong>, nao apenas construi-la para os clientes.</li>
+            <li>Agentes de codigo com IA amadureceram a ponto de pessoas nao-tecnicas conseguirem construir software real. Este evento prova isso.</li>
+            <li>Colaboracao entre areas desbloqueiam ideias que engenharia sozinha nao enxerga — os times comercial e de CS conhecem as dores dos clientes que se transformam nas melhores features.</li>
+          </ul>
+
+          <h3>Objetivos</h3>
+          <table class="plan-table">
+            <thead><tr><th>#</th><th>Objetivo</th><th>Como medimos</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Treinar o time em agentes de codigo com IA</strong></td><td>Todo participante entrega codigo usando Claude Code ou AI Studio</td></tr>
+              <tr><td>2</td><td><strong>Integracao entre areas</strong></td><td>Todo squad tem membros de pelo menos 2 areas diferentes</td></tr>
+              <tr><td>3</td><td><strong>Construir coisas que importam</strong></td><td>Projetos ligados ao roadmap, clientes ou operacoes da Cienty</td></tr>
+              <tr><td>4</td><td><strong>Mover rapido, aprender rapido</strong></td><td>Demos funcionais apresentadas no final do dia</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Estrutura -->
+        <div class="plan-section">
+          <h2><span class="num">2</span> Estrutura do Evento</h2>
+          <h3>Cronograma</h3>
+          <table class="plan-table">
+            <thead><tr><th>Horario</th><th>Atividade</th><th>Duracao</th><th>Detalhes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>09:00</strong></td><td>Abertura & Kickoff</td><td>20 min</td><td>Founders dao o tom. Por que isso importa para a Cienty.</td></tr>
+              <tr><td><strong>09:20</strong></td><td>Bootcamp de Ferramentas de IA</td><td>40 min</td><td>Mao na massa: todos constroem algo em 30 min usando Claude Code / AI Studio.</td></tr>
+              <tr><td><strong>10:00</strong></td><td>Formacao dos Squads & Selecao de Projetos</td><td>30 min</td><td>Squads escolhem projetos, definem escopo, distribuem papeis.</td></tr>
+              <tr><td><strong>10:30</strong></td><td>Bloco de Sprint 1</td><td>2h30</td><td>Cabeca baixa. Construir. Founders circulam dando feedback.</td></tr>
+              <tr><td><strong>13:00</strong></td><td>Almoco</td><td>1h</td><td>Comida + networking informal. Time remoto recebe vouchers de delivery.</td></tr>
+              <tr><td><strong>14:00</strong></td><td>Bloco de Sprint 2</td><td>3h</td><td>Continuar construindo. Preparar demo.</td></tr>
+              <tr><td><strong>17:00</strong></td><td>Hora da Demo</td><td>1h</td><td>5 min por squad: mostre o que construiu, como usou IA, o que aprendeu.</td></tr>
+              <tr><td><strong>18:00</strong></td><td>Avaliacao & Premiacao</td><td>30 min</td><td>Founders avaliam. Premios entregues.</td></tr>
+              <tr><td><strong>18:30</strong></td><td>Happy Hour / Encerramento</td><td>Aberto</td><td>Celebrar. Retro. Conversar sobre proximos passos.</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Tempo total ativo:</strong> ~8,5 horas (09:00-18:30)</p>
+
+          <h3>Bootcamp de Ferramentas de IA (09:20-10:00)</h3>
+          <p>Como o time ja participou de um workshop de Google AI Studio, esta sessao e um <strong>aquecimento rapido</strong>, nao um curso completo.</p>
+          <ol>
+            <li><strong>5 min</strong> — Visao geral das ferramentas disponiveis (Claude Code, Google AI Studio, Cursor)</li>
+            <li><strong>5 min</strong> — Demo ao vivo: construindo uma ferramenta simples do zero em tempo real</li>
+            <li><strong>25 min</strong> — Desafio mao na massa: cada pessoa (ou dupla) constroi um micro-projeto</li>
+            <li><strong>5 min</strong> — Perguntas e respostas, dicas para o sprint</li>
+          </ol>
+          <div class="plan-blockquote"><strong>Objetivo:</strong> Todos saem confiantes de que conseguem usar um agente de IA para gerar codigo funcional.</div>
+          <p><strong>Preparacao pre-evento:</strong> Compartilhar um guia rapido de 1 pagina 2-3 dias antes do evento com instrucoes de setup.</p>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Squads -->
+        <div class="plan-section">
+          <h2><span class="num">3</span> Squads</h2>
+          <h3>Composicao</h3>
+          <ul>
+            <li><strong>~30 participantes</strong> divididos em <strong>6 squads de 5 pessoas</strong></li>
+            <li>Pelo menos 1 engenheiro(a)</li>
+            <li>Pelo menos 1 pessoa de comercial, CS ou operacoes</li>
+            <li>Pelo menos 1 pessoa de produto, dados ou design</li>
+            <li>Squads sao <strong>pre-definidos pela lideranca</strong> para garantir mix equilibrado</li>
+          </ul>
+
+          <h3>Papeis</h3>
+          <table class="plan-table">
+            <thead><tr><th>Papel</th><th>Quem</th><th>Responsabilidade</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Tech Lead</strong></td><td>Engenheiro(a)</td><td>Decisoes de arquitetura, desbloquear questoes tecnicas</td></tr>
+              <tr><td><strong>Product Owner</strong></td><td>Comercial / CS / Ops</td><td>Define escopo, prioriza features, prepara a demo</td></tr>
+              <tr><td><strong>Builders</strong></td><td>Todos</td><td>Todos codam usando agentes de IA. Engenheiros mentoram nao-engenheiros.</td></tr>
+            </tbody>
+          </table>
+          <div class="plan-blockquote"><strong>Regra principal:</strong> Membros nao-tecnicos NAO sao observadores. Eles constroem com agentes de IA junto com os engenheiros.</div>
+
+          <h3>Participacao Remota</h3>
+          <ul>
+            <li>Chamada de video dedicada por squad (Google Meet / Discord)</li>
+            <li>Membros remotos fazem pair com presenciais via compartilhamento de tela</li>
+            <li>Workspace compartilhado: repo GitHub + colaboracao em tempo real</li>
+            <li>Participantes remotos distribuidos entre os squads (nao agrupados)</li>
+          </ul>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Projetos -->
+        <div class="plan-section">
+          <h2><span class="num">4</span> Projetos</h2>
+          <h3>Processo de Selecao</h3>
+          <ol>
+            <li><strong>2 semanas antes</strong> — Lideranca compartilha lista de 10-15 ideias</li>
+            <li><strong>1 semana antes</strong> — Time envia novas ideias via formulario</li>
+            <li><strong>3 dias antes</strong> — Curadoria da lista final (~8-10 opcoes)</li>
+            <li><strong>Dia do evento</strong> — Squads escolhem (ordem por sorteio)</li>
+          </ol>
+
+          <h3>Requisitos</h3>
+          <ul>
+            <li>Relacionado a Cienty (produto, operacoes, clientes ou time)</li>
+            <li>Realizavel como MVP/prototipo em ~5,5 horas</li>
+            <li>Ideias criativas bem-vindas, desde que conectadas a Cienty</li>
+            <li>Deve produzir <strong>demo funcional</strong> (nao slides)</li>
+          </ul>
+
+          <h3>Cliente & Produto</h3>
+          <table class="plan-table">
+            <thead><tr><th>#</th><th>Projeto</th><th>Descricao</th><th>Complexidade</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Assistente IA no WhatsApp</strong></td><td>IA conversacional para farmacias sobre pedidos, precos e disponibilidade</td><td>Alta</td></tr>
+              <tr><td>2</td><td><strong>Sugestoes Inteligentes de Pedidos</strong></td><td>Analisa historico e sugere listas de compras otimizadas</td><td>Alta</td></tr>
+              <tr><td>3</td><td><strong>Dashboard Comparacao Fornecedores</strong></td><td>Compara fornecedores por preco, prazo e confiabilidade</td><td>Media</td></tr>
+              <tr><td>4</td><td><strong>Wizard de Onboarding</strong></td><td>Ferramenta guiada para novas farmacias</td><td>Media</td></tr>
+              <tr><td>5</td><td><strong>Busca com Linguagem Natural</strong></td><td>Motor de busca em portugues para produtos</td><td>Media</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Operacoes Internas</h3>
+          <table class="plan-table">
+            <thead><tr><th>#</th><th>Projeto</th><th>Descricao</th><th>Complexidade</th></tr></thead>
+            <tbody>
+              <tr><td>6</td><td><strong>Auto-Classificador de Tickets</strong></td><td>IA que categoriza, prioriza e sugere respostas para tickets</td><td>Media</td></tr>
+              <tr><td>7</td><td><strong>Lead Scoring para Vendas</strong></td><td>Dashboard que ranqueia leads por tamanho, regiao e potencial</td><td>Media</td></tr>
+              <tr><td>8</td><td><strong>Base de Conhecimento / Chatbot</strong></td><td>Chatbot treinado nos documentos e processos internos</td><td>Media</td></tr>
+              <tr><td>9</td><td><strong>Gerador de Dashboard de KPIs</strong></td><td>Descreva KPI em linguagem natural e receba SQL + visualizacao</td><td>Alta</td></tr>
+              <tr><td>10</td><td><strong>Resumidor de Reunioes</strong></td><td>Gera action items e resumos de gravacoes de reunioes</td><td>Baixa</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Criativos / Experimentais</h3>
+          <table class="plan-table">
+            <thead><tr><th>#</th><th>Projeto</th><th>Descricao</th><th>Complexidade</th></tr></thead>
+            <tbody>
+              <tr><td>11</td><td><strong>Gerador de Pitch</strong></td><td>IA que gera pitch decks personalizados por segmento</td><td>Media</td></tr>
+              <tr><td>12</td><td><strong>Monitor de Pulso do Mercado</strong></td><td>Scraper + IA para noticias farma e concorrentes</td><td>Media</td></tr>
+              <tr><td>13</td><td><strong>Preditor de Demanda</strong></td><td>Dados historicos + sazonalidade para prever demanda</td><td>Alta</td></tr>
+              <tr><td>14</td><td><strong>Bot de Retro / Pulso</strong></td><td>Bot para retros assincronas e pulse checks</td><td>Baixa</td></tr>
+              <tr><td>15</td><td><strong>Treinamento Gamificado</strong></td><td>Quiz/desafios para treinar novos colaboradores</td><td>Media</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Avaliacao -->
+        <div class="plan-section">
+          <h2><span class="num">5</span> Avaliacao</h2>
+          <p><strong>Founders</strong> sao os jurados principais, apoiados por feedback dos pares.</p>
+          <table class="plan-table">
+            <thead><tr><th>Criterio</th><th>Peso</th><th>Descricao</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Impacto</strong></td><td>30%</td><td>Quao valioso para a Cienty? Usariamos em producao?</td></tr>
+              <tr><td><strong>Execucao & Maturidade</strong></td><td>25%</td><td>Quao completo e polido esta o prototipo?</td></tr>
+              <tr><td><strong>Uso de Agentes de IA</strong></td><td>20%</td><td>Quao efetivamente usaram agentes de codigo?</td></tr>
+              <tr><td><strong>Criatividade</strong></td><td>15%</td><td>Originalidade da ideia ou abordagem.</td></tr>
+              <tr><td><strong>Trabalho em Equipe</strong></td><td>10%</td><td>Todo o squad contribuiu? Colaboracao entre areas?</td></tr>
+            </tbody>
+          </table>
+          <h3>Formato da Demo</h3>
+          <ul>
+            <li><strong>5 minutos</strong> por squad (timer rigoroso)</li>
+            <li>Estrutura: Problema → Solucao → Demo ao Vivo → Destaques do Uso de IA → Aprendizados</li>
+            <li>Todos os membros devem participar da apresentacao</li>
+            <li>Perguntas dos founders (2 min)</li>
+          </ul>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Premios -->
+        <div class="plan-section">
+          <h2><span class="num">6</span> Premiacoes & Premios</h2>
+          <table class="plan-table">
+            <thead><tr><th>Categoria</th><th>Premio</th><th>Custo (BRL)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1o Lugar — Melhor Geral</strong></td><td>Gift cards R$200/pessoa (x5)</td><td>R$ 1.000</td></tr>
+              <tr><td><strong>2o Lugar — Vice</strong></td><td>Gift cards R$100/pessoa (x5)</td><td>R$ 500</td></tr>
+              <tr><td><strong>3o Lugar</strong></td><td>Gift cards R$60/pessoa (x5)</td><td>R$ 300</td></tr>
+              <tr><td><strong>Melhor Uso de IA</strong></td><td>Mencao especial + premio menor</td><td>R$ 250</td></tr>
+              <tr><td><strong>Mais Criativo</strong></td><td>Mencao especial + premio menor</td><td>R$ 250</td></tr>
+              <tr><td><strong>Melhor Demo</strong></td><td>Mencao especial + premio menor</td><td>R$ 250</td></tr>
+            </tbody>
+          </table>
+          <p>Gift cards: iFood, Amazon ou Americanas — vencedores escolhem.</p>
+          <h3>Reconhecimento nao-monetario</h3>
+          <ul>
+            <li>Projeto vencedor entra em <strong>fast-track para producao</strong></li>
+            <li>Todos os projetos arquivados no "repositorio de inovacao"</li>
+            <li>Post interno / anuncio no Slack celebrando todos os squads</li>
+          </ul>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Orcamento -->
+        <div class="plan-section">
+          <h2><span class="num">7</span> Estimativa de Orcamento</h2>
+          <table class="plan-table">
+            <thead><tr><th>Item</th><th>Detalhes</th><th>Custo (BRL)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Almoco (presencial)</strong></td><td>~20 pessoas x R$50/pessoa</td><td>R$ 1.000</td></tr>
+              <tr><td><strong>Almoco (remoto)</strong></td><td>~10 pessoas x R$50 voucher</td><td>R$ 500</td></tr>
+              <tr><td><strong>Lanches & Cafe</strong></td><td>Lanches, cafe, agua, suco o dia todo</td><td>R$ 400</td></tr>
+              <tr><td><strong>Happy Hour</strong></td><td>Bebidas + petiscos leves</td><td>R$ 600</td></tr>
+              <tr><td><strong>Premios</strong></td><td>Todas as categorias</td><td>R$ 2.550</td></tr>
+              <tr><td><strong>Creditos de IA</strong></td><td>API Claude/OpenAI se necessario</td><td>R$ 300</td></tr>
+              <tr><td><strong>Brindes (opcional)</strong></td><td>Adesivos, itens da marca</td><td>R$ 300</td></tr>
+              <tr><td colspan="2"><strong>Total (com brindes)</strong></td><td><strong>R$ 5.650</strong></td></tr>
+              <tr><td colspan="2"><strong>Total (sem brindes)</strong></td><td><strong>R$ 5.350</strong></td></tr>
+            </tbody>
+          </table>
+          <h3>Faixas de Orcamento</h3>
+          <table class="plan-table">
+            <thead><tr><th>Faixa</th><th>O que inclui</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Enxuto</strong></td><td>Comida + bebidas + 3 categorias de premios</td><td><strong>R$ 3.800</strong></td></tr>
+              <tr><td><strong>Padrao</strong></td><td>Comida + bebidas + todos os premios + creditos de API</td><td><strong>R$ 5.350</strong></td></tr>
+              <tr><td><strong>Completo</strong></td><td>Tudo incluindo brindes</td><td><strong>R$ 5.650</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Logistica -->
+        <div class="plan-section">
+          <h2><span class="num">8</span> Logistica & Preparacao</h2>
+          <h3>Cronograma de Preparacao</h3>
+          <table class="plan-table">
+            <thead><tr><th>Quando</th><th>O que</th><th>Responsavel</th></tr></thead>
+            <tbody>
+              <tr><td><strong>3 semanas antes</strong></td><td>Confirmar data, reservar espaco, anunciar evento</td><td>Lideranca</td></tr>
+              <tr><td><strong>2 semanas antes</strong></td><td>Compartilhar banco de projetos + formulario de ideias</td><td>Lideranca</td></tr>
+              <tr><td><strong>2 semanas antes</strong></td><td>Enviar guia de setup (Claude Code, AI Studio)</td><td>Engenharia</td></tr>
+              <tr><td><strong>1 semana antes</strong></td><td>Encerrar sugestoes, curadoria da lista final</td><td>Lideranca</td></tr>
+              <tr><td><strong>5 dias antes</strong></td><td>Anunciar squads e lista de projetos</td><td>Lideranca</td></tr>
+              <tr><td><strong>3 dias antes</strong></td><td>Compartilhar guia rapido, cronograma e logistica</td><td>Organizador</td></tr>
+              <tr><td><strong>1 dia antes</strong></td><td>Testar setup remoto (video, GitHub, ferramentas)</td><td>Engenharia</td></tr>
+              <tr><td><strong>Dia do evento</strong></td><td>Executar o evento</td><td>Todos</td></tr>
+              <tr><td><strong>1 semana depois</strong></td><td>Compartilhar retro, decidir quais projetos continuar</td><td>Lideranca</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Setup Tecnico</h3>
+          <ul class="plan-checklist">
+            <li>Criar org/repo no GitHub para projetos do hackathon</li>
+            <li>Garantir que todos tenham Claude Code instalado</li>
+            <li>Garantir acesso ao Google AI Studio</li>
+            <li>Preparar repos template / starter kits</li>
+            <li>Criar canal no Slack: #cienty-agent-sprint</li>
+            <li>Configurar chamadas de video por squad</li>
+            <li>Preparar timer / dashboard compartilhado</li>
+          </ul>
+
+          <h3>Experiencia Remota</h3>
+          <ul>
+            <li><strong>Chamadas Dedicadas por Squad</strong> — chamada aberta o dia todo</li>
+            <li><strong>Vouchers de Delivery</strong> — time remoto recebe iFood para almoco</li>
+            <li><strong>Tempo Igual de Demo</strong> — mesmo tempo via compartilhamento de tela</li>
+            <li><strong>Sistema de Buddy</strong> — cada remoto tem um buddy presencial</li>
+          </ul>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Regras -->
+        <div class="plan-section">
+          <h2><span class="num">9</span> Regras</h2>
+          <ol>
+            <li><strong>Todo codigo deve ser escrito durante o evento</strong> — nada de projetos pre-prontos</li>
+            <li><strong>Agentes de codigo com IA devem ser usados</strong> — esse e o proposito</li>
+            <li><strong>Bibliotecas open source e APIs sao permitidas</strong> — use o que acelerar</li>
+            <li><strong>Todo membro do squad deve contribuir</strong> — todos codam, todos apresentam</li>
+            <li><strong>Respeite o relogio</strong> — demos as 17:00 em ponto, sem extensoes</li>
+            <li><strong>Divirta-se</strong> — aprender e construir juntos</li>
+            <li><strong>Peca ajuda</strong> — nao fique travado por mais de 15 minutos</li>
+          </ol>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Pos-Evento -->
+        <div class="plan-section">
+          <h2><span class="num">10</span> Pos-Evento</h2>
+          <h3>No Mesmo Dia</h3>
+          <ul>
+            <li>Anunciar vencedores e celebrar</li>
+            <li>Retro rapida via Google Form: "Qual foi a melhor parte? O que melhoraria?"</li>
+          </ul>
+          <h3>Semana Seguinte</h3>
+          <ul>
+            <li>Lideranca revisa todos os projetos com o time de produto</li>
+            <li>Decidir quais 1-2 projetos continuar desenvolvendo</li>
+            <li>Compartilhar post interno com fotos, demos e aprendizados</li>
+            <li>Atualizar roadmap de treinamento em IA</li>
+          </ul>
+          <h3>Longo Prazo</h3>
+          <ul>
+            <li>Tornar isso um <strong>evento recorrente</strong> (trimestral ou semestral)</li>
+            <li>Construir um "pipeline de inovacao" interno</li>
+            <li>Acompanhar como a proficiencia em IA do time evolui</li>
+          </ul>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Comunicacao -->
+        <div class="plan-section">
+          <h2><span class="num">11</span> Templates de Comunicacao</h2>
+          <h3>Mensagem de Anuncio (Slack / Email)</h3>
+          <div class="plan-blockquote">
+            <strong>Cienty Agent Sprint — Save the Date!</strong><br><br>
+            No dia [DATA], vamos realizar nosso primeiro hackathon interno. O time inteiro vai formar squads multifuncionais e construir prototipos reais para a Cienty usando agentes de codigo com IA como Claude Code e Google AI Studio.<br><br>
+            <strong>Nao precisa saber programar</strong> — agentes de IA sao o grande equalizador. Se voce consegue descrever o que quer construir, voce consegue construir.<br><br>
+            <strong>O que esperar:</strong><br>
+            • Um bootcamp pratico de ferramentas de IA<br>
+            • 5-6 horas construindo em squads de 5<br>
+            • Demos, avaliacao pelos founders e premios<br>
+            • Comida, bebida e boas vibes
+          </div>
+
+          <h3>Formulario de Sugestao de Ideias</h3>
+          <ol>
+            <li>Nome do projeto</li>
+            <li>Descricao em uma frase</li>
+            <li>Quem se beneficia? (clientes / time interno / ambos)</li>
+            <li>Qual problema resolve?</li>
+            <li>Por que e empolgante?</li>
+            <li>Complexidade sugerida (Baixa / Media / Alta)</li>
+            <li>Seu nome</li>
+          </ol>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Decisoes -->
+        <div class="plan-section">
+          <h2><span class="num">★</span> Pontos de Decisao para os Founders</h2>
+          <table class="plan-table">
+            <thead><tr><th>#</th><th>Decisao</th><th>Opcoes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Data do evento</strong></td><td>Qual sexta-feira?</td></tr>
+              <tr><td>2</td><td><strong>Faixa de orcamento</strong></td><td>Enxuto (R$3,8k) / Padrao (R$5,3k) / Completo (R$5,6k)</td></tr>
+              <tr><td>3</td><td><strong>Formacao dos squads</strong></td><td>Pre-definidos pela lideranca vs. parcialmente auto-selecionados</td></tr>
+              <tr><td>4</td><td><strong>Estrutura de premios</strong></td><td>Gift cards vs. experiencias vs. outros</td></tr>
+              <tr><td>5</td><td><strong>Continuidade dos projetos</strong></td><td>Comprometer-se a colocar em producao os top 1-2 projetos?</td></tr>
+              <tr><td>6</td><td><strong>Evento recorrente</strong></td><td>Unica vez ou comprometer-se com trimestral?</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    Cienty Agent Sprint — Rascunho para aprovacao dos founders
+  </div>
+</footer>
+
+<script>
+// Toggle full plan
+function togglePlan() {
+  const content = document.getElementById('fullPlan');
+  const btn = document.querySelector('.toggle-btn');
+  const text = document.getElementById('toggleText');
+  content.classList.toggle('open');
+  btn.classList.toggle('open');
+  text.textContent = content.classList.contains('open') ? 'Fechar Plano Completo' : 'Abrir Plano Completo';
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
