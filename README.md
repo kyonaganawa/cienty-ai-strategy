@@ -31,10 +31,15 @@ Build a comprehensive AI-powered ecosystem that enhances operational efficiency,
 
 ## Documentation Structure
 
-- [ROADMAP.md](./ROADMAP.md) - Detailed development roadmap with phases and timelines
-- [ai-agents/](./ai-agents/) - AI agent specifications and architecture
+- [strategy/](./strategy/) - Roadmap, strategy suggestions, and technology stack
 - [systems/](./systems/) - System designs and technical specifications
-- [integrations/](./integrations/) - Integration architecture and data flow
+- [ai-practices/](./ai-practices/) - AI agents, best practices, and productivity measurement
+- [surveys/](./surveys/) - AI usage surveys and form setup guides
+- [workshop/](./workshop/) - Workshop plans, templates, and supporting materials
+- [presentations/](./presentations/) - Slides, comparison dashboard, and usage reports
+- [agreements/](./agreements/) - Team agreements and policy documents
+- [resources/](./resources/) - Additional playbooks and references
+- [data/](./data/) - Supporting datasets
 
 ## Technology Stack Considerations
 
@@ -68,4 +73,4 @@ Build a comprehensive AI-powered ecosystem that enhances operational efficiency,
 
 ## Getting Started
 
-Review the [ROADMAP.md](./ROADMAP.md) to understand the phased approach to building these systems.
+Review the [Roadmap](./strategy/ROADMAP.md) to understand the phased approach to building these systems.
