@@ -23,22 +23,40 @@ Com estes acordos em prática, a empresa espera ganhos operacionais mensuráveis
 
 ---
 
-## 2. Agentes de Código no Desenvolvimento do Dia a Dia
+## 2. Desenvolvimento AI-First
 
-Incentivamos a equipe a usar agentes de código (como Claude Code, Cursor, Windsurf e ferramentas similares) como parceiro padrão no trabalho diário, incluindo:
+Adotamos uma abordagem AI-first para construir software. Agentes de código (como Claude Code, Cursor, GitHub Copilot e ferramentas similares) são os construtores primários. Engenheiros direcionam, validam e corrigem seus resultados.
 
-- **Criação de novos projetos e funcionalidades** — Usar agentes para estruturar, implementar e iterar.
-- **Desenvolvimento colaborativo** — Usar agentes para explorar arquitetura, comparar abordagens e raciocinar sobre trade-offs.
-- **Testes** — Usar agentes para rascunhar casos de teste, ampliar cobertura e identificar casos de borda.
-- **Revisão de código e qualidade** — Usar agentes para verificações pré-review, descoberta de bugs e sugestões de melhoria.
-- **Monitoramento e observabilidade** — Usar agentes para apoiar logs, alertas e análise de incidentes.
-- **Proteção e segurança** — Usar agentes para revisar dependências, detectar riscos e reforçar práticas de código seguro.
+Isso significa que agentes de IA são o ponto de partida padrão para todo trabalho de desenvolvimento:
 
-Nosso objetivo não é substituir o julgamento de engenharia, mas amplificá-lo. Desenvolvedores continuam responsáveis pelas decisões finais e pelo código entregue.
+- **Construção de novos projetos e funcionalidades** — Agentes escrevem o código. Engenheiros definem requisitos, revisam resultados e direcionam.
+- **Arquitetura e design** — Agentes propõem soluções, exploram trade-offs e geram opções de implementação. Engenheiros tomam as decisões finais.
+- **Testes** — Agentes geram casos de teste, constroem suítes de teste e identificam casos de borda. Engenheiros verificam cobertura e correção.
+- **Revisão de código e qualidade** — Agentes fazem revisões de primeira passagem, sinalizam problemas e sugerem melhorias. Engenheiros aprovam e fazem merge.
+- **Monitoramento e observabilidade** — Agentes constroem ferramentas de logging, alertas e análise. Engenheiros validam a prontidão operacional.
+- **Proteção e segurança** — Agentes escaneiam dependências, detectam riscos e aplicam padrões de código seguro. Engenheiros garantem conformidade e aprovam.
+
+Engenheiros são responsáveis pelo que é entregue. Seu papel é direcionar a IA, validar seus resultados, corrigir erros e aplicar julgamento onde mais importa.
 
 ---
 
-## 3. Proficiência, Aprendizado e Crescimento
+## 3. Navegando um Cenário de IA em Rápida Evolução
+
+O ecossistema de ferramentas de IA está mudando em velocidade sem precedentes. Capacidades que não eram viáveis semanas atrás podem se tornar prontas para produção de repente. Novas ferramentas, modelos e fluxos de trabalho surgem constantemente — e a distância entre os early adopters e o restante aumenta rápido.
+
+Tratamos esse ritmo de mudança como desafio e oportunidade:
+
+- **Fique atento** — O que não funcionou no mês passado pode funcionar hoje. Reavalie ferramentas e técnicas descartadas regularmente.
+- **Experimente com propósito** — Teste novas ferramentas cedo, em cenários de baixo risco, para construir entendimento direto do que podem e não podem fazer.
+- **Seja crítico** — Nem todo lançamento merece adoção. Avalie ferramentas com base em necessidades reais, não no hype. Pergunte: isso resolve um problema que realmente temos?
+- **Adote com convicção** — Quando uma ferramenta prova seu valor, comprometa-se com ela. Meia-adoção desperdiça mais tempo do que compromisso total ou uma decisão clara de não usar.
+- **Mova-se rápido, adote corretamente** — Velocidade de adoção é vantagem competitiva, mas somente quando acompanhada de integração adequada, alinhamento do time e compreensão.
+
+Reconhecemos que, nesse ambiente, a capacidade de avaliar, adotar e dominar novas ferramentas rapidamente é, por si só, uma competência essencial. Ficar para trás em ferramentas significa ficar para trás em entrega. Estar à frente significa fazer mais, com menos, mais rápido do que concorrentes que hesitam.
+
+---
+
+## 4. Proficiência, Aprendizado e Crescimento
 
 Tratamos o desenvolvimento assistido por IA como uma competência profissional que construímos juntos ao longo do tempo.
 
@@ -53,7 +71,7 @@ Para apoiar crescimento contínuo, nos comprometemos a criar espaço para experi
 
 ---
 
-## 4. Padrões de Trabalho e Boas Práticas
+## 5. Padrões de Trabalho e Boas Práticas
 
 Nossos padrões se aplicam igualmente ao trabalho escrito por humanos e ao trabalho assistido por agentes.
 
@@ -69,7 +87,7 @@ Esses padrões são práticas vivas e serão atualizados conforme aprendemos o q
 
 ---
 
-## 5. Compartilhamento de Conhecimento e Melhoria Contínua
+## 6. Compartilhamento de Conhecimento e Melhoria Contínua
 
 Melhoramos mais rápido quando aprendemos juntos.
 
@@ -81,11 +99,13 @@ Compromissos da equipe:
 - **Apoiar uns aos outros** — Membros mais experientes orientam colegas que estão desenvolvendo proficiência em IA.
 - **Participar de revisões regulares** — Refletir em equipe sobre ferramentas, resultados e melhorias de processo.
 
+O compartilhamento de conhecimento acontece em múltiplos níveis. O compartilhamento com todo o time garante que todos se beneficiem de insights transversais e se mantenham alinhados sobre ferramentas e práticas. Fóruns especializados — como grupos de frontend, backend ou infraestrutura — permitem trocas mais profundas e direcionadas de técnicas, prompts e fluxos de trabalho específicos do domínio que podem não ser relevantes para todo o time. Ambos são essenciais: abrangência nos mantém conectados, profundidade nos mantém afiados.
+
 Também incentivamos a experimentação, reconhecendo e valorizando contribuições que melhorem a capacidade da equipe, a qualidade e a entrega.
 
 ---
 
-## 6. Práticas Sugeridas ao Time
+## 7. Práticas Sugeridas ao Time
 
 Nos comprometemos como time a desenvolver uma lista de boas práticas sugeridas, de forma a direcionar e aprimorar o desenvolvimento assistido por IA. Essa lista será complementada e revisada constantemente, refletindo o aprendizado contínuo e as alterações do ambiente de desenvolvimento. Contamos com a colaboração de todos da equipe de desenvolvimento.
 

@@ -25,22 +25,40 @@ We expect everyone on the team to engage with this direction and help shape how 
 
 ---
 
-## 2. Coding Agents in Day-to-Day Development
+## 2. AI-First Development
 
-We encourage the team to use coding agents (such as Claude Code, Cursor, GitHub Copilot, and similar tools) as a default partner in daily work, including:
+We adopt an AI-first approach to building software. Coding agents (such as Claude Code, Cursor, GitHub Copilot, and similar tools) are the primary builders. Engineers guide, validate, and correct their output.
 
-- **Creating new projects and features** — Use agents to scaffold, implement, and iterate.
-- **Collaborative development** — Use agents to explore architecture, compare approaches, and reason through tradeoffs.
-- **Testing** — Use agents to draft test cases, improve coverage, and identify edge cases.
-- **Code review and quality** — Use agents for pre-review checks, bug discovery, and improvement suggestions.
-- **Monitoring and observability** — Use agents to support logging, alerting, and incident analysis.
-- **Safety and security** — Use agents to review dependencies, detect risks, and strengthen secure coding practices.
+This means AI agents are the default starting point for all development work:
 
-Our goal is not to replace engineering judgment, but to amplify it. Developers remain accountable for final decisions and shipped code.
+- **Building new projects and features** — Agents write the code. Engineers define requirements, review results, and steer direction.
+- **Architecture and design** — Agents propose solutions, explore tradeoffs, and generate implementation options. Engineers make final decisions.
+- **Testing** — Agents generate test cases, build test suites, and identify edge cases. Engineers verify coverage and correctness.
+- **Code review and quality** — Agents perform first-pass reviews, flag issues, and suggest improvements. Engineers approve and merge.
+- **Monitoring and observability** — Agents build logging, alerting, and analysis tooling. Engineers validate operational readiness.
+- **Safety and security** — Agents scan dependencies, detect risks, and apply secure coding patterns. Engineers ensure compliance and sign off.
+
+Engineers are accountable for what ships. Their role is to direct the AI, validate its output, correct mistakes, and apply judgment where it matters most.
 
 ---
 
-## 3. Proficiency, Learning, and Growth
+## 3. Navigating a Rapidly Evolving AI Landscape
+
+The AI tooling ecosystem is changing at unprecedented speed. Capabilities that were not viable weeks ago can suddenly become production-ready. New tools, models, and workflows emerge constantly — and the gap between early adopters and the rest widens fast.
+
+We treat this pace of change as both a challenge and an opportunity:
+
+- **Stay alert** — What didn't work last month may work today. Revisit dismissed tools and techniques regularly.
+- **Experiment deliberately** — Try new tools early, in low-risk settings, to build firsthand understanding of what they can and cannot do.
+- **Be critical** — Not every new release deserves adoption. Evaluate tools against real needs, not hype. Ask: does this solve a problem we actually have?
+- **Adopt with conviction** — When a tool proves its value, commit to it. Half-adoption wastes more time than either full commitment or a clear pass.
+- **Move fast, adopt correctly** — Speed of adoption is a competitive advantage, but only when paired with proper integration, team alignment, and understanding.
+
+We recognize that in this environment, the ability to evaluate, adopt, and master new tools quickly is itself a core competency. Falling behind on tooling means falling behind on delivery. Staying ahead means we can do more, with less, faster than competitors who hesitate.
+
+---
+
+## 4. Proficiency, Learning, and Growth
 
 We treat AI-assisted development as a professional skill we build together over time.
 
@@ -55,7 +73,7 @@ To support continuous growth, we commit to creating space for experimentation, r
 
 ---
 
-## 4. Working Standards and Good Practices
+## 5. Working Standards and Good Practices
 
 Our standards apply equally to human-written and agent-assisted work.
 
@@ -71,7 +89,7 @@ These standards are living practices and will be updated as we learn what works 
 
 ---
 
-## 5. Knowledge Sharing and Continuous Improvement
+## 6. Knowledge Sharing and Continuous Improvement
 
 We improve faster when we learn together.
 
@@ -83,11 +101,13 @@ Team commitments:
 - **Support each other** — Experienced members mentor peers building AI proficiency.
 - **Participate in regular reviews** — Reflect on tools, outcomes, and process improvements as a team.
 
+Knowledge sharing happens at multiple levels. Team-wide sharing ensures everyone benefits from cross-cutting insights and stays aligned on tools and practices. Specialized forums — such as frontend, backend, or infrastructure groups — allow deeper, more targeted exchange of domain-specific techniques, prompts, and workflows that may not be relevant to the full team. Both are essential: breadth keeps us connected, depth keeps us sharp.
+
 We also encourage experimentation by recognizing and rewarding contributions that improve team capability, quality, and delivery.
 
 ---
 
-## 6. Team Practices
+## 7. Team Practices
 
 > *This section will be defined collaboratively by the team and added in a future iteration. It will include concrete workflows, ceremonies, tool configurations, and operational standards we agree to follow.*
 
