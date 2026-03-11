@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cienty - AI Strategy: Building the Buying Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Cienty Brand Colors */
+            --cienty-primary: #c054a0;
+            --cienty-secondary: #a0448a;
+            --cienty-accent: #d474b8;
+            --cienty-highlight: #c054a0;
+
+            /* Semantic Colors */
+            --cienty-success: #48bb78;
+            --cienty-warning: #ed8936;
+            --cienty-danger: #f56565;
+
+            /* Text Colors */
+            --cienty-text-dark: #2d3748;
+            --cienty-text-light: #ffffff;
+            --cienty-text-muted: #666666;
+
+            /* Background Colors */
+            --cienty-bg-light: #e8e8ec;
+            --cienty-bg-dark: #1a202c;
+            --cienty-bg-card: #ffffff;
+            --cienty-bg-section: #f0f0f3;
+
+            /* Dark Theme (Hero Sections) */
+            --cienty-dark-primary: #1a1a2e;
+            --cienty-dark-secondary: #16213e;
+            --cienty-dark-accent: #0f3460;
+
+            /* Gradients */
+            --cienty-gradient-primary: linear-gradient(135deg, #c054a0 0%, #a0448a 100%);
+            --cienty-gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --cienty-gradient-agent: linear-gradient(135deg, #c054a0, #a0448a);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--cienty-bg-light);
+            color: var(--cienty-text-dark);
+            line-height: 1.6;
+        }
+
+        /* ========== MAIN SLIDE ========== */
+        .slide {
+            background: var(--cienty-bg-light);
+            color: var(--cienty-text-dark);
+            min-height: 100vh;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-direction: row-reverse;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: lowercase;
+        }
+
+        .logo span {
+            color: var(--cienty-primary);
+        }
+
+        .badge {
+            background: var(--cienty-gradient-primary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--cienty-text-light);
+        }
+
+        .slide-title {
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .slide-title h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .slide-title h1 span {
+            color: var(--cienty-primary);
+        }
+
+        .slide-title p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        /* Main content grid */
+        .slide-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: 30px;
+        }
+
+        /* Left column */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Agentic comparison box */
+        .agentic-box {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .agentic-box h3 {
+            color: var(--cienty-primary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .comparison {
+            margin-bottom: 20px;
+        }
+
+        .comparison-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--cienty-text-muted);
+            margin-bottom: 8px;
+        }
+
+        .comparison-flow {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: var(--cienty-bg-section);
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: var(--cienty-text-dark);
+        }
+
+        .flow-arrow {
+            color: var(--cienty-text-muted);
+        }
+
+        .comparison.traditional {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .comparison.agentic .flow-step {
+            background: rgba(192, 84, 160, 0.12);
+            border: 1px solid var(--cienty-primary);
+        }
+
+        .agentic-insight {
+            background: rgba(192, 84, 160, 0.08);
+            border: 1px solid var(--cienty-primary);
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        .agentic-insight strong {
+            color: var(--cienty-primary);
+        }
+
+        /* Why we win box */
+        .moats-box {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .moats-box h3 {
+            color: var(--cienty-success);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .moat-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .moat-icon {
+            width: 26px;
+            height: 26px;
+            background: var(--cienty-success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .moat-text {
+            font-size: 12px;
+        }
+
+        .moat-text strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .moat-text span {
+            color: var(--cienty-text-muted);
+            font-size: 11px;
+        }
+
+        /* Right column - Architecture */
+        .architecture {
+            background: var(--cienty-bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .architecture h3 {
+            text-align: center;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            color: var(--cienty-text-muted);
+        }
+
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .arch-node {
+            background: var(--cienty-bg-section);
+            border-radius: 12px;
+            padding: 18px 25px;
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .arch-node.agent {
+            background: var(--cienty-gradient-primary);
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(192, 84, 160, 0.35);
+            color: var(--cienty-text-light);
+        }
+
+        .arch-node .icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .arch-node .name {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .arch-arrow {
+            font-size: 20px;
+            color: var(--cienty-text-muted);
+        }
+
+        .layer-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .data-layer {
+            background: var(--cienty-bg-section);
+            border-radius: 10px;
+            padding: 15px 20px;
+        }
+
+        .data-layer h4 {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--cienty-text-muted);
+            margin-bottom: 10px;
+        }
+
+        .data-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .data-tag {
+            background: var(--cienty-bg-light);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            border: 1px solid #d8d8dc;
+        }
+
+        .data-layer.agentic {
+            border: 1px solid rgba(192, 84, 160, 0.3);
+        }
+
+        .data-layer.agentic .data-tag {
+            background: rgba(192, 84, 160, 0.08);
+            border-color: rgba(192, 84, 160, 0.3);
+        }
+
+        /* Bottom section */
+        .slide-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .vision-box, .tech-box {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .vision-box h3, .tech-box h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: var(--cienty-text-muted);
+        }
+
+        .autonomy-ladder {
+            display: flex;
+            gap: 10px;
+        }
+
+        .autonomy-step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: var(--cienty-bg-section);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .autonomy-step::after {
+            content: '\2192';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--cienty-text-muted);
+        }
+
+        .autonomy-step:last-child::after {
+            display: none;
+        }
+
+        .autonomy-step .num {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--cienty-primary);
+            margin-bottom: 5px;
+        }
+
+        .autonomy-step .title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .autonomy-step .desc {
+            font-size: 10px;
+            color: var(--cienty-text-muted);
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .tech-item {
+            background: var(--cienty-bg-section);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .tech-item .name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .tech-item .desc {
+            font-size: 10px;
+            color: var(--cienty-text-muted);
+        }
+
+        /* Footer */
+        .slide-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #d8d8dc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tagline {
+            font-size: 16px;
+            font-style: italic;
+            color: var(--cienty-text-muted);
+        }
+
+        .cta {
+            background: var(--cienty-primary);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--cienty-text-light);
+        }
+
+        /* ========== SUPPORTING SECTIONS ========== */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: var(--cienty-text-dark);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--cienty-primary);
+            border-radius: 2px;
+        }
+
+        /* Agentic Deep Dive */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .comparison-card {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .comparison-card.traditional {
+            opacity: 0.7;
+        }
+
+        .comparison-card.agentic {
+            border: 2px solid var(--cienty-primary);
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-card.traditional h4 {
+            color: var(--cienty-text-muted);
+        }
+
+        .comparison-card.agentic h4 {
+            color: var(--cienty-primary);
+        }
+
+        .comparison-card h4 .icon {
+            font-size: 24px;
+        }
+
+        .aspect-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .aspect-row:last-child {
+            border-bottom: none;
+        }
+
+        .aspect-label {
+            font-size: 14px;
+            color: var(--cienty-text-muted);
+        }
+
+        .aspect-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Capabilities */
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .capability-card {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .capability-card h4 {
+            font-size: 16px;
+            color: var(--cienty-text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capability-card h4 .icon {
+            font-size: 24px;
+        }
+
+        .capability-list {
+            list-style: none;
+            counter-reset: capability-counter;
+        }
+
+        .capability-list li {
+            font-size: 13px;
+            color: var(--cienty-text-muted);
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+            counter-increment: capability-counter;
+        }
+
+        .capability-list li::before {
+            content: counter(capability-counter) '.';
+            position: absolute;
+            left: 0;
+            color: var(--cienty-primary);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Infrastructure Requirement */
+        .infra-section {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            margin-top: 50px;
+        }
+
+        .infra-section h3 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: var(--cienty-text-dark);
+        }
+
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .infra-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: var(--cienty-bg-section);
+            border-radius: 10px;
+        }
+
+        .infra-item .icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .infra-item h5 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .infra-item p {
+            font-size: 12px;
+            color: var(--cienty-text-muted);
+        }
+
+        .infra-callout {
+            background: linear-gradient(90deg, rgba(192, 84, 160, 0.08), transparent);
+            border-left: 4px solid var(--cienty-primary);
+            padding: 20px 25px;
+            margin-top: 30px;
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        /* Tech Stack Section */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .tech-card {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .tech-card .icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .tech-card h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .tech-card .category {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--cienty-primary);
+            margin-bottom: 10px;
+        }
+
+        .tech-card p {
+            font-size: 12px;
+            color: var(--cienty-text-muted);
+        }
+
+        .cost-section {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            margin-top: 40px;
+        }
+
+        .cost-section h3 {
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        .cost-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .cost-item {
+            background: var(--cienty-bg-section);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .cost-item h5 {
+            font-size: 13px;
+            color: var(--cienty-secondary);
+            margin-bottom: 8px;
+        }
+
+        .cost-item p {
+            font-size: 12px;
+            color: var(--cienty-text-muted);
+        }
+
+        /* Q&A Section */
+        .qa-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .qa-card {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--cienty-primary);
+        }
+
+        .qa-card h4 {
+            font-size: 15px;
+            color: var(--cienty-text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qa-card h4::before {
+            content: 'Q';
+            background: var(--cienty-primary);
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .qa-card p {
+            color: var(--cienty-text-muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* Narrative */
+        .narrative {
+            background: var(--cienty-bg-card);
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .narrative-content {
+            max-width: 800px;
+        }
+
+        .narrative h3 {
+            font-size: 22px;
+            color: var(--cienty-text-dark);
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        .narrative h3:first-child {
+            margin-top: 0;
+        }
+
+        .narrative p {
+            font-size: 15px;
+            color: var(--cienty-text-dark);
+            margin-bottom: 18px;
+            line-height: 1.8;
+        }
+
+        .narrative .highlight-quote {
+            background: linear-gradient(90deg, rgba(192, 84, 160, 0.08), transparent);
+            border-left: 4px solid var(--cienty-primary);
+            padding: 20px 25px;
+            margin: 30px 0;
+            font-size: 17px;
+            font-style: italic;
+            color: var(--cienty-text-dark);
+        }
+
+        .narrative ul {
+            margin: 20px 0;
+            padding-left: 0;
+            list-style: none;
+            counter-reset: narrative-counter;
+        }
+
+        .narrative li {
+            margin-bottom: 12px;
+            color: var(--cienty-text-dark);
+            font-size: 15px;
+            padding-left: 28px;
+            position: relative;
+            counter-increment: narrative-counter;
+        }
+
+        .narrative li::before {
+            content: counter(narrative-counter) '.';
+            position: absolute;
+            left: 0;
+            color: var(--cienty-primary);
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--cienty-dark-primary);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 30px;
+            }
+            .slide-content {
+                grid-template-columns: 1fr;
+            }
+            .slide-bottom {
+                grid-template-columns: 1fr;
+            }
+            .comparison-grid, .capabilities-grid, .tech-grid, .qa-grid {
+                grid-template-columns: 1fr;
+            }
+            .arch-diagram {
+                flex-direction: column;
+            }
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+            .autonomy-ladder {
+                flex-direction: column;
+            }
+            .autonomy-step::after {
+                display: none;
+            }
+            .cost-grid, .infra-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== MAIN SLIDE ========== -->
+    <section class="slide">
+        <div class="slide-header">
+            <div class="logo">cienty<span>.</span></div>
+            <div class="badge">AI STRATEGY</div>
+        </div>
+
+        <div class="slide-title">
+            <h1><span>Agentic Infrastructure</span> for Pharmacy Procurement</h1>
+            <p>Building the buying agent on deep connections to industry and distributors</p>
+        </div>
+
+        <div class="slide-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Agentic vs Traditional -->
+                <div class="agentic-box">
+                    <h3>Why Agentic AI</h3>
+
+                    <div class="comparison traditional">
+                        <div class="comparison-label">Traditional AI</div>
+                        <div class="comparison-flow">
+                            <span class="flow-step">User asks</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">AI suggests</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">User acts</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">Repeat</span>
+                        </div>
+                    </div>
+
+                    <div class="comparison agentic">
+                        <div class="comparison-label">Agentic AI</div>
+                        <div class="comparison-flow">
+                            <span class="flow-step">User sets goals</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">Agent plans</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">Agent acts</span>
+                            <span class="flow-arrow">&rarr;</span>
+                            <span class="flow-step">Agent learns</span>
+                        </div>
+                    </div>
+
+                    <div class="agentic-insight">
+                        <strong>The difference:</strong> A tool vs. a teammate
+                    </div>
+                </div>
+
+                <!-- Why We Win -->
+                <div class="moats-box">
+                    <h3>Why We're Positioned</h3>
+                    <div class="moat-item">
+                        <div class="moat-icon">&#128202;</div>
+                        <div class="moat-text">
+                            <strong>Data Network Effects</strong>
+                            <span>Every transaction improves predictions for all</span>
+                        </div>
+                    </div>
+                    <div class="moat-item">
+                        <div class="moat-icon">&#128268;</div>
+                        <div class="moat-text">
+                            <strong>Deep Integrations</strong>
+                            <span>Direct supplier APIs, not scraped data</span>
+                        </div>
+                    </div>
+                    <div class="moat-item">
+                        <div class="moat-icon">&#129504;</div>
+                        <div class="moat-text">
+                            <strong>Vertical-Native AI</strong>
+                            <span>Built for pharma, not retrofitted</span>
+                        </div>
+                    </div>
+                    <div class="moat-item">
+                        <div class="moat-icon">&#129309;</div>
+                        <div class="moat-text">
+                            <strong>Trust Infrastructure</strong>
+                            <span>Years of pharmacy relationships</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Architecture -->
+            <div class="architecture">
+                <h3>Agentic Platform Architecture</h3>
+
+                <div class="arch-diagram">
+                    <div class="arch-node">
+                        <div class="icon">&#127978;</div>
+                        <div class="name">Pharmacies</div>
+                    </div>
+                    <div class="arch-arrow">&#10231;</div>
+                    <div class="arch-node agent">
+                        <div class="icon">&#129302;</div>
+                        <div class="name">AI Agent</div>
+                    </div>
+                    <div class="arch-arrow">&#10231;</div>
+                    <div class="arch-node">
+                        <div class="icon">&#127981;</div>
+                        <div class="name">Suppliers</div>
+                    </div>
+                </div>
+
+                <div class="layer-section">
+                    <div class="data-layer">
+                        <h4>Unified Data Layer</h4>
+                        <div class="data-tags">
+                            <span class="data-tag">Real-time Pricing</span>
+                            <span class="data-tag">Inventory Levels</span>
+                            <span class="data-tag">Order History</span>
+                            <span class="data-tag">Demand Signals</span>
+                            <span class="data-tag">Supplier Reliability</span>
+                        </div>
+                    </div>
+
+                    <div class="data-layer agentic">
+                        <h4>Agentic AI Capabilities</h4>
+                        <div class="data-tags">
+                            <span class="data-tag">Multi-step Reasoning</span>
+                            <span class="data-tag">Autonomous Execution</span>
+                            <span class="data-tag">Learning from Outcomes</span>
+                            <span class="data-tag">Tool Use (APIs, DBs)</span>
+                            <span class="data-tag">Human-in-the-Loop</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="slide-bottom">
+            <div class="vision-box">
+                <h3>Graduated Autonomy Model</h3>
+                <div class="autonomy-ladder">
+                    <div class="autonomy-step">
+                        <div class="num">1</div>
+                        <div class="title">Observe</div>
+                        <div class="desc">Agent monitors, human decides</div>
+                    </div>
+                    <div class="autonomy-step">
+                        <div class="num">2</div>
+                        <div class="title">Suggest</div>
+                        <div class="desc">Agent recommends, human approves</div>
+                    </div>
+                    <div class="autonomy-step">
+                        <div class="num">3</div>
+                        <div class="title">Act</div>
+                        <div class="desc">Agent executes within limits</div>
+                    </div>
+                    <div class="autonomy-step">
+                        <div class="num">4</div>
+                        <div class="title">Automate</div>
+                        <div class="desc">Agent handles routine fully</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-box">
+                <h3>2026 AI Stack</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <div class="name">Opus 4.5</div>
+                        <div class="desc">Primary LLM</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="name">GPT 5.2</div>
+                        <div class="desc">Math/Reasoning</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="name">LangGraph</div>
+                        <div class="desc">Orchestration</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="name">Redis</div>
+                        <div class="desc">Vector Cache</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="tagline">"Infrastructure first, then intelligence. We built the rails; now we add the brain."</div>
+            <div class="cta">One-Stop Shop for Pharmacies</div>
+        </div>
+    </section>
+
+    <!-- ========== AGENTIC DEEP DIVE ========== -->
+    <section class="section">
+        <h2 class="section-title">Agentic AI: Why It Matters</h2>
+
+        <div class="comparison-grid">
+            <div class="comparison-card traditional">
+                <h4><span class="icon">&#128172;</span> Traditional AI Assistant</h4>
+                <div class="aspect-row">
+                    <span class="aspect-label">Interaction</span>
+                    <span class="aspect-value">Query-response</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Scope</span>
+                    <span class="aspect-value">Single task</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Memory</span>
+                    <span class="aspect-value">Session-based</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Action</span>
+                    <span class="aspect-value">Suggests only</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Improvement</span>
+                    <span class="aspect-value">Manual retraining</span>
+                </div>
+            </div>
+
+            <div class="comparison-card agentic">
+                <h4><span class="icon">&#129302;</span> Agentic AI</h4>
+                <div class="aspect-row">
+                    <span class="aspect-label">Interaction</span>
+                    <span class="aspect-value">Goal-oriented</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Scope</span>
+                    <span class="aspect-value">Multi-step workflows</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Memory</span>
+                    <span class="aspect-value">Persistent learning</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Action</span>
+                    <span class="aspect-value">Executes (with guardrails)</span>
+                </div>
+                <div class="aspect-row">
+                    <span class="aspect-label">Improvement</span>
+                    <span class="aspect-value">Continuous from outcomes</span>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 22px; margin-bottom: 25px;">Agentic Capabilities We're Building</h3>
+
+        <div class="capabilities-grid">
+            <div class="capability-card">
+                <h4><span class="icon">&#129504;</span> Multi-step Reasoning</h4>
+                <ul class="capability-list">
+                    <li>Compare 50+ products across 10+ suppliers</li>
+                    <li>Weigh trade-offs: price vs. delivery vs. terms</li>
+                    <li>Consider pharmacy-specific constraints</li>
+                    <li>Synthesize into optimal recommendation</li>
+                </ul>
+            </div>
+
+            <div class="capability-card">
+                <h4><span class="icon">&#9889;</span> Autonomous Execution</h4>
+                <ul class="capability-list">
+                    <li>Place orders within pre-approved limits</li>
+                    <li>Split orders across suppliers for optimization</li>
+                    <li>Schedule deliveries around operations</li>
+                    <li>Handle payment terms negotiation</li>
+                </ul>
+            </div>
+
+            <div class="capability-card">
+                <h4><span class="icon">&#128200;</span> Learning Loops</h4>
+                <ul class="capability-list">
+                    <li>Track: Did prediction match reality?</li>
+                    <li>Adjust: Supplier reliability scores</li>
+                    <li>Improve: Demand forecasting models</li>
+                    <li>Personalize: Per-pharmacy preferences</li>
+                </ul>
+            </div>
+
+            <div class="capability-card">
+                <h4><span class="icon">&#128295;</span> Tool Use</h4>
+                <ul class="capability-list">
+                    <li>Query inventory databases</li>
+                    <li>Call supplier APIs for real-time pricing</li>
+                    <li>Generate purchase orders</li>
+                    <li>Update pharmacy dashboards</li>
+                </ul>
+            </div>
+
+            <div class="capability-card">
+                <h4><span class="icon">&#128101;</span> Human-in-the-Loop</h4>
+                <ul class="capability-list">
+                    <li>Escalate edge cases (new products, unusual qty)</li>
+                    <li>Respect approval workflows</li>
+                    <li>Provide explanations for all decisions</li>
+                    <li>Allow human override at any point</li>
+                </ul>
+            </div>
+
+            <div class="capability-card">
+                <h4><span class="icon">&#128274;</span> Safety & Compliance</h4>
+                <ul class="capability-list">
+                    <li>LGPD compliance built-in</li>
+                    <li>ANVISA regulatory awareness</li>
+                    <li>Full audit trails for all actions</li>
+                    <li>Reversible transactions</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="infra-section">
+            <h3>Why Deep Infrastructure is Required</h3>
+            <p style="color: var(--cienty-text-muted); margin-bottom: 25px;">An agentic buying agent can't work with surface-level integrations. Here's what's needed:</p>
+
+            <div class="infra-grid">
+                <div class="infra-item">
+                    <div class="icon">&#128176;</div>
+                    <div>
+                        <h5>Real-time Pricing</h5>
+                        <p>Screen scraping breaks; APIs need partnerships</p>
+                    </div>
+                </div>
+                <div class="infra-item">
+                    <div class="icon">&#128230;</div>
+                    <div>
+                        <h5>Inventory Visibility</h5>
+                        <p>Suppliers don't expose this to unknown parties</p>
+                    </div>
+                </div>
+                <div class="infra-item">
+                    <div class="icon">&#128221;</div>
+                    <div>
+                        <h5>Order Execution</h5>
+                        <p>Requires authenticated, transactional connections</p>
+                    </div>
+                </div>
+                <div class="infra-item">
+                    <div class="icon">&#128202;</div>
+                    <div>
+                        <h5>Historical Data</h5>
+                        <p>Need years of transaction history for learning</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="infra-callout">
+                Cienty has built this over years. The AI layer is the capstone, not the foundation.
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TECH STACK ========== -->
+    <section class="section" style="background: var(--cienty-bg-section);">
+        <h2 class="section-title">Technology Choices</h2>
+
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="icon">&#129302;</div>
+                <div class="category">Primary LLM</div>
+                <h4>Claude Opus 4.5</h4>
+                <p>80.9% SWE-bench (best for agents), 59.3% Terminal-Bench, Portuguese fluency</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#129504;</div>
+                <div class="category">Reasoning LLM</div>
+                <h4>GPT 5.2</h4>
+                <p>100% AIME 2025, 65% fewer hallucinations, superior math reasoning</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#128279;</div>
+                <div class="category">Orchestration</div>
+                <h4>LangGraph</h4>
+                <p>Stateful multi-agent workflows, cyclic graphs, enterprise-grade</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#128269;</div>
+                <div class="category">Vector Cache</div>
+                <h4>Redis</h4>
+                <p>In-memory semantic retrieval, 15x faster responses, 90% cost reduction</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#128451;</div>
+                <div class="category">Operational DB</div>
+                <h4>PostgreSQL + pgvector</h4>
+                <p>ACID compliance + semantic search in one</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#128202;</div>
+                <div class="category">Analytics</div>
+                <h4>BigQuery</h4>
+                <p>Scale for aggregate insights across network</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#9729;</div>
+                <div class="category">Infrastructure</div>
+                <h4>AWS SP</h4>
+                <p>Data residency in Brazil, low latency</p>
+            </div>
+
+            <div class="tech-card">
+                <div class="icon">&#127987;</div>
+                <div class="category">Deployment</div>
+                <h4>Feature Flags + CI/CD</h4>
+                <p>Gradual rollout, safe iteration</p>
+            </div>
+        </div>
+
+        <div class="cost-section">
+            <h3>Multi-Model Cost Strategy</h3>
+            <div class="cost-grid">
+                <div class="cost-item">
+                    <h5>Redis Vector Cache</h5>
+                    <p>Up to 90% cost reduction, 15x faster responses for repeated patterns</p>
+                </div>
+                <div class="cost-item">
+                    <h5>Tiered Models</h5>
+                    <p>GPT 5.2 Instant for speed, Opus 4.5 for reasoning, Haiku for routing</p>
+                </div>
+                <div class="cost-item">
+                    <h5>Memory Tiers</h5>
+                    <p>Short-term (JSON), long-term (vector DB), episodic (semantic search)</p>
+                </div>
+                <div class="cost-item">
+                    <h5>LangGraph Orchestration</h5>
+                    <p>Model-agnostic layer enables seamless switching between providers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== Q&A ========== -->
+    <section class="section">
+        <h2 class="section-title">AI-Focused Q&A</h2>
+
+        <div class="qa-grid">
+            <div class="qa-card">
+                <h4>Why build an agentic AI instead of a recommendation engine?</h4>
+                <p>Recommendations require human action for every decision. At scale, this creates fatigue - pharmacy owners ignore suggestions, revert to habits. Agentic AI crosses the threshold from "tool I check" to "system that handles it." The ROI difference is 10x: saved time from not reviewing vs. slightly better decisions from reviewing.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>How do you prevent the agent from making costly mistakes?</h4>
+                <p>Three layers: (1) Guardrails - hard limits on order sizes, spend, product types; (2) Graduated autonomy - agent earns trust through successful actions; (3) Reversibility - all actions can be cancelled within a window. We start with low-risk, high-frequency decisions before tackling edge cases.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>What's your moat against generic AI solutions?</h4>
+                <p>Generic LLMs can't access our supplier pricing APIs (no integration), know pharmacy-specific demand patterns (no data), execute purchases (no transaction rails), or understand ANVISA/LGPD requirements (no vertical expertise). Our moat is the infrastructure beneath the AI, not the AI itself.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>How do you handle LLM costs at scale?</h4>
+                <p>Redis vector caching delivers up to 90% cost reduction for repeated patterns. We use tiered models: GPT 5.2 Instant for speed, Opus 4.5 for complex reasoning, Haiku for routing. Opus 4.5 at $5/$25 per million tokens is viable for high-value procurement decisions. LangGraph orchestration enables seamless model switching.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>What happens when the LLM hallucinates?</h4>
+                <p>GPT 5.2 shows 65% fewer hallucinations than previous models. But more importantly, hallucination risk is bounded by design: agent only acts on real products in our database, prices come from supplier APIs not LLM generation, order execution is deterministic code. The LLM decides what to buy and why; databases provide what's available and at what price.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>Why a multi-model approach with Opus 4.5 and GPT 5.2?</h4>
+                <p>Different models excel at different tasks. Opus 4.5 leads on agentic workflows: 80.9% SWE-bench (first model to exceed 80%), 59.3% Terminal-Bench for tool use. GPT 5.2 wins on math reasoning (100% AIME 2025) and abstract reasoning. LangGraph orchestration makes model switching seamless per task.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>How do pharmacies trust AI to buy for them?</h4>
+                <p>Trust is built progressively: (1) dashboards for visibility, (2) suggestions to prove value, (3) auto-order for staples (low risk), (4) expand autonomy as trust grows. We never force automation - pharmacies opt in at their comfort level.</p>
+            </div>
+
+            <div class="qa-card">
+                <h4>How does the agent improve over time?</h4>
+                <p>Every transaction creates a feedback loop: did the predicted delivery time match reality? Was the product in stock? Did the pharmacy reorder? This data improves supplier reliability scores, demand forecasting, and per-pharmacy personalization without manual retraining.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== NARRATIVE ========== -->
+    <section class="section" style="background: var(--cienty-bg-section);">
+        <h2 class="section-title">The AI Strategy Narrative</h2>
+
+        <div class="narrative">
+            <div class="narrative-content">
+                <h3>The Agentic Opportunity</h3>
+                <p>The difference between AI that assists and AI that acts is the difference between incremental improvement and transformational change.</p>
+
+                <p>Traditional AI in procurement looks like this: show the pharmacy owner a dashboard of recommended purchases, let them review each one, require them to click approve. Better than nothing, but still requires their time and attention.</p>
+
+                <p>Agentic AI looks like this: the pharmacy owner sets their goals ("keep stock levels healthy, minimize costs, prioritize fast delivery"). The agent handles the rest. The owner reviews a summary, sees what was ordered, and gets on with their day.</p>
+
+                <div class="highlight-quote">
+                    This isn't a chatbot. It's a buyer that works 24/7, never forgets to check a promotion, and gets better with every transaction.
+                </div>
+
+                <h3>Why Infrastructure Comes First</h3>
+                <p>You can't bolt agentic capabilities onto a shallow platform. The agent needs:</p>
+
+                <ul>
+                    <li><strong>Real data</strong> - Live pricing, actual inventory, genuine transaction history</li>
+                    <li><strong>Execution ability</strong> - APIs to place orders, not just display information</li>
+                    <li><strong>Trust relationships</strong> - Suppliers who accept automated orders, pharmacies who grant permission</li>
+                </ul>
+
+                <p>Cienty has spent years building this infrastructure. The marketplace was never the endgame - it was the foundation for intelligence.</p>
+
+                <h3>The Technical Bet</h3>
+                <p>We're betting that:</p>
+
+                <ul>
+                    <li><strong>LLMs are production-ready</strong> - Opus 4.5 achieves 80.9% on real-world coding benchmarks; GPT 5.2 shows 65% fewer hallucinations</li>
+                    <li><strong>Multi-model is the future</strong> - Different models excel at different tasks; LangGraph orchestration makes this seamless</li>
+                    <li><strong>Costs will continue dropping</strong> - Opus 4.5 at $5/$25 per million tokens is already viable for high-value decisions</li>
+                    <li><strong>Trust can be built</strong> - Through graduated autonomy and transparency</li>
+                    <li><strong>Vertical expertise matters</strong> - Generic solutions won't capture pharma nuances</li>
+                </ul>
+
+                <p>These bets inform every technical decision: model selection, LangGraph orchestration, safety mechanisms, and rollout strategy.</p>
+
+                <h3>What We're Building</h3>
+                <p>An AI buying agent that:</p>
+
+                <ul>
+                    <li><strong>Understands</strong> inventory levels, demand patterns, and pharmacy preferences</li>
+                    <li><strong>Evaluates</strong> all available suppliers, prices, promotions, and terms</li>
+                    <li><strong>Decides</strong> the optimal purchasing strategy across multiple dimensions</li>
+                    <li><strong>Executes</strong> within defined limits, with full auditability</li>
+                    <li><strong>Learns</strong> from every outcome to improve future decisions</li>
+                </ul>
+
+                <div class="highlight-quote">
+                    "Infrastructure first, then intelligence. We built the rails; now we add the brain."
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo" style="margin-bottom: 15px;">cienty<span style="color: var(--cienty-primary);">.</span></div>
+        <p style="opacity: 0.7; font-size: 14px;">Agentic Infrastructure for Pharmacy Procurement</p>
+    </footer>
+
+</body>
+</html>
