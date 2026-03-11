@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cienty - Series B Pitch Summary</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
         :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #0f3460;
-            --highlight: #e94560;
-            --light: #f1f1f1;
-            --success: #00d26a;
-            --warning: #ffc107;
+            --purple: #c054a0;
+            --purple-light: #d472b8;
+            --purple-bg: #c054a0;
+            --dark: #1a1a1a;
+            --gray-bg: #e8e8ec;
+            --card-bg: #ffffff;
+            --text: #2d2d2d;
+            --text-light: #666;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         * {
@@ -22,360 +26,170 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--light);
-            color: var(--primary);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--gray-bg);
+            color: var(--text);
             line-height: 1.6;
         }
 
         /* ========== MAIN SLIDE ========== */
         .slide {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
-            color: white;
+            background: var(--gray-bg);
             min-height: 100vh;
-            padding: 40px 60px;
+            padding: 50px 60px;
             display: flex;
             flex-direction: column;
+            max-width: 1440px;
+            margin: 0 auto;
         }
 
         .slide-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
+        }
+
+        .slide-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--dark);
         }
 
         .logo {
             font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        .logo span {
-            color: var(--highlight);
-        }
-
-        .series-badge {
-            background: var(--highlight);
-            padding: 8px 20px;
-            border-radius: 20px;
             font-weight: 600;
-            font-size: 14px;
+            color: var(--dark);
+            letter-spacing: 1px;
         }
 
-        .slide-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .slide-title h1 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .slide-title h1 span {
-            color: var(--highlight);
-        }
-
-        .slide-title p {
-            font-size: 22px;
-            opacity: 0.9;
-        }
-
-        .slide-content {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1.5fr 1fr;
-            gap: 30px;
-            align-items: center;
-        }
-
-        /* Left Column - Problem */
-        .problem-box {
-            background: rgba(255,255,255,0.1);
+        /* Icon boxes */
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: var(--purple-bg);
             border-radius: 16px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
         }
 
-        .problem-box h3 {
-            color: var(--highlight);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
+        .icon-box svg {
+            width: 44px;
+            height: 44px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .stat {
+        /* Three column cards */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            margin-bottom: 28px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 36px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
             margin-bottom: 20px;
         }
 
-        .stat .number {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--highlight);
+        .card ol, .card ul {
+            padding-left: 20px;
+            color: var(--text);
         }
 
-        .stat .label {
-            font-size: 14px;
-            opacity: 0.8;
+        .card li {
+            margin-bottom: 10px;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Center - Architecture Diagram */
-        .architecture {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .architecture h3 {
-            text-align: center;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            opacity: 0.7;
-        }
-
-        .arch-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .arch-node {
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            min-width: 120px;
-        }
-
-        .arch-node.agent {
-            background: linear-gradient(135deg, var(--highlight), #ff6b6b);
-            transform: scale(1.1);
-            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.3);
-        }
-
-        .arch-node .icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .arch-node .name {
-            font-size: 12px;
+        .card li::marker {
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .arch-arrow {
-            font-size: 24px;
-            opacity: 0.5;
+        .card ul.sub {
+            list-style-type: circle;
+            padding-left: 22px;
+            margin-top: 6px;
         }
 
-        .data-layer {
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-        }
-
-        .data-layer h4 {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.6;
-            margin-bottom: 8px;
-        }
-
-        .data-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .data-tag {
-            background: rgba(255,255,255,0.1);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-
-        /* Right Column - Why We Win */
-        .moats-box {
-            background: rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .moats-box h3 {
-            color: var(--success);
+        .card ul.sub li {
+            margin-bottom: 4px;
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
+            color: var(--text-light);
         }
 
-        .moat-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 15px;
+        .card ul.detail {
+            list-style-type: square;
+            padding-left: 22px;
+            margin-top: 4px;
         }
 
-        .moat-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .moat-text {
-            font-size: 13px;
-        }
-
-        .moat-text strong {
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .moat-text span {
-            opacity: 0.7;
-            font-size: 12px;
-        }
-
-        /* Bottom - Vision & Tech */
-        .slide-bottom {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .vision-box, .tech-box {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 25px;
-        }
-
-        .vision-box h3, .tech-box h3 {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            opacity: 0.7;
-        }
-
-        .vision-flow {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .vision-step {
-            flex: 1;
-            text-align: center;
-        }
-
-        .vision-step.from {
-            opacity: 0.5;
-            text-decoration: line-through;
-        }
-
-        .vision-step.to {
-            background: rgba(0, 210, 106, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--success);
-        }
-
-        .vision-step .quote {
-            font-style: italic;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .vision-step .desc {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .vision-arrow {
-            font-size: 30px;
-            color: var(--success);
-        }
-
-        .tech-stack {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .tech-item {
-            background: rgba(255,255,255,0.1);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .tech-item .name {
-            font-size: 12px;
-            font-weight: 600;
+        .card ul.detail li {
             margin-bottom: 3px;
+            font-size: 13px;
+            color: var(--text-light);
         }
 
-        .tech-item .desc {
-            font-size: 10px;
-            opacity: 0.6;
+        /* Bottom KR row */
+        .kr-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
         }
 
-        /* Footer */
-        .slide-footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .kr-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px 36px;
+            box-shadow: var(--shadow);
         }
 
-        .tagline {
-            font-size: 18px;
-            font-style: italic;
-            opacity: 0.8;
+        .kr-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+            line-height: 1.5;
         }
 
-        .cta {
-            background: var(--highlight);
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 14px;
+        .kr-card .status {
+            font-size: 15px;
+            color: var(--text-light);
         }
 
         /* ========== SUPPORTING SECTIONS ========== */
-        .section {
-            max-width: 1200px;
+        .section-wrapper {
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 80px 40px;
+            padding: 0 60px;
+        }
+
+        .section {
+            padding: 70px 0;
         }
 
         .section-title {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             margin-bottom: 40px;
-            color: var(--primary);
+            color: var(--dark);
             position: relative;
             padding-bottom: 15px;
         }
@@ -385,32 +199,33 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 60px;
+            width: 50px;
             height: 4px;
-            background: var(--highlight);
+            background: var(--purple);
             border-radius: 2px;
         }
 
-        /* Supporting Data */
+        /* Data Cards */
         .data-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 28px;
         }
 
         .data-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
         }
 
         .data-card h4 {
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
+            letter-spacing: 1.5px;
+            color: var(--purple);
             margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .metric-row {
@@ -418,7 +233,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .metric-row:last-child {
@@ -427,52 +242,50 @@
 
         .metric-label {
             font-size: 14px;
-            color: #666;
+            color: var(--text-light);
         }
 
         .metric-value {
             font-size: 18px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--dark);
         }
 
-        .metric-value.highlight {
-            color: var(--highlight);
-        }
-
-        .metric-value.success {
-            color: var(--success);
-        }
+        .metric-value.purple { color: var(--purple); }
+        .metric-value.green { color: #2e9e5a; }
 
         /* Competitive Table */
         .comp-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
+            margin-top: 30px;
         }
 
         .comp-table th, .comp-table td {
-            padding: 18px 24px;
+            padding: 16px 24px;
             text-align: left;
+            font-size: 14px;
         }
 
         .comp-table th {
-            background: var(--primary);
+            background: var(--dark);
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .comp-table tr:nth-child(even) {
-            background: #f8f9fa;
+            background: #fafafa;
         }
 
         .comp-table tr.cienty {
-            background: linear-gradient(90deg, rgba(233, 69, 96, 0.1), rgba(233, 69, 96, 0.05));
+            background: rgba(192, 84, 160, 0.08);
         }
 
         .comp-table tr.cienty td {
@@ -481,66 +294,73 @@
 
         .badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
             font-size: 11px;
             font-weight: 600;
         }
 
-        .badge.red { background: #ffe5e5; color: #d32f2f; }
-        .badge.yellow { background: #fff8e1; color: #f57c00; }
+        .badge.red { background: #fde8e8; color: #c62828; }
+        .badge.yellow { background: #fff8e1; color: #e65100; }
         .badge.green { background: #e8f5e9; color: #2e7d32; }
 
-        /* Q&A Section */
+        /* Q&A */
+        .qa-section {
+            background: #f2f2f5;
+        }
+
         .qa-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
+            gap: 24px;
         }
 
         .qa-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--highlight);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--purple);
         }
 
         .qa-card h4 {
-            font-size: 16px;
-            color: var(--primary);
-            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 12px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
         }
 
         .qa-card h4::before {
             content: 'Q';
-            background: var(--highlight);
+            background: var(--purple);
             color: white;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
+            flex-shrink: 0;
         }
 
         .qa-card p {
-            color: #555;
+            color: var(--text-light);
             font-size: 14px;
             line-height: 1.7;
+            padding-left: 36px;
         }
 
-        /* Narrative Section */
+        /* Narrative */
         .narrative {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 50px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
         }
 
         .narrative-content {
@@ -548,9 +368,10 @@
         }
 
         .narrative h3 {
-            font-size: 24px;
-            color: var(--primary);
-            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 16px;
             margin-top: 40px;
         }
 
@@ -559,33 +380,34 @@
         }
 
         .narrative p {
-            font-size: 16px;
-            color: #444;
-            margin-bottom: 20px;
+            font-size: 15px;
+            color: var(--text-light);
+            margin-bottom: 16px;
             line-height: 1.8;
         }
 
         .narrative .highlight-quote {
-            background: linear-gradient(90deg, rgba(233, 69, 96, 0.1), transparent);
-            border-left: 4px solid var(--highlight);
+            background: linear-gradient(90deg, rgba(192, 84, 160, 0.1), transparent);
+            border-left: 4px solid var(--purple);
             padding: 20px 25px;
             margin: 30px 0;
-            font-size: 18px;
+            font-size: 17px;
             font-style: italic;
-            color: var(--primary);
+            color: var(--dark);
         }
 
         .narrative ul {
-            margin: 20px 0;
-            padding-left: 25px;
+            margin: 16px 0;
+            padding-left: 22px;
         }
 
         .narrative li {
-            margin-bottom: 12px;
-            color: #444;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-size: 15px;
         }
 
-        /* Roadmap Timeline */
+        /* Timeline */
         .timeline {
             position: relative;
             padding-left: 30px;
@@ -598,14 +420,14 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background: linear-gradient(to bottom, var(--success), var(--highlight), var(--accent));
+            background: linear-gradient(to bottom, #2e9e5a, var(--purple), var(--dark));
             border-radius: 2px;
         }
 
         .timeline-item {
             position: relative;
-            margin-bottom: 30px;
-            padding-left: 30px;
+            margin-bottom: 28px;
+            padding-left: 28px;
         }
 
         .timeline-item::before {
@@ -613,39 +435,60 @@
             position: absolute;
             left: -26px;
             top: 5px;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: white;
-            border: 3px solid var(--accent);
+            border: 3px solid var(--dark);
         }
 
         .timeline-item.done::before {
-            background: var(--success);
-            border-color: var(--success);
+            background: #2e9e5a;
+            border-color: #2e9e5a;
         }
 
         .timeline-item.current::before {
-            background: var(--highlight);
-            border-color: var(--highlight);
-            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.2);
+            background: var(--purple);
+            border-color: var(--purple);
+            box-shadow: 0 0 0 4px rgba(192, 84, 160, 0.2);
         }
 
         .timeline-item h4 {
-            font-size: 16px;
-            color: var(--primary);
-            margin-bottom: 5px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 3px;
         }
 
         .timeline-item p {
-            font-size: 14px;
-            color: #666;
+            font-size: 13px;
+            color: var(--text-light);
         }
 
         .timeline-item .time {
-            font-size: 12px;
-            color: var(--accent);
-            font-weight: 600;
+            font-size: 11px;
+            color: var(--purple);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        footer .logo {
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        footer p {
+            opacity: 0.5;
+            font-size: 14px;
         }
 
         /* Responsive */
@@ -653,21 +496,14 @@
             .slide {
                 padding: 30px;
             }
-            .slide-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            .slide-bottom {
+            .cards-row, .data-grid {
                 grid-template-columns: 1fr;
             }
-            .data-grid, .qa-grid {
+            .kr-row, .qa-grid {
                 grid-template-columns: 1fr;
             }
-            .arch-diagram {
-                flex-direction: column;
-            }
-            .arch-arrow {
-                transform: rotate(90deg);
+            .section-wrapper {
+                padding: 0 30px;
             }
         }
     </style>
@@ -677,393 +513,353 @@
     <!-- ========== MAIN SLIDE ========== -->
     <section class="slide">
         <div class="slide-header">
-            <div class="logo">CIENTY<span>.</span></div>
-            <div class="series-badge">SERIES B</div>
+            <h1>AI Buying Agent for Pharmacies</h1>
+            <div class="logo">cienty</div>
         </div>
 
-        <div class="slide-title">
-            <h1>The <span>AI Buying Agent</span> for Pharmacies</h1>
-            <p>Deep infrastructure connecting pharmacies with industry and distributors</p>
-        </div>
-
-        <div class="slide-content">
-            <!-- Left: Problem -->
-            <div class="problem-box">
-                <h3>The Problem</h3>
-                <div class="stat">
-                    <div class="number">80K+</div>
-                    <div class="label">Pharmacies in Brazil</div>
+        <div class="cards-row">
+            <!-- Card 1: What We've Built -->
+            <div class="card">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 5l-1 1 3 3-3 3 1 1"/>
+                        <line x1="14" y1="5" x2="20" y2="5"/>
+                        <path d="M9 11l-1 1 3 3-3 3 1 1"/>
+                        <line x1="14" y1="11" x2="20" y2="11"/>
+                        <path d="M9 17l-1 1 3 3-3 3 1 1" transform="translate(0,-6)"/>
+                        <line x1="14" y1="17" x2="20" y2="17"/>
+                    </svg>
                 </div>
-                <div class="stat">
-                    <div class="number">15h</div>
-                    <div class="label">Wasted weekly on procurement</div>
-                </div>
-                <div class="stat">
-                    <div class="number">10+</div>
-                    <div class="label">Suppliers to manage manually</div>
-                </div>
+                <h2>What we've built</h2>
+                <ol>
+                    <li>Deep infrastructure connecting pharmacies to suppliers
+                        <ul class="sub">
+                            <li>Direct integrations with manufacturers &amp; distributors</li>
+                            <li>Real-time pricing, inventory, and promotions data</li>
+                        </ul>
+                    </li>
+                    <li>Agentic AI architecture
+                        <ul class="sub">
+                            <li>Purpose-built for autonomous purchasing decisions</li>
+                            <li>RAG system with pharma knowledge base</li>
+                        </ul>
+                    </li>
+                    <li>Unified data layer
+                        <ul class="sub">
+                            <li>PostgreSQL + BigQuery + pgvector</li>
+                            <li>Transaction history powering AI models</li>
+                        </ul>
+                    </li>
+                </ol>
             </div>
 
-            <!-- Center: Architecture -->
-            <div class="architecture">
-                <h3>Agentic Infrastructure</h3>
-                <div class="arch-diagram">
-                    <div class="arch-node">
-                        <div class="icon">🏪</div>
-                        <div class="name">Pharmacies</div>
-                    </div>
-                    <div class="arch-arrow">⟷</div>
-                    <div class="arch-node agent">
-                        <div class="icon">🤖</div>
-                        <div class="name">AI Agent</div>
-                    </div>
-                    <div class="arch-arrow">⟷</div>
-                    <div class="arch-node">
-                        <div class="icon">🏭</div>
-                        <div class="name">Suppliers</div>
-                    </div>
+            <!-- Card 2: Why We Win -->
+            <div class="card">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
                 </div>
-                <div class="data-layer">
-                    <h4>Unified Data Layer</h4>
-                    <div class="data-tags">
-                        <span class="data-tag">Real-time Pricing</span>
-                        <span class="data-tag">Inventory</span>
-                        <span class="data-tag">Order History</span>
-                        <span class="data-tag">Promotions</span>
-                        <span class="data-tag">Demand Signals</span>
-                    </div>
-                </div>
-                <div class="data-layer">
-                    <h4>Agentic AI Capabilities</h4>
-                    <div class="data-tags">
-                        <span class="data-tag">Autonomous Purchasing</span>
-                        <span class="data-tag">Price Optimization</span>
-                        <span class="data-tag">Demand Forecasting</span>
-                        <span class="data-tag">Multi-supplier Negotiation</span>
-                    </div>
-                </div>
+                <h2>Why we win</h2>
+                <ol>
+                    <li>Data network effects: every transaction improves intelligence for all pharmacies</li>
+                    <li>Deep integrations that took years to build &mdash; can't be replicated overnight</li>
+                    <li>100% vertical focus: ANVISA, LGPD, Brazilian pharma supply chain</li>
+                    <li>Best-in-class tooling: Claude AI, LangChain, BigQuery, AWS SP</li>
+                </ol>
             </div>
 
-            <!-- Right: Why We Win -->
-            <div class="moats-box">
-                <h3>Why We Win</h3>
-                <div class="moat-item">
-                    <div class="moat-icon">📊</div>
-                    <div class="moat-text">
-                        <strong>Data Network Effects</strong>
-                        <span>Every transaction improves intelligence for all</span>
-                    </div>
+            <!-- Card 3: What's Next -->
+            <div class="card">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <line x1="22" y1="2" x2="14" y2="10" stroke-width="2"/>
+                        <polyline points="22 8 22 2 16 2"/>
+                    </svg>
                 </div>
-                <div class="moat-item">
-                    <div class="moat-icon">🔌</div>
-                    <div class="moat-text">
-                        <strong>Deep Integrations</strong>
-                        <span>Direct connections others can't replicate</span>
-                    </div>
-                </div>
-                <div class="moat-item">
-                    <div class="moat-icon">🧠</div>
-                    <div class="moat-text">
-                        <strong>Agentic Architecture</strong>
-                        <span>Built for autonomy, not retrofitted</span>
-                    </div>
-                </div>
-                <div class="moat-item">
-                    <div class="moat-icon">💊</div>
-                    <div class="moat-text">
-                        <strong>Vertical Expertise</strong>
-                        <span>100% pharma focus (LGPD, ANVISA)</span>
-                    </div>
-                </div>
+                <h2>What's next</h2>
+                <ol>
+                    <li>Buying Agent MVP
+                        <ul class="sub">
+                            <li>Pilot with 20 pharmacies</li>
+                            <li>Suggestions then auto-execute</li>
+                        </ul>
+                    </li>
+                    <li>One-stop shop for pharmacies
+                        <ul class="sub">
+                            <li>Procurement + analytics + support</li>
+                        </ul>
+                    </li>
+                    <li>Scale supplier automation and grow pharmacy network</li>
+                </ol>
             </div>
         </div>
 
-        <!-- Bottom Row -->
-        <div class="slide-bottom">
-            <div class="vision-box">
-                <h3>The Vision</h3>
-                <div class="vision-flow">
-                    <div class="vision-step from">
-                        <div class="quote">"Check 10 suppliers, compare prices, place orders..."</div>
-                        <div class="desc">Hours of manual work</div>
-                    </div>
-                    <div class="vision-arrow">→</div>
-                    <div class="vision-step to">
-                        <div class="quote">"Cienty, restock my store"</div>
-                        <div class="desc">Agent handles everything</div>
-                    </div>
-                </div>
+        <!-- KR Row -->
+        <div class="kr-row">
+            <div class="kr-card">
+                <h3>Vision: "Cienty, restock my store" &mdash; the agent handles everything</h3>
+                <div class="status">From 15h/week manual procurement to seconds. Save pharmacies 10+ hours/week while reducing costs by 8-15%.</div>
             </div>
-            <div class="tech-box">
-                <h3>Best-in-Class Stack</h3>
-                <div class="tech-stack">
-                    <div class="tech-item">
-                        <div class="name">Claude 3.5</div>
-                        <div class="desc">AI/LLM</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="name">BigQuery</div>
-                        <div class="desc">Analytics</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="name">PostgreSQL</div>
-                        <div class="desc">Operational DB</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="name">AWS SP</div>
-                        <div class="desc">Infrastructure</div>
-                    </div>
-                </div>
+            <div class="kr-card">
+                <h3>Positioning: Deep infrastructure + agentic AI = best buying agent for pharmacies</h3>
+                <div class="status">We're not building another marketplace. We're building the AI that runs pharmacy procurement.</div>
             </div>
-        </div>
-
-        <div class="slide-footer">
-            <div class="tagline">"We're not building another marketplace. We're building the AI that runs pharmacy procurement."</div>
-            <div class="cta">One-Stop Shop for Pharmacies</div>
         </div>
     </section>
 
     <!-- ========== SUPPORTING DATA ========== -->
-    <section class="section">
-        <h2 class="section-title">Supporting Data</h2>
+    <div class="section-wrapper">
+        <section class="section">
+            <h2 class="section-title">Supporting Data</h2>
 
-        <div class="data-grid">
-            <div class="data-card">
-                <h4>Unit Economics</h4>
-                <div class="metric-row">
-                    <span class="metric-label">Avg. Monthly Procurement</span>
-                    <span class="metric-value">R$ 150K</span>
+            <div class="data-grid">
+                <div class="data-card">
+                    <h4>Unit Economics</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg. Monthly Procurement</span>
+                        <span class="metric-value">R$ 150K</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Savings via Agent (10%)</span>
+                        <span class="metric-value green">R$ 15K/mo</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Time Saved</span>
+                        <span class="metric-value green">40+ hrs/mo</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Potential Take Rate</span>
+                        <span class="metric-value purple">R$ 3-4.5K/mo</span>
+                    </div>
                 </div>
-                <div class="metric-row">
-                    <span class="metric-label">Savings via Agent (10%)</span>
-                    <span class="metric-value success">R$ 15K/mo</span>
+
+                <div class="data-card">
+                    <h4>ROI Projections</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Customer Agent ROI</span>
+                        <span class="metric-value green">385%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Internal Agent ROI</span>
+                        <span class="metric-value green">160%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Payback Period</span>
+                        <span class="metric-value">&lt; 12 months</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Target Automation</span>
+                        <span class="metric-value">70%</span>
+                    </div>
                 </div>
-                <div class="metric-row">
-                    <span class="metric-label">Time Saved</span>
-                    <span class="metric-value success">40+ hrs/mo</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Potential Take Rate</span>
-                    <span class="metric-value highlight">R$ 3-4.5K/mo</span>
+
+                <div class="data-card">
+                    <h4>12-Month Targets</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Active Pharmacies</span>
+                        <span class="metric-value">3X growth</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Connected Suppliers</span>
+                        <span class="metric-value">2X growth</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Agent-Assisted Orders</span>
+                        <span class="metric-value purple">40%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg. Savings/Pharmacy</span>
+                        <span class="metric-value green">10%+</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="data-card">
-                <h4>ROI Projections</h4>
-                <div class="metric-row">
-                    <span class="metric-label">Customer Agent ROI</span>
-                    <span class="metric-value success">385%</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Internal Agent ROI</span>
-                    <span class="metric-value success">160%</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Payback Period</span>
-                    <span class="metric-value">< 12 months</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Target Automation</span>
-                    <span class="metric-value">70%</span>
-                </div>
-            </div>
-
-            <div class="data-card">
-                <h4>12-Month Targets</h4>
-                <div class="metric-row">
-                    <span class="metric-label">Active Pharmacies</span>
-                    <span class="metric-value">3X growth</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Connected Suppliers</span>
-                    <span class="metric-value">2X growth</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Agent-Assisted Orders</span>
-                    <span class="metric-value highlight">40%</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Avg. Savings/Pharmacy</span>
-                    <span class="metric-value success">10%+</span>
-                </div>
-            </div>
-        </div>
-
-        <h3 style="margin-top: 50px; margin-bottom: 25px; font-size: 20px;">Competitive Landscape</h3>
-        <table class="comp-table">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Approach</th>
-                    <th>AI Capability</th>
-                    <th>Vertical Focus</th>
-                    <th>Gap</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Traditional Distributors</td>
-                    <td>Manual ordering, sales reps</td>
-                    <td><span class="badge red">None</span></td>
-                    <td><span class="badge green">High</span></td>
-                    <td>No optimization, no automation</td>
-                </tr>
-                <tr>
-                    <td>Generic B2B Marketplaces</td>
-                    <td>Price comparison portals</td>
-                    <td><span class="badge yellow">Basic</span></td>
-                    <td><span class="badge red">Low</span></td>
-                    <td>No vertical expertise, no agent</td>
-                </tr>
-                <tr>
-                    <td>ERP/POS Systems</td>
-                    <td>Inventory management</td>
-                    <td><span class="badge yellow">Basic</span></td>
-                    <td><span class="badge yellow">Medium</span></td>
-                    <td>No purchasing intelligence</td>
-                </tr>
-                <tr class="cienty">
-                    <td>Cienty</td>
-                    <td>Agentic buying + deep integrations</td>
-                    <td><span class="badge green">Advanced</span></td>
-                    <td><span class="badge green">100%</span></td>
-                    <td><strong>Full stack solution</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Approach</th>
+                        <th>AI Capability</th>
+                        <th>Vertical Focus</th>
+                        <th>Gap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Traditional Distributors</td>
+                        <td>Manual ordering, sales reps</td>
+                        <td><span class="badge red">None</span></td>
+                        <td><span class="badge green">High</span></td>
+                        <td>No optimization, no automation</td>
+                    </tr>
+                    <tr>
+                        <td>Generic B2B Marketplaces</td>
+                        <td>Price comparison portals</td>
+                        <td><span class="badge yellow">Basic</span></td>
+                        <td><span class="badge red">Low</span></td>
+                        <td>No vertical expertise, no agent</td>
+                    </tr>
+                    <tr>
+                        <td>ERP/POS Systems</td>
+                        <td>Inventory management</td>
+                        <td><span class="badge yellow">Basic</span></td>
+                        <td><span class="badge yellow">Medium</span></td>
+                        <td>No purchasing intelligence</td>
+                    </tr>
+                    <tr class="cienty">
+                        <td>Cienty</td>
+                        <td>Agentic buying + deep integrations</td>
+                        <td><span class="badge green">Advanced</span></td>
+                        <td><span class="badge green">100%</span></td>
+                        <td><strong>Full stack solution</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
 
     <!-- ========== Q&A ========== -->
-    <section class="section" style="background: #f8f9fa;">
-        <h2 class="section-title">Investor Q&A</h2>
+    <div class="qa-section">
+        <div class="section-wrapper">
+            <section class="section">
+                <h2 class="section-title">Investor Q&A</h2>
 
-        <div class="qa-grid">
-            <div class="qa-card">
-                <h4>Why is now the right time for an AI buying agent?</h4>
-                <p>LLM capabilities have reached the inflection point where autonomous purchasing decisions are viable. Claude 3.5 offers the reasoning depth, low hallucination rates, and Portuguese fluency required. Combined with our existing marketplace infrastructure and supplier relationships, we can deploy agentic capabilities that weren't possible 18 months ago.</p>
-            </div>
+                <div class="qa-grid">
+                    <div class="qa-card">
+                        <h4>Why is now the right time for an AI buying agent?</h4>
+                        <p>LLM capabilities have reached the inflection point where autonomous purchasing decisions are viable. Claude offers the reasoning depth, low hallucination rates, and Portuguese fluency required. Combined with our existing marketplace infrastructure and supplier relationships, we can deploy agentic capabilities that weren't possible 18 months ago.</p>
+                    </div>
 
-            <div class="qa-card">
-                <h4>How do you prevent AI errors in purchasing?</h4>
-                <p>We implement graduated autonomy with human-in-the-loop workflows. The agent starts with suggestions, graduates to auto-execute within approval limits, and always escalates edge cases. Every action is logged, reversible, and constrained by pharmacy-defined rules. We're building trust through transparency.</p>
-            </div>
+                    <div class="qa-card">
+                        <h4>How do you prevent AI errors in purchasing?</h4>
+                        <p>We implement graduated autonomy with human-in-the-loop workflows. The agent starts with suggestions, graduates to auto-execute within approval limits, and always escalates edge cases. Every action is logged, reversible, and constrained by pharmacy-defined rules.</p>
+                    </div>
 
-            <div class="qa-card">
-                <h4>What's your moat against big tech or incumbents?</h4>
-                <p>Three layers: (1) Deep supplier integrations that took years to build, (2) Proprietary transaction data that trains our models, (3) Vertical-specific knowledge (ANVISA regulations, pharma supply chain nuances). A generic AI can't replicate domain expertise + data + relationships.</p>
-            </div>
+                    <div class="qa-card">
+                        <h4>What's your moat against big tech or incumbents?</h4>
+                        <p>Three layers: (1) Deep supplier integrations that took years to build, (2) Proprietary transaction data that trains our models, (3) Vertical-specific knowledge (ANVISA regulations, pharma supply chain nuances). A generic AI can't replicate domain expertise + data + relationships.</p>
+                    </div>
 
-            <div class="qa-card">
-                <h4>How do you control LLM costs at scale?</h4>
-                <p>Semantic caching for repeated queries, tiered models (Haiku for simple tasks, Sonnet for complex), query cost estimation, and monthly budget caps per pharmacy. Our architecture is LLM-vendor agnostic, so we can optimize costs as the market evolves.</p>
-            </div>
+                    <div class="qa-card">
+                        <h4>How do you control LLM costs at scale?</h4>
+                        <p>Semantic caching for repeated queries, tiered models (Haiku for simple tasks, Sonnet for complex), query cost estimation, and monthly budget caps per pharmacy. Our architecture is LLM-vendor agnostic, so we can optimize costs as the market evolves.</p>
+                    </div>
 
-            <div class="qa-card">
-                <h4>What's the path to 40% agent-assisted orders?</h4>
-                <p>Phase 1: Analytics dashboards (build trust). Phase 2: Buying suggestions (prove value). Phase 3: Auto-reorder for replenishment items (low risk). Phase 4: Full procurement automation for willing pharmacies. Each phase expands the trust boundary.</p>
-            </div>
+                    <div class="qa-card">
+                        <h4>What's the path to 40% agent-assisted orders?</h4>
+                        <p>Phase 1: Analytics dashboards (build trust). Phase 2: Buying suggestions (prove value). Phase 3: Auto-reorder for replenishment items (low risk). Phase 4: Full procurement automation for willing pharmacies. Each phase expands the trust boundary.</p>
+                    </div>
 
-            <div class="qa-card">
-                <h4>How do suppliers benefit from this?</h4>
-                <p>Suppliers get: (1) Predictable demand signals for inventory planning, (2) Direct channel to pharmacies without sales rep overhead, (3) Data on what drives purchasing decisions. The agent optimizes for pharmacy value, but suppliers win through volume and efficiency.</p>
-            </div>
+                    <div class="qa-card">
+                        <h4>How do suppliers benefit from this?</h4>
+                        <p>Suppliers get: (1) Predictable demand signals for inventory planning, (2) Direct channel to pharmacies without sales rep overhead, (3) Data on what drives purchasing decisions. The agent optimizes for pharmacy value, but suppliers win through volume and efficiency.</p>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
+    </div>
 
     <!-- ========== NARRATIVE ========== -->
-    <section class="section">
-        <h2 class="section-title">The Narrative</h2>
+    <div class="section-wrapper">
+        <section class="section">
+            <h2 class="section-title">The Narrative</h2>
 
-        <div class="narrative">
-            <div class="narrative-content">
-                <h3>The Problem We're Solving</h3>
-                <p>Every week, pharmacy owners across Brazil spend 15+ hours on procurement. They check prices across a dozen suppliers, compare promotions, negotiate payment terms, and manually place orders. It's tedious, error-prone, and takes them away from what matters: serving their customers and growing their business.</p>
+            <div class="narrative">
+                <div class="narrative-content">
+                    <h3>The Problem We're Solving</h3>
+                    <p>Every week, pharmacy owners across Brazil spend 15+ hours on procurement. They check prices across a dozen suppliers, compare promotions, negotiate payment terms, and manually place orders. It's tedious, error-prone, and takes them away from what matters: serving their customers and growing their business.</p>
 
-                <p>The pharmaceutical supply chain in Brazil is fragmented. Manufacturers, distributors, and pharmacies operate in silos. There's no unified view of pricing, inventory, or demand. Every pharmacy reinvents the wheel, making the same comparisons their neighbors made yesterday.</p>
+                    <p>The pharmaceutical supply chain in Brazil is fragmented. Manufacturers, distributors, and pharmacies operate in silos. There's no unified view of pricing, inventory, or demand. Every pharmacy reinvents the wheel, making the same comparisons their neighbors made yesterday.</p>
 
-                <h3>What We've Built</h3>
-                <p>Cienty started as a B2B marketplace connecting pharmacies with suppliers. But we realized the marketplace was just the foundation. The real value is in the infrastructure we've built underneath:</p>
+                    <h3>What We've Built</h3>
+                    <p>Cienty started as a B2B marketplace connecting pharmacies with suppliers. But we realized the marketplace was just the foundation. The real value is in the infrastructure we've built underneath:</p>
 
-                <ul>
-                    <li><strong>Deep supplier integrations</strong> — Direct connections to manufacturers and distributors, with real-time pricing and inventory data</li>
-                    <li><strong>Unified data layer</strong> — Order history, demand patterns, promotions, and payment terms all in one place</li>
-                    <li><strong>Agentic AI architecture</strong> — Purpose-built for autonomous decision-making, not a chatbot bolted onto a legacy system</li>
-                </ul>
+                    <ul>
+                        <li><strong>Deep supplier integrations</strong> &mdash; Direct connections to manufacturers and distributors, with real-time pricing and inventory data</li>
+                        <li><strong>Unified data layer</strong> &mdash; Order history, demand patterns, promotions, and payment terms all in one place</li>
+                        <li><strong>Agentic AI architecture</strong> &mdash; Purpose-built for autonomous decision-making, not a chatbot bolted onto a legacy system</li>
+                    </ul>
 
-                <div class="highlight-quote">
-                    "We're not building another marketplace. We're building the AI that runs pharmacy procurement."
-                </div>
-
-                <h3>The Buying Agent Vision</h3>
-                <p>Imagine a pharmacy owner who says: <em>"Cienty, restock my store."</em></p>
-
-                <p>The agent analyzes inventory levels and demand patterns. It scans all connected suppliers for the best prices. It considers promotions, payment terms, and delivery times. It optimizes the order across multiple suppliers to minimize cost and maximize availability. Then it executes — within the approval limits the owner has set.</p>
-
-                <p>The owner reviews a summary, approves with one tap, and gets back to running their business. What used to take hours now takes seconds.</p>
-
-                <h3>Why We Win</h3>
-                <p>Our moat is the combination of three things that are hard to replicate:</p>
-
-                <ul>
-                    <li><strong>Data network effects</strong> — Every transaction makes the agent smarter for all pharmacies. Pricing intelligence, demand forecasting, supplier reliability scores — they all improve with scale.</li>
-                    <li><strong>Deep integrations</strong> — We've spent years building direct connections with suppliers. A new entrant can't replicate these relationships overnight.</li>
-                    <li><strong>Vertical expertise</strong> — We understand ANVISA regulations, LGPD compliance, Brazilian Portuguese nuances, and the quirks of pharmaceutical logistics. Generic AI solutions miss these details.</li>
-                </ul>
-
-                <h3>Execution Excellence</h3>
-                <p>We've adopted best-in-class tooling to accelerate development:</p>
-
-                <ul>
-                    <li><strong>Claude 3.5</strong> for AI/LLM — Best reasoning capabilities and Portuguese fluency</li>
-                    <li><strong>PostgreSQL + BigQuery</strong> for data — Operational speed plus analytics power</li>
-                    <li><strong>AWS São Paulo</strong> for infrastructure — Low latency for Brazilian users</li>
-                    <li><strong>Feature flags + CI/CD</strong> for deployment — Ship fast, fail safe</li>
-                </ul>
-
-                <h3>The Roadmap</h3>
-                <div class="timeline">
-                    <div class="timeline-item done">
-                        <span class="time">Complete</span>
-                        <h4>Core Marketplace</h4>
-                        <p>Pharmacy and supplier network established</p>
+                    <div class="highlight-quote">
+                        "We're not building another marketplace. We're building the AI that runs pharmacy procurement."
                     </div>
-                    <div class="timeline-item current">
-                        <span class="time">Q1-Q2</span>
-                        <h4>Analytics & Data Infrastructure</h4>
-                        <p>Dashboards, BigQuery integration, data foundation</p>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="time">Q2-Q3</span>
-                        <h4>Buying Agent MVP</h4>
-                        <p>Pilot with 20 pharmacies, suggestions → auto-execute</p>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="time">Q3-Q4</span>
-                        <h4>Full Agent Rollout</h4>
-                        <p>Scale to all pharmacies, supplier automation</p>
-                    </div>
-                </div>
 
-                <h3>The Ask</h3>
-                <p>We're raising Series B to accelerate the Buying Agent and become the one-stop shop for pharmacies. The funds will go toward:</p>
+                    <h3>The Buying Agent Vision</h3>
+                    <p>Imagine a pharmacy owner who says: <em>"Cienty, restock my store."</em></p>
 
-                <ul>
-                    <li>Expanding our AI/ML team</li>
-                    <li>Scaling supplier integrations</li>
-                    <li>Growing the pharmacy network</li>
-                    <li>Building autonomous purchasing capabilities</li>
-                </ul>
+                    <p>The agent analyzes inventory levels and demand patterns. It scans all connected suppliers for the best prices. It considers promotions, payment terms, and delivery times. It optimizes the order across multiple suppliers to minimize cost and maximize availability. Then it executes &mdash; within the approval limits the owner has set.</p>
 
-                <div class="highlight-quote">
-                    The opportunity is clear: 80,000+ pharmacies wasting 15+ hours/week on procurement. The infrastructure is built. The AI is ready. Now we scale.
+                    <p>The owner reviews a summary, approves with one tap, and gets back to running their business. What used to take hours now takes seconds.</p>
+
+                    <h3>Why We Win</h3>
+                    <p>Our moat is the combination of three things that are hard to replicate:</p>
+
+                    <ul>
+                        <li><strong>Data network effects</strong> &mdash; Every transaction makes the agent smarter for all pharmacies. Pricing intelligence, demand forecasting, supplier reliability scores &mdash; they all improve with scale.</li>
+                        <li><strong>Deep integrations</strong> &mdash; We've spent years building direct connections with suppliers. A new entrant can't replicate these relationships overnight.</li>
+                        <li><strong>Vertical expertise</strong> &mdash; We understand ANVISA regulations, LGPD compliance, Brazilian Portuguese nuances, and the quirks of pharmaceutical logistics. Generic AI solutions miss these details.</li>
+                    </ul>
+
+                    <h3>Execution Excellence</h3>
+                    <p>We've adopted best-in-class tooling to accelerate development:</p>
+
+                    <ul>
+                        <li><strong>Claude</strong> for AI/LLM &mdash; Best reasoning capabilities and Portuguese fluency</li>
+                        <li><strong>PostgreSQL + BigQuery</strong> for data &mdash; Operational speed plus analytics power</li>
+                        <li><strong>AWS S&atilde;o Paulo</strong> for infrastructure &mdash; Low latency for Brazilian users</li>
+                        <li><strong>Feature flags + CI/CD</strong> for deployment &mdash; Ship fast, fail safe</li>
+                    </ul>
+
+                    <h3>The Roadmap</h3>
+                    <div class="timeline">
+                        <div class="timeline-item done">
+                            <span class="time">Complete</span>
+                            <h4>Core Marketplace</h4>
+                            <p>Pharmacy and supplier network established</p>
+                        </div>
+                        <div class="timeline-item current">
+                            <span class="time">Q1-Q2</span>
+                            <h4>Analytics &amp; Data Infrastructure</h4>
+                            <p>Dashboards, BigQuery integration, data foundation</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="time">Q2-Q3</span>
+                            <h4>Buying Agent MVP</h4>
+                            <p>Pilot with 20 pharmacies, suggestions then auto-execute</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="time">Q3-Q4</span>
+                            <h4>Full Agent Rollout</h4>
+                            <p>Scale to all pharmacies, supplier automation</p>
+                        </div>
+                    </div>
+
+                    <h3>The Ask</h3>
+                    <p>We're raising Series B to accelerate the Buying Agent and become the one-stop shop for pharmacies. The funds will go toward:</p>
+
+                    <ul>
+                        <li>Expanding our AI/ML team</li>
+                        <li>Scaling supplier integrations</li>
+                        <li>Growing the pharmacy network</li>
+                        <li>Building autonomous purchasing capabilities</li>
+                    </ul>
+
+                    <div class="highlight-quote">
+                        The opportunity is clear: 80,000+ pharmacies wasting 15+ hours/week on procurement. The infrastructure is built. The AI is ready. Now we scale.
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
-    <footer style="background: var(--primary); color: white; padding: 40px; text-align: center;">
-        <div class="logo" style="margin-bottom: 15px;">CIENTY<span style="color: var(--highlight);">.</span></div>
-        <p style="opacity: 0.7; font-size: 14px;">The AI Buying Agent for Pharmacies</p>
+    <footer>
+        <div class="logo">cienty</div>
+        <p>The AI Buying Agent for Pharmacies</p>
     </footer>
 
 </body>
