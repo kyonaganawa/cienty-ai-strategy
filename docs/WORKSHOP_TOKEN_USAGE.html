@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop — LLM Token Usage & Efficiency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --gray: #bbbdc7;
+      --pink: #dc36c0;
+      --yellow: #ffb92a;
+      --light-blue: #eeeff1;
+      --dark-gray: #6d7079;
+      --charcoal: #2f2f32;
+
+      --bg: var(--white);
+      --card: var(--light-blue);
+      --border: var(--gray);
+      --text: var(--black);
+      --muted: var(--dark-gray);
+      --accent: var(--pink);
+      --accent2: var(--yellow);
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .slide {
+      min-height: 100vh;
+      padding: 60px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+    }
+
+    .slide.dark {
+      background: var(--black);
+      color: var(--white);
+    }
+    .slide.dark h1, .slide.dark h3 { color: var(--white); }
+    .slide.dark .subtitle { color: var(--gray); }
+
+    .slide-number {
+      font-size: 0.7rem;
+      color: var(--pink);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      line-height: 1.15;
+      color: var(--black);
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: var(--pink);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--charcoal);
+    }
+
+    .subtitle {
+      font-size: 1.35rem;
+      color: var(--dark-gray);
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; flex: 1; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+    .card {
+      background: var(--light-blue);
+      border-radius: 8px;
+      padding: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .card.highlight {
+      border-left-color: var(--pink);
+      background: linear-gradient(135deg, rgba(220, 54, 192, 0.08) 0%, var(--light-blue) 50%);
+    }
+
+    .card.dark {
+      background: var(--charcoal);
+      color: var(--white);
+    }
+    .card.dark h3 { color: var(--yellow); }
+
+    .stat-card {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--black);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--black);
+      color: var(--white);
+      font-weight: 500;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray);
+      vertical-align: top;
+    }
+
+    tr:hover td { background: var(--light-blue); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-success { background: var(--black); color: var(--yellow); }
+    .badge-warning { background: var(--yellow); color: var(--black); }
+    .badge-accent  { background: var(--pink); color: var(--white); }
+    .badge-muted   { background: var(--gray); color: var(--black); }
+
+    ul { list-style: none; padding-left: 0; }
+    ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      color: var(--charcoal);
+    }
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .slide.dark ul li { color: var(--light-blue); }
+
+    code, .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+    }
+
+    .code-block {
+      background: var(--black);
+      color: var(--light-blue);
+      padding: 18px 22px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      border-left: 3px solid var(--pink);
+    }
+    .code-block .hl { color: var(--yellow); }
+    .code-block .dim { color: var(--dark-gray); }
+
+    .big-number {
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--pink);
+      line-height: 1;
+    }
+
+    .decision-box {
+      background: var(--light-blue);
+      border-left: 4px solid var(--pink);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 24px 0;
+    }
+
+    .vs-split {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 16px;
+    }
+    .vs-split .vs-mid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--gray);
+      font-size: 1.25rem;
+    }
+    .vs-col {
+      padding: 24px;
+      border-radius: 8px;
+      background: var(--light-blue);
+    }
+    .vs-col.bad  { border-top: 4px solid var(--yellow); }
+    .vs-col.good { border-top: 4px solid var(--pink); background: rgba(220, 54, 192, 0.06); }
+
+    .agenda-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--light-blue);
+    }
+    .agenda-item:last-child { border-bottom: none; }
+    .agenda-time {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--pink);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .agenda-title { font-weight: 500; flex: 1; padding-left: 20px; }
+
+    .cienty-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .cienty-logo span { color: var(--pink); }
+
+    .slide-footer {
+      margin-top: auto;
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray);
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-key { color: var(--dark-gray); font-size: 0.9rem; }
+    .kv-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+    .rule-card {
+      background: var(--black);
+      color: var(--white);
+      border-radius: 8px;
+      padding: 20px 24px;
+      border-left: 4px solid var(--yellow);
+    }
+    .rule-card .rule-num {
+      color: var(--yellow);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    @media print {
+      .slide {
+        page-break-after: always;
+        min-height: auto;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 — COVER ============ -->
+<section class="slide dark">
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <div class="cienty-logo" style="color: var(--white); margin-bottom: 60px;">ci<span>en</span>ty</div>
+    <div class="eyebrow" style="color: var(--yellow);">Workshop · 60 min</div>
+    <h1 style="color: var(--white); font-size: 3.5rem;">LLM Token Usage<br><span style="color: var(--pink);">& Efficiency</span></h1>
+    <p class="subtitle" style="color: var(--gray); max-width: 720px;">
+      How tokens work, where they leak, and how to get more out of Claude Code — for everyone, technical or not.
+    </p>
+  </div>
+  <div class="slide-footer">
+    <span>Covalenty · AI Strategy</span>
+    <span>45 min content · 15 min Q&amp;A</span>
+  </div>
+</section>
+
+<!-- ============ NEW SLIDE — LEVEL SET / CAVEATS ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Before we start</div>
+  <h1>A quick <span style="color: var(--pink);">level check</span></h1>
+  <p class="subtitle">Four things to know so the next hour lands the way it should.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Level 01</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">This is intermediate</h3>
+      <p>Assumes you've used Claude Code or a chat LLM before and have some intuition for what a "prompt" is. Brand new? Parts of this will move fast — grab me after.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Level 02</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">Some concepts are abstract</h3>
+      <p>Tokens, attention, caching, context windows. They feel theoretical until suddenly they explain everything you've been fighting. Push through the abstraction — the mental models are the point.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Level 03</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">Explanations are approximate</h3>
+      <p>I'll simplify where the simplification doesn't change your decisions. This isn't a research paper — it's a playbook. Close enough to be <em>useful</em> is the bar.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Level 04</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">The field is moving fast</h3>
+      <p>Specific numbers, commands, and limits may change within months. The <strong>high-level principles</strong> — stateless models, context costs, caching, hygiene — should stay useful much longer. Re-check the details periodically.</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 20px;">
+    <div class="rule-num">ONE FAVOR</div>
+    <p>If something's unclear, <strong>interrupt</strong>. Half the value is in the side questions — and if one person is confused, usually three more are too.</p>
+  </div>
+
+  <div class="slide-footer"><span>NEW · Level set</span><span>Set expectations before diving in</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — OBJECTIVES ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Why we're here</div>
+  <h1>What you'll leave with</h1>
+  <p class="subtitle">Four outcomes. If by the end of this hour any of these clicks, the workshop did its job.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Outcome 01</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Improve the quality of LLM responses</h3>
+      <p>Understand why long sessions drift and how keeping context tight keeps answers sharp.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Outcome 02</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Do more with your subscription</h3>
+      <p>Squeeze more work out of each 5-hour window and each week — without paying for extra credits.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Outcome 03</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Save LLM costs</h3>
+      <p>Use caching, skills, scripts, and subagents to cut the token cost of the same work by 5–10×.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Outcome 04</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Understand how LLMs actually work</h3>
+      <p>Get the mental model — tokens, context, caching, statelessness — so you can make good judgment calls on your own.</p>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>NEW · Objectives</span><span>Set the stakes</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — SITUATIONS ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Sound familiar?</div>
+  <h1>Two moments you've <span style="color: var(--pink);">probably</span> had</h1>
+  <p class="subtitle">If either of these has happened to you, the rest of the hour is going to be useful.</p>
+
+  <div class="grid-2" style="gap: 32px; flex: 1;">
+    <!-- Situation 1 -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card" style="padding: 28px; background: var(--light-blue); border-left: 4px solid var(--pink);">
+        <div class="eyebrow">Situation 01</div>
+        <h3 style="font-size: 1.15rem; margin-top: 6px; margin-bottom: 12px; line-height: 1.35;">"It knew this 20 minutes ago."</h3>
+        <p style="font-size: 0.95rem; color: var(--charcoal); line-height: 1.55;">
+          You asked the agent to do a task and it nailed it. An hour later in the same session, you ask a follow-up — and it seems to have <em>forgotten</em> information you already gave it. It re-asks for file paths, contradicts earlier decisions, or ignores a constraint you set up-front.
+        </p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">WHAT'S HAPPENING</div>
+        <p style="color: var(--light-blue);">The model didn't "forget" — the context got too big, and your instruction became a needle in a much larger haystack. We'll cover this in <strong style="color: var(--yellow);">context degradation</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Situation 2 -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card" style="padding: 28px; background: var(--light-blue); border-left: 4px solid var(--pink);">
+        <div class="eyebrow">Situation 02</div>
+        <h3 style="font-size: 1.15rem; margin-top: 6px; margin-bottom: 12px; line-height: 1.35;">"That one prompt just cost me 20% of the day."</h3>
+        <p style="font-size: 0.95rem; color: var(--charcoal); line-height: 1.55;">
+          You've been coding productively in a session all morning. You step away for lunch. When you come back and send <em>one</em> follow-up prompt, it burns through a huge chunk of your weekly limit in a single shot.
+        </p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">WHAT'S HAPPENING</div>
+        <p style="color: var(--light-blue);">You re-sent a 150k-token history after the cache expired. Without caching, every prior message is billed at full price. We'll cover this in <strong style="color: var(--yellow);">prompt caching</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>NEW · Situations</span><span>Relatable pain → workshop topics</span></div>
+</section>
+
+<!-- ============ SLIDE 2 — AGENDA ============ -->
+<section class="slide">
+  <div class="slide-number">01 · Agenda</div>
+  <h1>What we'll cover</h1>
+  <div class="grid-2" style="gap: 48px;">
+    <div>
+      <div class="agenda-item"><span class="agenda-time">00:00</span><span class="agenda-title">Why tokens matter</span><span class="badge badge-muted">5 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:05</span><span class="agenda-title">Context windows</span><span class="badge badge-muted">5 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:10</span><span class="agenda-title">Prompt caching — the biggest lever</span><span class="badge badge-accent">7 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:17</span><span class="agenda-title">Subscription vs API</span><span class="badge badge-muted">3 min</span></div>
+    </div>
+    <div>
+      <div class="agenda-item"><span class="agenda-time">00:20</span><span class="agenda-title">Skills, subagents, scripts, hooks</span><span class="badge badge-muted">8 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:28</span><span class="agenda-title">Capstone — long analysis, done right</span><span class="badge badge-accent">15 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:43</span><span class="agenda-title">Wrap &amp; takeaways</span><span class="badge badge-muted">2 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:45</span><span class="agenda-title">Q&amp;A — bring your own session</span><span class="badge badge-warning">15 min</span></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>2 / 22</span><span>Agenda</span></div>
+</section>
+
+<!-- ============ SLIDE 3 — WHY TOKENS MATTER ============ -->
+<section class="slide">
+  <div class="slide-number">02 · Fundamentals</div>
+  <h1>Why tokens matter</h1>
+  <p class="subtitle">A token ≈ ¾ of a word in English, but closer to a character in code or JSON.</p>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value">~4</div>
+      <div class="stat-label">Chars per token (English)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">~2</div>
+      <div class="stat-label">Chars per token (code / JSON)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5×</div>
+      <div class="stat-label">Output cost vs input</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card highlight">
+      <h3>Live demo</h3>
+      <p>Paste a paragraph, a Python function, and a JSON blob into a tokenizer — same character count, very different token counts.</p>
+    </div>
+    <div class="card">
+      <h3>Why this matters</h3>
+      <p>Every message you send re-bills all prior context. A 2-hour session is not "one message" — it's the full transcript, every turn.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>3 / 22</span><span>Fundamentals</span></div>
+</section>
+
+<!-- ============ SLIDE 4 — LLMs ARE STATELESS (INTERACTIVE) ============ -->
+<section class="slide">
+  <div class="slide-number">02 · Fundamentals</div>
+  <h1>LLMs don't remember — <span style="color: var(--pink);">you do</span></h1>
+  <p class="subtitle">Every turn, your client re-sends the entire conversation history. The model itself is stateless. Click <strong>Next turn</strong> to watch a real request get bigger.</p>
+
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; flex: 1;">
+    <!-- LEFT: interactive turn-by-turn diagram -->
+    <div style="display: flex; flex-direction: column;">
+      <div class="eyebrow">What actually travels over the wire</div>
+
+      <div id="sl-turns" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 360px;">
+        <!-- turns injected here -->
+      </div>
+
+      <!-- Legend + controls -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 20px; font-size: 0.82rem;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; background: var(--pink); border-radius: 2px; display: inline-block;"></span>
+            <span style="color: var(--dark-gray);">new this turn</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; background: var(--gray); border-radius: 2px; display: inline-block;"></span>
+            <span style="color: var(--dark-gray);">replayed from earlier turns</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="sl-next" style="padding: 12px 22px; background: var(--pink); color: var(--white); border: none; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: inherit;">
+            ▶ Next turn
+          </button>
+          <button id="sl-reset" style="padding: 12px 16px; background: var(--white); color: var(--charcoal); border: 2px solid var(--gray); border-radius: 8px; font-size: 0.88rem; font-weight: 500; cursor: pointer; font-family: inherit;">
+            ↺ Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: running totals + insight -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="grid-2" style="gap: 12px;">
+        <div class="stat-card" style="padding: 18px 12px;">
+          <div id="sl-this-turn" class="stat-value" style="font-size: 2.1rem;">—</div>
+          <div class="stat-label">This turn · tokens sent</div>
+        </div>
+        <div class="stat-card" style="padding: 18px 12px;">
+          <div id="sl-total" class="stat-value" style="font-size: 2.1rem; color: var(--pink);">0</div>
+          <div class="stat-label">Session · cumulative tokens sent</div>
+        </div>
+      </div>
+
+      <div id="sl-commentary" class="card highlight">
+        <h3>The conversation is an illusion</h3>
+        <p>Claude Code holds the history on your machine. Every turn, it stitches the whole thing together and sends a fresh API call. The model sees the entire transcript from scratch each time — it has no recollection between calls.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">KEY INSIGHT</div>
+        <p>Every rule later in this workshop follows from this one fact: if the client has to re-send everything each turn, shorter histories cost less. That's all caching, skills, scripts, and hygiene are doing.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>4 / 22</span><span>Stateless model</span></div>
+</section>
+
+<script>
+(function() {
+  // Per-message token sizes (approximate)
+  // msg = user message · reply = assistant response
+  const messages = [
+    { label: "msg₁",   tokens: 120 },
+    { label: "reply₁", tokens: 420 },
+    { label: "msg₂",   tokens: 90  },
+    { label: "reply₂", tokens: 680 },
+    { label: "msg₃",   tokens: 110 },
+    { label: "reply₃", tokens: 540 },
+    { label: "msg₄",   tokens: 140 },
+    { label: "reply₄", tokens: 820 },
+    { label: "msg₅",   tokens: 100 },
+    { label: "reply₅", tokens: 610 },
+    { label: "msg₆",   tokens: 130 }
+  ];
+  // Turn N sends: previous replies + messages + new user msg
+  // Structure: turn i sends messages[0..(2i-2)] (inclusive)
+  const MAX_TURNS = 6;
+
+  const container = document.getElementById('sl-turns');
+  const nextBtn   = document.getElementById('sl-next');
+  const resetBtn  = document.getElementById('sl-reset');
+  const thisTurn  = document.getElementById('sl-this-turn');
+  const totalEl   = document.getElementById('sl-total');
+
+  let turnCount = 0;
+  let cumulative = 0;
+
+  function fmt(n) {
+    return n >= 1000 ? (n/1000).toFixed(2) + 'k' : n.toString();
+  }
+
+  function renderTurn(n) {
+    // Turn n sends items messages[0..(2n-2)]
+    const endIdx = 2 * n - 1; // exclusive
+    const items = messages.slice(0, endIdx);
+    const tokensThisTurn = items.reduce((s, m) => s + m.tokens, 0);
+    cumulative += tokensThisTurn;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'padding: 12px 16px; background: var(--light-blue); border-radius: 6px; border-left: 3px solid var(--pink); opacity: 0; transform: translateY(-6px); transition: opacity 0.3s ease, transform 0.3s ease;';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
+    header.innerHTML =
+      `<span class="mono" style="font-size: 0.7rem; color: var(--pink); letter-spacing: 0.08em;">TURN ${n} · REQUEST</span>` +
+      `<span class="mono" style="font-size: 0.78rem; color: var(--charcoal); font-weight: 600;">${fmt(tokensThisTurn)} tok</span>`;
+    row.appendChild(header);
+
+    const chips = document.createElement('div');
+    chips.style.cssText = 'display: flex; gap: 5px; flex-wrap: wrap;';
+    items.forEach((m, i) => {
+      const isNew = i === endIdx - 1;
+      const chip = document.createElement('span');
+      chip.textContent = m.label;
+      chip.style.cssText = `padding: 3px 9px; border-radius: 3px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; ` +
+        (isNew
+          ? 'background: rgba(220,54,192,0.18); color: var(--pink); font-weight: 600;'
+          : 'background: var(--gray); color: var(--charcoal);');
+      chips.appendChild(chip);
+    });
+    row.appendChild(chips);
+    container.appendChild(row);
+    requestAnimationFrame(() => {
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+    });
+
+    thisTurn.textContent = fmt(tokensThisTurn);
+    totalEl.textContent = fmt(cumulative);
+  }
+
+  function advance() {
+    if (turnCount >= MAX_TURNS) {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— and so on —';
+      return;
+    }
+    turnCount++;
+    renderTurn(turnCount);
+    if (turnCount >= MAX_TURNS) {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— and so on —';
+    }
+  }
+
+  function reset() {
+    turnCount = 0;
+    cumulative = 0;
+    container.innerHTML = '';
+    thisTurn.textContent = '—';
+    totalEl.textContent = '0';
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    nextBtn.textContent = '▶ Next turn';
+  }
+
+  nextBtn.addEventListener('click', advance);
+  resetBtn.addEventListener('click', reset);
+})();
+</script>
+
+<!-- ============ SLIDE 5 — YOU PAY FOR EVERY TOKEN, EVERY TURN ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">02 · Fundamentals</div>
+  <h1 style="color: var(--white);">You're billed for <span style="color: var(--pink);">every token</span>, <span style="color: var(--pink);">every turn</span></h1>
+  <p class="subtitle" style="color: var(--gray);">Whether API usage or subscription usage — the meter runs on what you send <em>and</em> what comes back. Including all the history you just replayed.</p>
+
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: cumulative bar chart -->
+    <div>
+      <div class="eyebrow" style="color: var(--yellow);">Cumulative tokens billed across a 10-turn session</div>
+
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <!-- Each bar represents a turn -->
+        <!-- Widths reflect: turn k sends roughly k× a turn-1 baseline -->
+        <!-- Bar = turn size ; tokens billed label on right -->
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 1</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 6%; height: 100%; background: var(--success); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">0.5k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 2</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 14%; height: 100%; background: var(--success); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">1.2k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 3</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 24%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">2.1k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 4</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 36%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">3.2k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 5</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 48%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">4.4k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 6</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 60%; height: 100%; background: #f97316; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">5.6k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 7</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 72%; height: 100%; background: #f97316; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">6.9k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 8</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 82%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">8.3k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turn 9</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 92%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">9.8k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--white); font-size: 0.78rem; font-weight: 600;">turn 10</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 100%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--yellow); font-size: 0.82rem; text-align: right; font-weight: 600;">11.4k</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--charcoal); display: flex; justify-content: space-between; align-items: center;">
+        <span class="mono" style="color: var(--gray); font-size: 0.78rem; letter-spacing: 0.06em;">TOTAL BILLED ACROSS SESSION</span>
+        <span class="mono" style="color: var(--yellow); font-size: 1.6rem; font-weight: 700;">53.4k tokens</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: explainer -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card dark" style="background: var(--charcoal); padding: 22px;">
+        <h3 style="color: var(--yellow);">The receipt doesn't list "new content"</h3>
+        <p style="color: var(--light-blue); margin-top: 6px;">It lists <strong style="color: var(--white);">every token in every request</strong>, plus <strong style="color: var(--white);">every token in every response</strong>. Your 10-word question at turn 10 comes with a ~11k-token receipt attached — because that's what was actually processed.</p>
+      </div>
+
+      <div class="card dark" style="background: var(--charcoal); padding: 22px;">
+        <h3 style="color: var(--yellow);">Input vs output</h3>
+        <ul style="margin-top: 4px;">
+          <li><strong style="color: var(--white);">Input</strong> — what you send (prompt + full history + tool outputs)</li>
+          <li><strong style="color: var(--white);">Output</strong> — what Claude generates back</li>
+          <li>Output is ~5× more expensive per token — but input volume is much larger, so input usually dominates the bill</li>
+        </ul>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">SUBSCRIPTION USERS</div>
+        <p style="color: var(--light-blue);">You don't see a dollar bill — but your plan's 5-hour window and weekly cap are both metered in tokens. Every re-sent byte eats into them just the same.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span style="color: var(--gray);">5 / 22</span><span style="color: var(--gray);">Billed on all tokens, both directions</span></div>
+</section>
+
+<!-- ============ SLIDE 5 — THE $20 CONVERSATION ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">03 · Reality check</div>
+  <h1 style="color: var(--white);">The $20 conversation</h1>
+  <p class="subtitle">A real Claude Code session, unedited.</p>
+
+  <div class="grid-2" style="gap: 48px;">
+    <div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Task</span><span class="kv-val" style="color: var(--white);">Refactor auth module</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Duration</span><span class="kv-val" style="color: var(--white);">2h 14m</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Turns</span><span class="kv-val" style="color: var(--white);">47</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Input tokens</span><span class="kv-val" style="color: var(--yellow);">3.2M</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Output tokens</span><span class="kv-val" style="color: var(--yellow);">180k</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">API cost (no cache)</span><span class="kv-val" style="color: var(--pink);">~$22</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">With caching</span><span class="kv-val" style="color: var(--success);">~$4</span></div>
+    </div>
+    <div class="card dark">
+      <h3>The punchline</h3>
+      <p style="color: var(--light-blue); margin-bottom: 16px;">The same session, with good hygiene, costs <strong style="color: var(--yellow);">5× less</strong> and runs faster.</p>
+      <p style="color: var(--gray); font-size: 0.9rem;">That delta is what this workshop is about.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">6 / 22</span><span style="color: var(--gray);">Cost reality</span></div>
+</section>
+
+<!-- ============ SLIDE 5 — CONTEXT WINDOWS ============ -->
+<section class="slide">
+  <div class="slide-number">04 · Context</div>
+  <h1>Context windows are working memory</h1>
+  <p class="subtitle">Everything the model "remembers" lives in the window. When it fills up, things break.</p>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="card">
+      <h3>200k tokens</h3>
+      <p>Default window. ~500 pages of text. Plenty for most tasks.</p>
+    </div>
+    <div class="card">
+      <h3>1M tokens</h3>
+      <p>Available on Opus 4.6. For very large codebases or long analyses — but expensive and slower.</p>
+    </div>
+    <div class="card highlight">
+      <h3>Bloat signals</h3>
+      <p>Slower responses, forgotten instructions, hallucinated file paths, the model asking for things you already gave it.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 16px;">Three tools, three rules</h3>
+  <table>
+    <thead>
+      <tr><th>Command</th><th>What it does</th><th>Use when</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/clear</code></td><td>Wipes context, fresh start</td><td>Switching to an unrelated task</td></tr>
+      <tr><td><code>/compact</code></td><td>Summarizes history to save space</td><td>Long session, still on same task</td></tr>
+      <tr><td><strong>New session</strong></td><td>Clean slate, clean cache</td><td>Default — one session per task</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>7 / 22</span><span>Context management</span></div>
+</section>
+
+<!-- ============ SLIDE 6 — INTERACTIVE CONTEXT SIMULATION ============ -->
+<section class="slide" id="sim-slide">
+  <div class="slide-number">04 · Context in motion</div>
+  <h1>Watch context <span style="color: var(--pink);">grow</span> — turn by turn</h1>
+  <p class="subtitle">Every turn re-bills the full context. Click <strong>Next turn</strong> and watch both the window <em>and</em> the per-turn cost climb.</p>
+
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; flex: 1;">
+    <!-- LEFT: meter + controls -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Meter -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+          <span class="mono" style="font-size: 0.78rem; color: var(--dark-gray); letter-spacing: 0.08em;">CONTEXT USED · 200k WINDOW</span>
+          <span id="sim-pct" class="mono" style="font-size: 1rem; font-weight: 600; color: var(--charcoal);">0%</span>
+        </div>
+        <div style="position: relative; height: 32px; background: var(--light-blue); border-radius: 6px; overflow: hidden;">
+          <div id="sim-bar" style="height: 100%; width: 0%; background: var(--success); transition: width 0.45s ease, background 0.45s ease;"></div>
+          <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 2px; background: var(--pink); opacity: 0.6;"></div>
+          <div style="position: absolute; top: -22px; left: 80%; transform: translateX(-50%); font-size: 0.68rem; color: var(--pink); font-family: 'JetBrains Mono', monospace; font-weight: 600;">compact @ 80%</div>
+        </div>
+        <div id="sim-status" style="margin-top: 14px; padding: 10px 14px; border-radius: 6px; background: var(--light-blue); font-size: 0.88rem; color: var(--charcoal); min-height: 44px;">
+          Fresh session — baseline of ~24k tokens loaded (system prompt, tools, CLAUDE.md).
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid-4" style="gap: 10px;">
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-turn" class="stat-value" style="font-size: 1.9rem;">0</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Turn</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-total" class="stat-value" style="font-size: 1.9rem;">24k</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Total context</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-last-cost" class="stat-value" style="font-size: 1.9rem; color: var(--pink);">$0.00</div>
+          <div class="stat-label" style="font-size: 0.7rem;">This turn cost</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-cum-cost" class="stat-value" style="font-size: 1.9rem;">$0.00</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Session total</div>
+        </div>
+      </div>
+
+      <!-- Cost growth hint -->
+      <div id="sim-growth" style="padding: 10px 14px; border-radius: 6px; background: var(--light-blue); font-size: 0.82rem; color: var(--dark-gray); line-height: 1.5; display: none;">
+        <span style="color: var(--pink); font-weight: 600;">Notice:</span>
+        <span id="sim-growth-text">—</span>
+      </div>
+
+      <!-- Controls -->
+      <div style="display: flex; gap: 12px; margin-top: auto;">
+        <button id="sim-next" style="flex: 1; padding: 16px 24px; background: var(--pink); color: var(--white); border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; letter-spacing: 0.02em;">
+          ▶ Next turn
+        </button>
+        <button id="sim-reset" style="padding: 16px 20px; background: var(--white); color: var(--charcoal); border: 2px solid var(--gray); border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit;">
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: turn log -->
+    <div style="display: flex; flex-direction: column;">
+      <div class="eyebrow">Turn log</div>
+      <div id="sim-log" style="flex: 1; background: var(--black); color: var(--light-blue); border-radius: 8px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; overflow-y: auto; max-height: 460px; border-left: 3px solid var(--pink);">
+        <div style="color: var(--gray);">// press Next turn to start</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>8 / 22</span><span>Context in motion · costs at Sonnet API rates ($3 / $15 per M · uncached)</span></div>
+</section>
+
+<script>
+(function() {
+  const BASELINE = 24000;
+  const MAX = 200000;
+  const COMPACT_AT = 160000;
+
+  const turns = [
+    { who: "user",      desc: "How is auth handled in this repo?",                     cost: 0.2 },
+    { who: "assistant", desc: "Grep across src/ for 'auth' keywords",                  cost: 8,   tool: "Grep" },
+    { who: "assistant", desc: "Read src/auth/middleware.ts (full file)",               cost: 6,   tool: "Read" },
+    { who: "user",      desc: "Now trace where sessions are stored",                   cost: 0.2 },
+    { who: "assistant", desc: "Read src/auth/session.ts + session.test.ts",            cost: 9,   tool: "Read×2" },
+    { who: "assistant", desc: "Grep for 'session' across codebase (big output)",       cost: 14,  tool: "Grep" },
+    { who: "user",      desc: "Add error handling to the login flow",                  cost: 0.3 },
+    { who: "assistant", desc: "Read src/auth/login.ts",                                cost: 5,   tool: "Read" },
+    { who: "assistant", desc: "Edit login.ts + write tests",                           cost: 3,   tool: "Edit" },
+    { who: "assistant", desc: "Run test suite — full stack trace pasted back",         cost: 22,  tool: "Bash" },
+    { who: "user",      desc: "Fix the failing test",                                  cost: 0.2 },
+    { who: "assistant", desc: "Read test file + 3 related source files",               cost: 18,  tool: "Read×4" },
+    { who: "assistant", desc: "Edit and re-run tests",                                 cost: 12,  tool: "Edit+Bash" },
+    { who: "user",      desc: "Also refactor the token refresh logic",                 cost: 0.3 },
+    { who: "assistant", desc: "Read 3 more files, large bash output",                  cost: 28,  tool: "Read+Bash" },
+    { who: "assistant", desc: "Explore subagent (spawned but results inlined here)",   cost: 32,  tool: "Agent" },
+    { who: "user",      desc: "Summarize everything changed",                          cost: 0.2 },
+    { who: "assistant", desc: "Long synthesis response",                               cost: 6 }
+  ];
+
+  // Pricing (approx Claude Sonnet API rates — uncached)
+  // Input: $3 / 1M tokens · Output: $15 / 1M tokens
+  const INPUT_PER_TOK  = 3  / 1_000_000;
+  const OUTPUT_PER_TOK = 15 / 1_000_000;
+
+  let idx = 0;
+  let total = BASELINE;
+  let cumCost = 0;
+  let firstTurnCost = null;
+
+  const bar      = document.getElementById('sim-bar');
+  const pctEl    = document.getElementById('sim-pct');
+  const turnEl   = document.getElementById('sim-turn');
+  const totalEl  = document.getElementById('sim-total');
+  const lastCost = document.getElementById('sim-last-cost');
+  const cumEl    = document.getElementById('sim-cum-cost');
+  const growth   = document.getElementById('sim-growth');
+  const growthTx = document.getElementById('sim-growth-text');
+  const log      = document.getElementById('sim-log');
+  const status   = document.getElementById('sim-status');
+  const nextBtn  = document.getElementById('sim-next');
+  const resetBtn= document.getElementById('sim-reset');
+
+  function fmt(tokens) {
+    if (tokens >= 1000) return (tokens/1000).toFixed(tokens >= 10000 ? 0 : 1) + 'k';
+    return tokens.toString();
+  }
+
+  function money(n) {
+    if (n < 0.01) return '$' + n.toFixed(4);
+    if (n < 1)    return '$' + n.toFixed(3);
+    return '$' + n.toFixed(2);
+  }
+
+  function colorFor(pct) {
+    if (pct < 50)  return '#10b981';
+    if (pct < 70)  return '#ffb92a';
+    if (pct < 85)  return '#f97316';
+    return '#dc36c0';
+  }
+
+  function updateStatus(pct) {
+    if (pct < 50) {
+      status.innerHTML = '<strong style="color: var(--success);">Healthy.</strong> Plenty of room — model responses are sharp.';
+      status.style.background = 'rgba(16, 185, 129, 0.1)';
+    } else if (pct < 70) {
+      status.innerHTML = '<strong style="color: #ffb92a;">Warming up.</strong> Still fine, but tool outputs are starting to bloat history.';
+      status.style.background = 'rgba(255, 185, 42, 0.15)';
+    } else if (pct < 85) {
+      status.innerHTML = '<strong style="color: #f97316;">Bloated.</strong> Responses slower. Instructions may drift. Consider ending the session after this task.';
+      status.style.background = 'rgba(249, 115, 22, 0.15)';
+    } else if (pct < 100) {
+      status.innerHTML = '<strong style="color: var(--pink);">Critical.</strong> /compact will trigger automatically soon. Quality is visibly degrading.';
+      status.style.background = 'rgba(220, 54, 192, 0.15)';
+    } else {
+      status.innerHTML = '<strong style="color: var(--pink);">Overflow — auto-compacted.</strong> History summarized to ~40k. Context survived, but detail is lost.';
+      status.style.background = 'rgba(220, 54, 192, 0.2)';
+    }
+  }
+
+  function render() {
+    const pct = Math.min(100, Math.round((total / MAX) * 100));
+    bar.style.width = pct + '%';
+    bar.style.background = colorFor(pct);
+    pctEl.textContent = pct + '%';
+    turnEl.textContent = idx;
+    totalEl.textContent = fmt(total);
+    updateStatus(pct);
+  }
+
+  function addTurn() {
+    if (idx >= turns.length) {
+      // trigger simulated compaction
+      const before = total;
+      total = 40000;
+      idx++;
+      const line = document.createElement('div');
+      line.style.color = '#dc36c0';
+      line.style.margin = '8px 0';
+      line.style.padding = '8px 10px';
+      line.style.background = 'rgba(220,54,192,0.12)';
+      line.style.borderLeft = '2px solid #dc36c0';
+      line.innerHTML = `<strong>// /compact triggered</strong><br>` +
+        `<span style="color: var(--gray);">${fmt(before)} → ${fmt(total)} · history summarized · future turns will be cheaper again</span>`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+      lastCost.textContent = '—';
+      lastCost.style.color = 'var(--success)';
+      render();
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— end of demo —';
+      return;
+    }
+
+    const turn = turns[idx];
+    const newTokens = Math.round(turn.cost * 1000);
+    total += newTokens;
+    idx++;
+
+    // Estimated uncached cost for THIS turn:
+    //   input-billed = full context sent back (total after adding new tokens)
+    //   output-billed = assume ~25% of the new tokens on assistant turns are output
+    const outputTokens = turn.who === 'assistant' ? Math.round(newTokens * 0.25) : 0;
+    const inputTokens  = total - outputTokens;
+    const turnCost = inputTokens * INPUT_PER_TOK + outputTokens * OUTPUT_PER_TOK;
+    cumCost += turnCost;
+    if (firstTurnCost === null) firstTurnCost = turnCost;
+
+    const placeholder = log.querySelector('div[style*="gray"]');
+    if (placeholder && placeholder.textContent.includes('press Next')) placeholder.remove();
+
+    const line = document.createElement('div');
+    line.style.marginBottom = '6px';
+    const badge = turn.who === 'user'
+      ? '<span style="color: var(--yellow);">[user]</span>'
+      : '<span style="color: var(--pink);">[asst]</span>';
+    const toolBadge = turn.tool
+      ? ` <span style="color: var(--gray); font-size: 0.78rem;">(${turn.tool})</span>`
+      : '';
+    line.innerHTML =
+      `<span style="color: var(--gray);">t${String(idx).padStart(2,'0')}</span> ` +
+      `${badge} ${turn.desc}${toolBadge} ` +
+      `<span style="float:right;">` +
+        `<span style="color: var(--yellow);">+${fmt(newTokens)}</span> ` +
+        `<span style="color: #f97316; margin-left: 10px;">${money(turnCost)}</span>` +
+      `</span>`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+
+    lastCost.textContent = money(turnCost);
+    cumEl.textContent = money(cumCost);
+
+    // Growth hint: show the multiple vs turn 1 once we have a baseline
+    if (idx >= 3 && firstTurnCost > 0) {
+      const multiple = turnCost / firstTurnCost;
+      growth.style.display = 'block';
+      growthTx.innerHTML =
+        `This turn costs <strong>${multiple.toFixed(1)}×</strong> what turn 1 cost — ` +
+        `same kind of message, but Claude now has to re-read <strong>${fmt(total)}</strong> of history.`;
+    }
+
+    render();
+  }
+
+  function reset() {
+    idx = 0;
+    total = BASELINE;
+    cumCost = 0;
+    firstTurnCost = null;
+    log.innerHTML = '<div style="color: var(--gray);">// press Next turn to start</div>';
+    lastCost.textContent = '$0.00';
+    lastCost.style.color = 'var(--pink)';
+    cumEl.textContent = '$0.00';
+    growth.style.display = 'none';
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    nextBtn.textContent = '▶ Next turn';
+    render();
+  }
+
+  nextBtn.addEventListener('click', addTurn);
+  resetBtn.addEventListener('click', reset);
+  render();
+})();
+</script>
+
+<!-- ============ NEW SLIDE — CONTEXT DEGRADATION ============ -->
+<section class="slide">
+  <div class="slide-number">04 · Context degradation</div>
+  <h1>Bigger context ≠ better answers</h1>
+  <p class="subtitle">Past a certain point, filling the window doesn't help the model — it <em>hurts</em> it. Instructions get lost, constraints get ignored, responses drift.</p>
+
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: needle-in-haystack visual (proportional) -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+        <div class="eyebrow">Finding one fixed-size instruction</div>
+        <span class="mono" style="font-size: 0.72rem; color: var(--dark-gray);">200k window →</span>
+      </div>
+      <p style="margin-top: 2px; margin-bottom: 14px; font-size: 0.86rem; color: var(--dark-gray);">
+        The <strong style="color: var(--pink);">pink needle</strong> is the <strong>same ~200 tokens</strong> in every row. What changes is the haystack around it.
+      </p>
+
+      <!-- Shared 200k ruler — all bars align to this scale -->
+      <div style="position: relative; height: 4px; background: var(--light-blue); border-radius: 2px; margin-bottom: 6px;">
+        <div style="position: absolute; right: 0; top: -18px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--dark-gray);">200k cap</div>
+      </div>
+
+      <!-- All rows use the same 100%-width container. Each bar fills its proportion. -->
+      <!-- Needle is ALWAYS 6px wide — visually fixed regardless of haystack size. -->
+
+      <!-- 20k -->
+      <div style="margin-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">20k · early session</span>
+          <span class="mono" style="font-size: 0.76rem; color: var(--success); font-weight: 600;">~98% recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 10%; height: 100%; background: var(--gray); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 40%; width: 6px; height: 100%; background: var(--pink); box-shadow: 0 0 6px rgba(220,54,192,0.6);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 80k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">80k · mid session</span>
+          <span class="mono" style="font-size: 0.76rem; color: #ffb92a; font-weight: 600;">~90% recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 40%; height: 100%; background: var(--dark-gray); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 55%; width: 6px; height: 100%; background: var(--pink); opacity: 0.85; box-shadow: 0 0 5px rgba(220,54,192,0.5);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 150k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">150k · long session</span>
+          <span class="mono" style="font-size: 0.76rem; color: #f97316; font-weight: 600;">~72% recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 75%; height: 100%; background: var(--charcoal); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 60%; width: 6px; height: 100%; background: var(--pink); opacity: 0.65; box-shadow: 0 0 4px rgba(220,54,192,0.35);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 190k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--charcoal); font-weight: 600;">190k · near the cap</span>
+          <span class="mono" style="font-size: 0.76rem; color: var(--pink); font-weight: 600;">~55% recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 95%; height: 100%; background: var(--black); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 62%; width: 6px; height: 100%; background: var(--pink); opacity: 0.45;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proportion call-out -->
+      <div style="margin-top: 22px; padding: 14px 16px; background: var(--light-blue); border-radius: 6px; border-left: 3px solid var(--pink);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+          <div>
+            <div class="mono" style="font-size: 0.72rem; color: var(--dark-gray); letter-spacing: 0.06em; margin-bottom: 4px;">NEEDLE AT 20k</div>
+            <div class="mono" style="font-size: 1rem; color: var(--success); font-weight: 600;">1 part in 100</div>
+          </div>
+          <div>
+            <div class="mono" style="font-size: 0.72rem; color: var(--dark-gray); letter-spacing: 0.06em; margin-bottom: 4px;">NEEDLE AT 190k</div>
+            <div class="mono" style="font-size: 1rem; color: var(--pink); font-weight: 600;">1 part in 950</div>
+          </div>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.82rem; color: var(--dark-gray);">
+          The instruction is the same — but by the end of a long session, it's ~10× harder to find among everything else the model has to attend to.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 18px; margin-top: 16px; font-size: 0.76rem; color: var(--dark-gray);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 6px; height: 14px; background: var(--pink); border-radius: 1px; display: inline-block;"></span>
+          <span>your instruction · ~200 tokens · fixed</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 14px; height: 14px; background: var(--charcoal); border-radius: 2px; display: inline-block;"></span>
+          <span>surrounding history · growing</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: what degradation looks like -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card highlight">
+        <h3>What degradation looks like in practice</h3>
+        <ul style="margin-top: 4px;">
+          <li>Forgets a constraint you set 15 turns ago</li>
+          <li>Re-asks for a file path you already gave</li>
+          <li>Contradicts earlier decisions silently</li>
+          <li>Misses details in the middle of a long file</li>
+          <li>Follows the <em>most recent</em> instruction even if it conflicts with standing rules</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Why it happens</h3>
+        <p>Attention is finite. With more tokens to attend to, each one gets a thinner slice. Models are also <strong>positionally biased</strong> — they recall the start and end of context far better than the middle.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">PRACTICAL RULE</div>
+        <p>Don't judge Claude's response quality by turn 2 of a long session. By turn 40, it's a different (worse) model answering you. When answers start drifting, <strong>start a new session</strong> — it's almost always faster than fighting a bloated one.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>NEW · 22</span><span>Context degradation · "lost in the middle"</span></div>
+</section>
+
+<!-- ============ SLIDE 7 — PROMPT CACHING INTRO ============ -->
+<section class="slide">
+  <div class="slide-number">05 · Caching</div>
+  <h1>Prompt caching — <span class="text-pink" style="color: var(--pink);">the biggest lever</span></h1>
+  <p class="subtitle">Claude caches the static part of your prompt. If the next turn matches, you pay ~10% of the input cost.</p>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="card highlight">
+      <h3>The 1-hour rule</h3>
+      <p>Cache entries live <strong>up to 1 hour</strong>. Every turn within that window refreshes it. Go idle past it → cache miss → full cost again.</p>
+    </div>
+    <div class="card">
+      <h3>What Claude Code caches for you</h3>
+      <ul style="margin-top: 4px;">
+        <li>System prompt</li>
+        <li>CLAUDE.md files</li>
+        <li>Tool definitions</li>
+        <li>Prior conversation turns</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="decision-box">
+    <h3 style="color: var(--pink); margin-bottom: 10px;">Mental model</h3>
+    <p>Think of cache as a <strong>warm engine</strong>. Keep sending turns → engine stays warm → cheap. Walk away for an hour → engine cools → next turn pays full price to restart.</p>
+  </div>
+  <div class="slide-footer"><span>9 / 22</span><span>Caching</span></div>
+</section>
+
+<!-- ============ SLIDE 7 — CACHE VISUAL (ANATOMY OF A PROMPT) ============ -->
+<section class="slide">
+  <div class="slide-number">05 · Anatomy of a prompt</div>
+  <h1>What's in the prompt — and what gets <span style="color: var(--pink);">cached</span></h1>
+  <p class="subtitle">Every turn sends the entire stack. Caching means you only pay full price for the new part at the bottom.</p>
+
+  <div class="grid-2" style="gap: 40px; flex: 1;">
+    <!-- LEFT: Stacked prompt diagram -->
+    <div>
+      <div class="eyebrow">Turn N — full prompt sent to Claude</div>
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
+
+        <div style="background: var(--charcoal); color: var(--white); border-radius: 6px 6px 0 0; padding: 14px 18px; border-left: 4px solid var(--yellow); position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">SYSTEM PROMPT</div>
+              <div style="font-size: 0.92rem;">Claude Code's instructions, safety rules, tool-use protocol</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~8k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">TOOL DEFINITIONS</div>
+              <div style="font-size: 0.92rem;">Read, Edit, Bash, Grep, Glob, Agent, … + MCP tools</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~12k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">CLAUDE.md + MEMORY</div>
+              <div style="font-size: 0.92rem;">Project conventions, user preferences, saved memories</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~4k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">PRIOR CONVERSATION</div>
+              <div style="font-size: 0.92rem;">All earlier user messages, assistant turns, tool results</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~35k tok</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(220, 54, 192, 0.12); color: var(--black); padding: 16px 18px; border-left: 4px solid var(--pink); border-radius: 0 0 6px 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--pink); letter-spacing: 0.08em;">NEW USER MESSAGE</div>
+              <div style="font-size: 0.92rem; color: var(--black);">"now add error handling to the login flow"</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--pink);">~80 tok</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+          <span style="width: 14px; height: 14px; background: var(--yellow); border-radius: 3px; display: inline-block;"></span>
+          <span style="font-size: 0.85rem; color: var(--dark-gray);">Cached · billed at ~10%</span>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+          <span style="width: 14px; height: 14px; background: var(--pink); border-radius: 3px; display: inline-block;"></span>
+          <span style="font-size: 0.85rem; color: var(--dark-gray);">Fresh · billed at 100%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: the math + explanation -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="card highlight">
+        <h3>The math</h3>
+        <div class="kv-row"><span class="kv-key">Full prompt size</span><span class="kv-val">~59,080 tok</span></div>
+        <div class="kv-row"><span class="kv-key">Cached portion</span><span class="kv-val" style="color: var(--success);">59,000 tok</span></div>
+        <div class="kv-row"><span class="kv-key">Fresh portion</span><span class="kv-val" style="color: var(--pink);">80 tok</span></div>
+        <div class="kv-row"><span class="kv-key">You pay as if sending</span><span class="kv-val" style="color: var(--success);">~6,000 tok</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Why it works</h3>
+        <p>Claude hashes the <strong>prefix</strong> of your prompt. If the next turn's prefix matches a cached one, Claude reuses the computed state instead of re-processing from scratch.</p>
+        <p style="margin-top: 12px;">The cache is re-used if you send another turn within <strong>1 hour</strong>.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">KEY INSIGHT</div>
+        <p>The prefix has to match <strong>exactly</strong>. Change CLAUDE.md, add a tool, or edit an earlier turn → the whole cache from that point down is invalidated.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>10 / 22</span><span>Prompt anatomy</span></div>
+</section>
+
+<!-- ============ SLIDE 8 — CACHE DEMO ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">06 · Demo</div>
+  <h1 style="color: var(--white);">Cached vs uncached — same question</h1>
+
+  <div class="grid-2" style="gap: 32px; margin-top: 16px;">
+    <div class="vs-col bad" style="background: var(--charcoal);">
+      <div class="eyebrow" style="color: var(--yellow);">Cold · first turn</div>
+      <h3 style="color: var(--white); margin-top: 8px;">"Summarize this file"</h3>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Input billed</span><span class="kv-val" style="color: var(--white);">42,000 tok</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Latency</span><span class="kv-val" style="color: var(--white);">8.2s</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Cost</span><span class="kv-val" style="color: var(--pink);">$0.126</span></div>
+    </div>
+    <div class="vs-col good" style="background: rgba(255,185,42,0.08); border-top-color: var(--yellow);">
+      <div class="eyebrow" style="color: var(--yellow);">Warm · next turn</div>
+      <h3 style="color: var(--white); margin-top: 8px;">"Now summarize in bullets"</h3>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Input billed</span><span class="kv-val" style="color: var(--yellow);">4,200 tok</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Latency</span><span class="kv-val" style="color: var(--yellow);">2.1s</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Cost</span><span class="kv-val" style="color: var(--success);">$0.013</span></div>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 32px;">
+    <div class="rule-num">ANTI-PATTERNS</div>
+    <p><strong>Don't</strong> walk away for 10 minutes mid-session — you'll pay full price on return.<br>
+    <strong>Don't</strong> edit CLAUDE.md mid-session — it invalidates the whole cache for every subsequent turn.</p>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">11 / 22</span><span style="color: var(--gray);">Cache demo</span></div>
+</section>
+
+<!-- ============ SLIDE 8 — SUBSCRIPTION LIMITS ============ -->
+<section class="slide">
+  <div class="slide-number">07 · Your plan</div>
+  <h1>How your <span style="color: var(--pink);">subscription</span> actually meters you</h1>
+  <p class="subtitle">You're all on Pro or Max. The cost isn't dollars — it's two overlapping limits and a safety valve.</p>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="card highlight">
+      <div class="eyebrow">Limit 1</div>
+      <h3>5-hour rolling window</h3>
+      <p>Every message you send starts (or refreshes) a 5-hour window. Inside that window you get a bucket of usage — hit the cap and you're paused until the window rolls off.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">resets continuously · not on the hour</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Limit 2</div>
+      <h3>Weekly usage cap</h3>
+      <p>On top of the 5-hour windows, there's a <strong>rolling 7-day ceiling</strong>. It's the real budget — the 5-hour cap just prevents you from burning the week in an afternoon.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">higher on Max · much higher on Max 20x</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Safety valve</div>
+      <h3>Extra credits</h3>
+      <p>Hit a limit? You can top up with <strong>pay-as-you-go credits</strong> to keep going. But these are billed at API rates — <strong style="color: var(--pink);">noticeably more expensive per token</strong> than what your subscription gives you. A safety net, not a plan.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">enable in console · set a spend cap</p>
+    </div>
+  </div>
+
+  <div class="decision-box" style="margin-top: 16px; background: rgba(255, 185, 42, 0.12); border-left-color: var(--yellow);">
+    <h3 style="color: var(--charcoal); margin-bottom: 10px;">
+      <span style="color: var(--yellow); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.1em; display: block; margin-bottom: 6px;">TIP · SPREAD THE LOAD</span>
+      Use your windows — don't burn them
+    </h3>
+    <p>Back-to-back heavy sessions all morning → you hit the 5-hour cap by lunch and sit idle the rest of the day. Spread work across the day so each 5-hour window carries real output. A quick session after lunch keeps the window active without blocking you later.</p>
+  </div>
+
+  <div class="rule-card" style="margin-top: 16px;">
+    <div class="rule-num">WHY HYGIENE MATTERS</div>
+    <p>Every rule in this workshop — caching, skills, scripts, subagents — <strong>directly extends your 5-hour window and your week</strong>. Good hygiene = more work before the cap, and fewer forced top-ups at API rates.</p>
+  </div>
+  <div class="slide-footer"><span>12 / 22</span><span>Subscription limits</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — MODEL CHOICE ============ -->
+<section class="slide">
+  <div class="slide-number">07 · Model choice</div>
+  <h1>Pick the <span style="color: var(--pink);">right model</span> for the job</h1>
+  <p class="subtitle">Same task, three models → wildly different cost, speed, and quality. Default habits leave real money on the table.</p>
+
+  <div class="grid-3" style="gap: 20px;">
+    <div class="card">
+      <div class="eyebrow">Fast &amp; cheap</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Haiku 4.5</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Cost</span><span class="kv-val" style="color: var(--success);">1×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Speed</span><span class="kv-val" style="color: var(--success);">fastest</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Quality ceiling</span><span class="kv-val">good</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use for:</strong> simple edits, classification, boilerplate, short explanations, pre-filtering before a bigger model.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Balanced default</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Sonnet 4.6</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Cost</span><span class="kv-val" style="color: #ffb92a;">~3×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Speed</span><span class="kv-val">fast</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Quality ceiling</span><span class="kv-val" style="color: var(--success);">strong</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use for:</strong> most Claude Code work — refactors, debugging, multi-file changes, reviews, writing. The right default for 80% of sessions.</p>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Heavy reasoning</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Opus 4.6</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Cost</span><span class="kv-val" style="color: var(--pink);">~15×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Speed</span><span class="kv-val">slower</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Quality ceiling</span><span class="kv-val" style="color: var(--success);">highest</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use for:</strong> hard architecture decisions, tricky bugs, long analyses, anything where a bad answer costs more than the model does.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap: 24px; margin-top: 24px;">
+    <div class="card" style="background: var(--charcoal); color: var(--white); padding: 22px;">
+      <h3 style="color: var(--yellow);">Adjustable effort (extended thinking)</h3>
+      <p style="color: var(--light-blue); margin-top: 6px;">
+        Same model, different <strong>thinking budgets</strong>. Low effort = quick answer. High effort = the model spends more tokens reasoning internally before responding — better on complex problems, but slower and more expensive.
+      </p>
+      <p style="color: var(--gray); margin-top: 10px; font-size: 0.88rem;">
+        Treat it like a second dial alongside model choice: <strong style="color: var(--white);">Sonnet + high effort</strong> often beats <strong style="color: var(--white);">Opus + default</strong> at a fraction of the cost.
+      </p>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-num">PRACTICAL RULE</div>
+      <p>Start sessions on <strong>Sonnet</strong>. Drop to <strong>Haiku</strong> for grunt work. Escalate to <strong>Opus</strong> (or turn up effort) only when quality matters enough to pay 5–15× more. Switch models inside Claude Code with <code style="color: var(--yellow);">/model</code>.</p>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>NEW · Model choice</span><span>Cost multipliers are approximate, relative to Haiku</span></div>
+</section>
+
+<!-- ============ SLIDE 9 — SKILLS / SUBAGENTS / SCRIPTS / HOOKS ============ -->
+<section class="slide">
+  <div class="slide-number">08 · Tools to save tokens</div>
+  <h1>Four primitives. Each saves tokens differently.</h1>
+
+  <div class="grid-4" style="flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3>Reusable prompt</h3>
+      <p style="font-size: 0.92rem;">Loaded only when triggered. A 2-page instruction set doesn't sit in every session — it appears when needed.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">/review-pr 123</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Subagent</div>
+      <h3>Isolate big searches</h3>
+      <p style="font-size: 0.92rem;">Spawn a helper for a messy research task. It churns through 200k tokens; your main session only sees the summary.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">Agent(Explore)</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Script</div>
+      <h3>Deterministic work</h3>
+      <p style="font-size: 0.92rem;">LLM writes it once. Runs 1000× for $0. If you can express it as code, you shouldn't be paying tokens to redo it.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">python extract.py</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Hook</div>
+      <h3>Automation</h3>
+      <p style="font-size: 0.92rem;">Shell commands the harness runs on events. Zero tokens — ever. For repeated checks, tests, lint.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">PostToolUse → test</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 24px;">
+    <div class="rule-num">HEURISTIC</div>
+    <p>If you find yourself repeating a prompt → <strong>skill</strong>. Repeating an action → <strong>hook</strong>. Heavy search → <strong>subagent</strong>. Data crunching → <strong>script</strong>.</p>
+  </div>
+  <div class="slide-footer"><span>13 / 22</span><span>Primitives</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — PLAN FIRST ============ -->
+<section class="slide">
+  <div class="slide-number">08 · Plan first</div>
+  <h1>For complex tasks, <span style="color: var(--pink);">plan before you execute</span></h1>
+  <p class="subtitle">A wrong turn on a long task burns tokens, limit, and time. Make the agent explain its intent <em>before</em> it starts writing code.</p>
+
+  <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: 4-step flow -->
+    <div>
+      <div class="eyebrow">The plan-first workflow</div>
+
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px;">
+        <!-- Step 1 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">1</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Ask for a plan — not execution</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">"Don't change anything yet. Explain what you'd do, which files you'd touch, and why." Use plan mode (<code style="color: var(--pink);">shift+tab</code>) to lock it in.</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">2</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Review &amp; correct the plan</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">Push back. Catch wrong assumptions. Tighten scope. Iterate until the plan is <em>you</em>-approved — this is the cheapest moment to course-correct.</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">3</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Save the plan as a document</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">"Write this plan to <code>PLAN.md</code>." A durable artifact — outlives the session, reviewable by a teammate, re-usable if you retry.</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">4</div>
+          <div class="card" style="padding: 14px 18px; background: rgba(220,54,192,0.08); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">New session → execute from the plan</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">Fresh context. Feed in <code>PLAN.md</code> only. The model starts with a clean head and a focused brief — not dragging the whole brainstorm with it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: why + anti-pattern + rule -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card highlight">
+        <h3>Why this pays off</h3>
+        <p>Wrong turns on long tasks compound. By the time you notice, 40k tokens of bad direction are in the context — and fixing them means more turns, more tokens, and a more confused agent. A 5-minute plan review prevents an hour of cleanup.</p>
+      </div>
+
+      <div class="card" style="background: var(--charcoal); color: var(--white); padding: 22px; border-left: 4px solid #f97316;">
+        <div class="eyebrow" style="color: #f97316;">Anti-pattern</div>
+        <h3 style="color: var(--white); margin-top: 4px;">"Just do it" on a complex task</h3>
+        <p style="color: var(--light-blue); margin-top: 6px;">You type a one-liner. The agent runs for 20 minutes, edits 14 files, then you realize it misunderstood the requirement. Now the session is bloated, the diff is a mess, and you're paying to unwind it.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">RULE OF THUMB</div>
+        <p>If the task touches &gt; 3 files or takes &gt; 10 minutes to execute, <strong>plan first</strong>. The planning session itself is cheap — plan mode does no tool calls, no edits, no waste.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>NEW · Plan first</span><span>Plan mode → review → save → fresh session</span></div>
+</section>
+
+<!-- ============ SLIDE 10 — CAPSTONE INTRO ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">09 · Capstone</div>
+  <h1 style="color: var(--white); font-size: 3rem;">Long analysis, <span style="color: var(--pink);">done right</span></h1>
+
+  <p class="subtitle" style="color: var(--gray); max-width: 760px;">
+    A real scenario where tokens, context, and caching all matter at once — and where hygiene pays for itself immediately.
+  </p>
+
+  <div class="card dark" style="margin-top: 24px; background: var(--charcoal); border-left: 4px solid var(--pink); padding: 32px;">
+    <div class="eyebrow" style="color: var(--yellow);">Scenario</div>
+    <h3 style="color: var(--white); font-size: 1.4rem; margin-top: 8px;">
+      "Analyze 18 months of customer support tickets. Find the top churn drivers and propose product fixes."
+    </h3>
+    <p style="color: var(--gray); margin-top: 16px;">~12,000 tickets · mixed structured + free-text · deliverable is a proposal for product leadership.</p>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">14 / 22</span><span style="color: var(--gray);">Capstone setup</span></div>
+</section>
+
+<!-- ============ SLIDE 11 — NAIVE VS STRUCTURED ============ -->
+<section class="slide">
+  <div class="slide-number">10 · Capstone · the fork in the road</div>
+  <h1>Two ways to run this</h1>
+
+  <div class="vs-split" style="flex: 1;">
+    <div class="vs-col bad">
+      <div class="eyebrow" style="color: var(--yellow);">Naïve</div>
+      <h3 style="font-size: 1.2rem;">One long session</h3>
+      <ul>
+        <li>Dump all 12k tickets into context</li>
+        <li>Ask model to "analyze everything"</li>
+        <li>Keep asking follow-ups for 4 hours</li>
+        <li>Context collapses around turn 30</li>
+        <li>Re-paste data, lose consistency</li>
+      </ul>
+      <div class="kv-row" style="margin-top: 20px;"><span class="kv-key">Estimated cost</span><span class="kv-val" style="color: var(--pink);">~$18</span></div>
+      <div class="kv-row"><span class="kv-key">Quality</span><span class="kv-val" style="color: var(--pink);">Degrading</span></div>
+      <div class="kv-row"><span class="kv-key">Reusable?</span><span class="kv-val" style="color: var(--pink);">No</span></div>
+    </div>
+
+    <div class="vs-mid">vs</div>
+
+    <div class="vs-col good">
+      <div class="eyebrow">Structured</div>
+      <h3 style="font-size: 1.2rem;">Four short sessions, artifacts between</h3>
+      <ul>
+        <li>Plan first, without loading data</li>
+        <li>Script does the heavy extraction</li>
+        <li>Subagents do the deep reads</li>
+        <li>Final session stays tiny and sharp</li>
+        <li>Skills + script are reusable next quarter</li>
+      </ul>
+      <div class="kv-row" style="margin-top: 20px;"><span class="kv-key">Estimated cost</span><span class="kv-val" style="color: var(--success);">~$3</span></div>
+      <div class="kv-row"><span class="kv-key">Quality</span><span class="kv-val" style="color: var(--success);">Sharper</span></div>
+      <div class="kv-row"><span class="kv-key">Reusable?</span><span class="kv-val" style="color: var(--success);">Yes</span></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>15 / 22</span><span>Naïve vs structured</span></div>
+</section>
+
+<!-- ============ SLIDE 12 — THE FOUR SESSIONS ============ -->
+<section class="slide">
+  <div class="slide-number">11 · Capstone · the breakdown</div>
+  <h1>Four sessions, four artifacts</h1>
+  <p class="subtitle">Each session ends with a file the next can read in under 5k tokens.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 6%;">#</th>
+        <th style="width: 20%;">Session</th>
+        <th>What happens inside</th>
+        <th style="width: 22%;">Artifact produced</th>
+        <th style="width: 18%;">Why split</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color: var(--pink);">1</strong></td>
+        <td><strong>Plan</strong><br><span class="badge badge-muted">Plan mode only</span></td>
+        <td>Define the questions. Describe the data shape. Agree on deliverables. No data loaded.</td>
+        <td><code>analysis/PLAN.md</code></td>
+        <td>Cheap. Human review before spending real tokens.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">2</strong></td>
+        <td><strong>Extract</strong><br><span class="badge badge-accent">Write a script</span></td>
+        <td>LLM writes <code>extract_tickets.py</code>. Cleans, categorizes, aggregates. Run it deterministically.</td>
+        <td><code>data/tickets.parquet</code><br><code>scripts/extract_tickets.py</code></td>
+        <td>Script runs 100× for $0. LLM writes it once.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">3</strong></td>
+        <td><strong>Analyze</strong><br><span class="badge badge-accent">Subagents</span></td>
+        <td>Load <strong>summary stats only</strong>. Identify patterns. Spawn Explore subagents for category-specific deep-dives.</td>
+        <td><code>analysis/FINDINGS.md</code></td>
+        <td>Subagents keep 50k-token ticket samples out of your main context.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">4</strong></td>
+        <td><strong>Synthesize</strong><br><span class="badge badge-muted">Fresh session</span></td>
+        <td>Reads only <code>PLAN.md</code> + <code>FINDINGS.md</code>. Writes the final proposal for leadership.</td>
+        <td><code>analysis/PROPOSAL.md</code></td>
+        <td>Clean context = sharper writing. No exploration noise.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>16 / 22</span><span>Session breakdown</span></div>
+</section>
+
+<!-- ============ SLIDE 13 — REUSABLE ARTIFACTS ============ -->
+<section class="slide">
+  <div class="slide-number">12 · Capstone · the compounding effect</div>
+  <h1>What gets <span style="color: var(--pink);">reused next quarter</span></h1>
+  <p class="subtitle">The second time you run this analysis, most of it is free.</p>
+
+  <div class="grid-3" style="flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3><code>/ticket-extract</code></h3>
+      <p>Packaged from session 2. Point it at a new date range → script runs, parquet appears.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">~200 tokens to invoke</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3><code>/churn-analyze</code></h3>
+      <p>Loads only the parquet summary, never raw ticket text. Re-runs the analytical framing from session 3.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">~3k tokens to invoke</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Hook</div>
+      <h3>Auto-extract on drop</h3>
+      <p>New CSV lands in <code>data/raw/</code> → hook runs the extract script. Zero tokens. No one had to think about it.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">0 tokens</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 24px;">
+    <div class="rule-num">THE POINT</div>
+    <p>The structured run isn't just cheaper — it builds <strong>leverage</strong>. Next quarter's analysis is 20 minutes, not two hours.</p>
+  </div>
+  <div class="slide-footer"><span>17 / 22</span><span>Reusable artifacts</span></div>
+</section>
+
+<!-- ============ SLIDE 14 — LIVE DEMO ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">13 · Live demo</div>
+  <h1 style="color: var(--white);">Watch this happen</h1>
+  <p class="subtitle" style="color: var(--gray);">The only live demo of the workshop — because the capstone carries everything else.</p>
+
+  <div class="grid-2" style="gap: 32px; margin-top: 16px;">
+    <div class="card dark" style="background: var(--charcoal);">
+      <div class="eyebrow" style="color: var(--yellow);">What you'll see</div>
+      <ul>
+        <li>Naïve approach hitting compaction at ~70% — visible quality drop</li>
+        <li>Session 3 spawning a subagent: main context stays ~15k while the helper processes 200k</li>
+        <li>Session 4 starting fresh, reading 2 markdown files, finishing in under 20k tokens</li>
+        <li>Final cost bar: <strong style="color: var(--pink);">$18 naïve</strong> vs <strong style="color: var(--success);">$3 structured</strong></li>
+      </ul>
+    </div>
+    <div class="card dark" style="background: var(--charcoal);">
+      <div class="eyebrow" style="color: var(--yellow);">What to watch for</div>
+      <ul>
+        <li>The moment the subagent returns — main context barely moves</li>
+        <li>How small the final synthesis session is</li>
+        <li>How boring session 2 is — that's the point</li>
+        <li><code>/cost</code> before and after</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">18 / 22</span><span style="color: var(--gray);">Live demo</span></div>
+</section>
+
+<!-- ============ SLIDE 15 — TAKEAWAY RULES ============ -->
+<section class="slide">
+  <div class="slide-number">14 · Takeaways</div>
+  <h1>Four rules to leave with</h1>
+  <p class="subtitle">If you remember nothing else, remember these.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="rule-card">
+      <div class="rule-num">RULE 01</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">If raw data &gt; your answer, write a script first</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">The LLM shouldn't crunch what Python can. Pay once to generate the script, reuse forever.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">RULE 02</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Every session ends with an artifact</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">The next session should read it in under 5k tokens. If your handoff needs the full transcript, you didn't finish the session.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">RULE 03</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Subagents for search, main context for synthesis</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">Don't pollute the main thread with exploration. Send the messy work out; keep your context clean for the thinking.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">RULE 04</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Plan mode is free — use it first</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">Before any session touching &gt;10 files, plan. Alignment upfront costs nothing and saves hours of wrong-direction work.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>19 / 22</span><span>Takeaway rules</span></div>
+</section>
+
+<!-- ============ SLIDE 16 — CHEAT SHEET ============ -->
+<section class="slide">
+  <div class="slide-number">15 · Cheat sheet</div>
+  <h1>Commands you'll actually use</h1>
+
+  <div class="grid-2" style="gap: 32px;">
+    <div>
+      <h3 style="color: var(--pink);">Session control</h3>
+      <table style="margin-top: 12px;">
+        <tbody>
+          <tr><td><code>/clear</code></td><td>Wipe context, keep session</td></tr>
+          <tr><td><code>/compact</code></td><td>Summarize history</td></tr>
+          <tr><td><code>/cost</code></td><td>Current spend &amp; token count</td></tr>
+          <tr><td><code>/status</code></td><td>Plan &amp; usage limits</td></tr>
+          <tr><td><code>plan mode</code></td><td>Design before touching code</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="color: var(--pink);">Cache hygiene</h3>
+      <ul style="margin-top: 4px;">
+        <li>Don't idle &gt; 1 hour mid-task</li>
+        <li>Don't edit CLAUDE.md mid-session</li>
+        <li>One task = one session</li>
+        <li>Close sessions you're done with</li>
+      </ul>
+      <h3 style="color: var(--pink); margin-top: 24px;">Red flags</h3>
+      <ul style="margin-top: 4px;">
+        <li>Model asking for things you already gave</li>
+        <li>Hallucinated file paths</li>
+        <li>Responses getting slower over time</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>20 / 22</span><span>Cheat sheet</span></div>
+</section>
+
+<!-- ============ SLIDE 17 — Q&A ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">16 · Q&amp;A</div>
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <div class="big-number" style="color: var(--yellow);">15:00</div>
+    <h1 style="color: var(--white); font-size: 3rem; margin-top: 16px;">Bring your own session</h1>
+    <p class="subtitle" style="color: var(--gray); max-width: 720px;">
+      Open a recent Claude Code session. Run <code style="color: var(--yellow);">/cost</code>. We'll audit it together and find the leaks.
+    </p>
+    <div class="grid-3" style="margin-top: 32px; max-width: 900px;">
+      <div class="card dark" style="background: var(--charcoal);">
+        <h3 style="color: var(--yellow);">What worked</h3>
+        <p style="color: var(--light-blue);">Patterns worth keeping</p>
+      </div>
+      <div class="card dark" style="background: var(--charcoal);">
+        <h3 style="color: var(--yellow);">What leaked</h3>
+        <p style="color: var(--light-blue);">Wasted tokens, lost context</p>
+      </div>
+      <div class="card dark" style="background: var(--charcoal);">
+        <h3 style="color: var(--yellow);">What to automate</h3>
+        <p style="color: var(--light-blue);">Skill? Script? Hook?</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">21 / 22</span><span style="color: var(--gray);">Open floor</span></div>
+</section>
+
+<!-- ============ SLIDE 18 — END ============ -->
+<section class="slide">
+  <div class="slide-number">17 · Thank you</div>
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <h1 style="font-size: 3.5rem;">Use tokens like<br><span style="color: var(--pink);">they're your own money.</span></h1>
+    <p class="subtitle" style="max-width: 640px;">
+      Because if you're on the API — they are. And if you're on a plan, good hygiene still means you finish more work before the limit.
+    </p>
+
+    <div class="decision-box" style="margin-top: 24px; max-width: 720px;">
+      <h3 style="color: var(--pink); margin-bottom: 8px;">Before next week</h3>
+      <ul>
+        <li>Run <code>/cost</code> after every session for a week — get a feel for the numbers</li>
+        <li>Pick one repeated prompt → turn it into a skill</li>
+        <li>Pick one long session you regret → plan how you'd split it next time</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="cienty-logo" style="font-size: 1.2rem;">ci<span>en</span>ty</span>
+    <span>22 / 22 · Covalenty AI Strategy</span>
+  </div>
+</section>
+
+</body>
+</html>
