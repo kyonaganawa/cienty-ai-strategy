@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop — Uso de Tokens e Eficiência em LLMs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --gray: #bbbdc7;
+      --pink: #dc36c0;
+      --yellow: #ffb92a;
+      --light-blue: #eeeff1;
+      --dark-gray: #6d7079;
+      --charcoal: #2f2f32;
+
+      --bg: var(--white);
+      --card: var(--light-blue);
+      --border: var(--gray);
+      --text: var(--black);
+      --muted: var(--dark-gray);
+      --accent: var(--pink);
+      --accent2: var(--yellow);
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .slide {
+      min-height: 100vh;
+      padding: 60px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+    }
+
+    .slide.dark {
+      background: var(--black);
+      color: var(--white);
+    }
+    .slide.dark h1, .slide.dark h3 { color: var(--white); }
+    .slide.dark .subtitle { color: var(--gray); }
+
+    .slide-number {
+      font-size: 0.7rem;
+      color: var(--pink);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      line-height: 1.15;
+      color: var(--black);
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: var(--pink);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--charcoal);
+    }
+
+    .subtitle {
+      font-size: 1.35rem;
+      color: var(--dark-gray);
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; flex: 1; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+    .card {
+      background: var(--light-blue);
+      border-radius: 8px;
+      padding: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .card.highlight {
+      border-left-color: var(--pink);
+      background: linear-gradient(135deg, rgba(220, 54, 192, 0.08) 0%, var(--light-blue) 50%);
+    }
+
+    .card.dark {
+      background: var(--charcoal);
+      color: var(--white);
+    }
+    .card.dark h3 { color: var(--yellow); }
+
+    .stat-card {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--black);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--black);
+      color: var(--white);
+      font-weight: 500;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray);
+      vertical-align: top;
+    }
+
+    tr:hover td { background: var(--light-blue); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-success { background: var(--black); color: var(--yellow); }
+    .badge-warning { background: var(--yellow); color: var(--black); }
+    .badge-accent  { background: var(--pink); color: var(--white); }
+    .badge-muted   { background: var(--gray); color: var(--black); }
+
+    ul { list-style: none; padding-left: 0; }
+    ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      color: var(--charcoal);
+    }
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .slide.dark ul li { color: var(--light-blue); }
+
+    code, .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+    }
+
+    .code-block {
+      background: var(--black);
+      color: var(--light-blue);
+      padding: 18px 22px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      border-left: 3px solid var(--pink);
+    }
+    .code-block .hl { color: var(--yellow); }
+    .code-block .dim { color: var(--dark-gray); }
+
+    .big-number {
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--pink);
+      line-height: 1;
+    }
+
+    .decision-box {
+      background: var(--light-blue);
+      border-left: 4px solid var(--pink);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 24px 0;
+    }
+
+    .vs-split {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 16px;
+    }
+    .vs-split .vs-mid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--gray);
+      font-size: 1.25rem;
+    }
+    .vs-col {
+      padding: 24px;
+      border-radius: 8px;
+      background: var(--light-blue);
+    }
+    .vs-col.bad  { border-top: 4px solid var(--yellow); }
+    .vs-col.good { border-top: 4px solid var(--pink); background: rgba(220, 54, 192, 0.06); }
+
+    .agenda-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--light-blue);
+    }
+    .agenda-item:last-child { border-bottom: none; }
+    .agenda-time {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--pink);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .agenda-title { font-weight: 500; flex: 1; padding-left: 20px; }
+
+    .cienty-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .cienty-logo span { color: var(--pink); }
+
+    .slide-footer {
+      margin-top: auto;
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray);
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-key { color: var(--dark-gray); font-size: 0.9rem; }
+    .kv-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+    .rule-card {
+      background: var(--black);
+      color: var(--white);
+      border-radius: 8px;
+      padding: 20px 24px;
+      border-left: 4px solid var(--yellow);
+    }
+    .rule-card .rule-num {
+      color: var(--yellow);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    @media print {
+      .slide {
+        page-break-after: always;
+        min-height: auto;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 — COVER ============ -->
+<section class="slide dark">
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <div class="cienty-logo" style="color: var(--white); margin-bottom: 60px;">ci<span>en</span>ty</div>
+    <div class="eyebrow" style="color: var(--yellow);">Workshop · 60 min</div>
+    <h1 style="color: var(--white); font-size: 3.5rem;">Uso de Tokens em LLMs<br><span style="color: var(--pink);">& Eficiência</span></h1>
+    <p class="subtitle" style="color: var(--gray); max-width: 720px;">
+      Como tokens funcionam, onde eles vazam, e como extrair mais do Claude Code — para todos, técnicos ou não.
+    </p>
+  </div>
+  <div class="slide-footer">
+    <span>Covalenty · AI Strategy</span>
+    <span>45 min de conteúdo · 15 min de perguntas</span>
+  </div>
+</section>
+
+<!-- ============ NEW SLIDE — LEVEL SET / CAVEATS ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Antes de começar</div>
+  <h1>Uma rápida <span style="color: var(--pink);">verificação de nível</span></h1>
+  <p class="subtitle">Quatro coisas para saber para que a próxima hora faça sentido.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Nível 01</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">Este conteúdo é intermediário</h3>
+      <p>Pressupõe que você já usou Claude Code ou um LLM de chat antes e tem alguma intuição sobre o que é um "prompt". Nunca usou? Algumas partes vão avançar rápido — me procure depois.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Nível 02</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">Alguns conceitos são abstratos</h3>
+      <p>Tokens, atenção, caching, context windows. Parecem teóricos até que de repente explicam tudo com o que você vinha lutando. Passe pela abstração — os modelos mentais são o ponto central.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Nível 03</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">As explicações são aproximadas</h3>
+      <p>Vou simplificar onde a simplificação não muda suas decisões. Isso não é um paper de pesquisa — é um guia prático. Próximo o suficiente para ser <em>útil</em> é o critério.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Nível 04</div>
+      <h3 style="font-size: 1.2rem; margin-top: 6px;">O campo está evoluindo rápido</h3>
+      <p>Números específicos, comandos e limites podem mudar em meses. Os <strong>princípios de alto nível</strong> — modelos stateless, custo de contexto, caching, higiene — devem continuar úteis por muito mais tempo. Revise os detalhes periodicamente.</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 20px;">
+    <div class="rule-num">UM PEDIDO</div>
+    <p>Se algo não estiver claro, <strong>interrompa</strong>. Metade do valor está nas perguntas paralelas — e se uma pessoa está confusa, geralmente três outras também estão.</p>
+  </div>
+
+  <div class="slide-footer"><span>1 / 26</span><span>Definir expectativas antes de começar</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — OBJECTIVES ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Por que estamos aqui</div>
+  <h1>O que você vai levar daqui</h1>
+  <p class="subtitle">Quatro resultados. Se ao final desta hora qualquer um deles fizer sentido, o workshop cumpriu seu papel.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Resultado 01</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Melhorar a qualidade das respostas do LLM</h3>
+      <p>Entender por que sessões longas se degradam e como manter o contexto enxuto para manter as respostas precisas.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Resultado 02</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Fazer mais com sua assinatura</h3>
+      <p>Extrair mais trabalho de cada janela de 5 horas e de cada semana — sem pagar por créditos extras.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Resultado 03</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Economizar nos custos de LLM</h3>
+      <p>Usar caching, skills, scripts e subagents para reduzir o custo de tokens do mesmo trabalho em 5–10×.</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Resultado 04</div>
+      <h3 style="font-size: 1.25rem; margin-top: 6px;">Entender como LLMs realmente funcionam</h3>
+      <p>Ter o modelo mental — tokens, contexto, caching, statelessness — para tomar boas decisões por conta própria.</p>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>2 / 26</span><span>Definir as apostas</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — SITUATIONS ============ -->
+<section class="slide">
+  <div class="slide-number">00 · Já aconteceu com você?</div>
+  <h1>Dois momentos que você <span style="color: var(--pink);">provavelmente</span> já viveu</h1>
+  <p class="subtitle">Se algum desses já aconteceu com você, o restante da hora vai ser útil.</p>
+
+  <div class="grid-2" style="gap: 32px; flex: 1;">
+    <!-- Situation 1 -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card" style="padding: 28px; background: var(--light-blue); border-left: 4px solid var(--pink);">
+        <div class="eyebrow">Situação 01</div>
+        <h3 style="font-size: 1.15rem; margin-top: 6px; margin-bottom: 12px; line-height: 1.35;">"Ele sabia disso 20 minutos atrás."</h3>
+        <p style="font-size: 0.95rem; color: var(--charcoal); line-height: 1.55;">
+          Você pediu ao agente para fazer uma tarefa e ele acertou em cheio. Uma hora depois na mesma sessão, você faz um follow-up — e parece que ele <em>esqueceu</em> informações que você já tinha dado. Ele pede novamente caminhos de arquivos, contradiz decisões anteriores ou ignora uma restrição que você definiu no início.
+        </p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">O QUE ESTÁ ACONTECENDO</div>
+        <p style="color: var(--light-blue);">O modelo não "esqueceu" — o contexto ficou grande demais, e sua instrução virou uma agulha num palheiro muito maior. Vamos cobrir isso em <strong style="color: var(--yellow);">degradação de contexto</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Situation 2 -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card" style="padding: 28px; background: var(--light-blue); border-left: 4px solid var(--pink);">
+        <div class="eyebrow">Situação 02</div>
+        <h3 style="font-size: 1.15rem; margin-top: 6px; margin-bottom: 12px; line-height: 1.35;">"Aquele prompt consumiu 20% do meu dia."</h3>
+        <p style="font-size: 0.95rem; color: var(--charcoal); line-height: 1.55;">
+          Você estava codando produtivamente em uma sessão a manhã toda. Saiu para almoçar. Quando voltou e enviou <em>um</em> prompt de follow-up, ele consumiu uma fatia enorme do seu limite semanal de uma vez.
+        </p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">O QUE ESTÁ ACONTECENDO</div>
+        <p style="color: var(--light-blue);">Você reenvou um histórico de 150k tokens depois que o cache expirou. Sem caching, cada mensagem anterior é cobrada pelo preço cheio. Vamos cobrir isso em <strong style="color: var(--yellow);">prompt caching</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>3 / 26</span><span>Dor reconhecível → tópicos do workshop</span></div>
+</section>
+
+<!-- ============ SLIDE 2 — AGENDA ============ -->
+<section class="slide">
+  <div class="slide-number">01 · Agenda</div>
+  <h1>O que vamos cobrir</h1>
+  <div class="grid-2" style="gap: 48px;">
+    <div>
+      <div class="agenda-item"><span class="agenda-time">00:00</span><span class="agenda-title">Por que tokens importam</span><span class="badge badge-muted">5 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:05</span><span class="agenda-title">Context windows</span><span class="badge badge-muted">5 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:10</span><span class="agenda-title">Prompt caching — a maior alavanca</span><span class="badge badge-accent">7 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:17</span><span class="agenda-title">Assinatura vs API</span><span class="badge badge-muted">3 min</span></div>
+    </div>
+    <div>
+      <div class="agenda-item"><span class="agenda-time">00:20</span><span class="agenda-title">Skills, subagents, scripts, hooks</span><span class="badge badge-muted">8 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:28</span><span class="agenda-title">Capstone — análise longa, do jeito certo</span><span class="badge badge-accent">15 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:43</span><span class="agenda-title">Conclusão &amp; aprendizados</span><span class="badge badge-muted">2 min</span></div>
+      <div class="agenda-item"><span class="agenda-time">00:45</span><span class="agenda-title">Perguntas</span><span class="badge badge-warning">15 min</span></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>4 / 26</span><span>Agenda</span></div>
+</section>
+
+<!-- ============ SLIDE 3 — WHY TOKENS MATTER ============ -->
+<section class="slide">
+  <div class="slide-number">02 · Fundamentos</div>
+  <h1>Por que tokens importam</h1>
+  <p class="subtitle">Um token ≈ ¾ de uma palavra em inglês, mas mais próximo de um caractere em código ou JSON.</p>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value">~4</div>
+      <div class="stat-label">Caracteres por token (inglês)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">~2</div>
+      <div class="stat-label">Caracteres por token (código / JSON)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5×</div>
+      <div class="stat-label">Custo de output vs input</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap: 24px;">
+    <div>
+      <h3 style="color: var(--pink);">Preços por modelo · USD por 1M tokens</h3>
+      <table style="margin-top: 12px; width: 100%;">
+        <thead>
+          <tr>
+            <th style="text-align: left;">Modelo</th>
+            <th style="text-align: right;">Input</th>
+            <th style="text-align: right;">Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Claude Opus 4.x</strong></td><td style="text-align: right;">$15</td><td style="text-align: right;">$75</td></tr>
+          <tr><td><strong>Claude Sonnet 4.x</strong></td><td style="text-align: right;">$3</td><td style="text-align: right;">$15</td></tr>
+          <tr><td><strong>Claude Haiku 4.5</strong></td><td style="text-align: right;">$1</td><td style="text-align: right;">$5</td></tr>
+          <tr><td><strong>GPT-5</strong></td><td style="text-align: right;">$1,25</td><td style="text-align: right;">$10</td></tr>
+          <tr><td><strong>Gemini 2.5 Pro</strong></td><td style="text-align: right;">$1,25</td><td style="text-align: right;">$10</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size: 0.8rem; color: var(--dark-gray); margin-top: 8px;">Output custa ~5× mais que input — respostas longas são o que pesa na conta.</p>
+    </div>
+    <div class="card">
+      <h3>Exemplo prático</h3>
+      <p>Sessão de 1h com Sonnet 4.x: ~500k tokens de input acumulado + 50k de output.</p>
+      <ul style="margin-top: 8px;">
+        <li><strong>Input:</strong> 500k × $3/M = <strong style="color: var(--pink);">$1,50</strong></li>
+        <li><strong>Output:</strong> 50k × $15/M = <strong style="color: var(--pink);">$0,75</strong></li>
+        <li><strong>Total:</strong> ~$2,25 — sem cache</li>
+      </ul>
+      <p style="margin-top: 12px;">Toda mensagem re-cobra todo o contexto anterior. Uma sessão de 2h não é "uma mensagem" — é o transcript completo, a cada turno.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>5 / 26</span><span>Fundamentos</span></div>
+</section>
+
+<!-- ============ SLIDE 4 — LLMs ARE STATELESS (INTERACTIVE) ============ -->
+<section class="slide">
+  <div class="slide-number">02 · Fundamentos</div>
+  <h1>LLMs não lembram — <span style="color: var(--pink);">você lembra</span></h1>
+  <p class="subtitle">A cada turno, seu cliente reenvia todo o histórico da conversa. O modelo em si é stateless. Clique em <strong>Próximo turno</strong> para ver uma requisição real crescendo.</p>
+
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; flex: 1;">
+    <!-- LEFT: interactive turn-by-turn diagram -->
+    <div style="display: flex; flex-direction: column;">
+      <div class="eyebrow">O que realmente trafega pela rede</div>
+
+      <div id="sl-turns" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 360px;">
+        <!-- turns injected here -->
+      </div>
+
+      <!-- Legend + controls -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 20px; font-size: 0.82rem;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; background: var(--pink); border-radius: 2px; display: inline-block;"></span>
+            <span style="color: var(--dark-gray);">novo neste turno</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; background: var(--gray); border-radius: 2px; display: inline-block;"></span>
+            <span style="color: var(--dark-gray);">replicado de turnos anteriores</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="sl-next" style="padding: 12px 22px; background: var(--pink); color: var(--white); border: none; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: inherit;">
+            ▶ Próximo turno
+          </button>
+          <button id="sl-reset" style="padding: 12px 16px; background: var(--white); color: var(--charcoal); border: 2px solid var(--gray); border-radius: 8px; font-size: 0.88rem; font-weight: 500; cursor: pointer; font-family: inherit;">
+            ↺ Reiniciar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: running totals + insight -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="grid-2" style="gap: 12px;">
+        <div class="stat-card" style="padding: 18px 12px;">
+          <div id="sl-this-turn" class="stat-value" style="font-size: 2.1rem;">—</div>
+          <div class="stat-label">Neste turno · tokens enviados</div>
+        </div>
+        <div class="stat-card" style="padding: 18px 12px;">
+          <div id="sl-total" class="stat-value" style="font-size: 2.1rem; color: var(--pink);">0</div>
+          <div class="stat-label">Sessão · tokens enviados acumulados</div>
+        </div>
+      </div>
+
+      <div id="sl-commentary" class="card highlight">
+        <h3>A conversa é uma ilusão</h3>
+        <p>Claude Code mantém o histórico na sua máquina. A cada turno, ele monta tudo junto e envia uma nova chamada de API. O modelo vê o transcript inteiro do zero cada vez — ele não tem memória entre chamadas.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">IDEIA CENTRAL</div>
+        <p>Toda regra mais adiante neste workshop deriva desse único fato: se o cliente precisa reenviar tudo a cada turno, históricos mais curtos custam menos. É exatamente isso que caching, skills, scripts e higiene fazem.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>6 / 26</span><span>Modelo stateless</span></div>
+</section>
+
+<script>
+(function() {
+  // Per-message token sizes (approximate)
+  // msg = user message · reply = assistant response
+  const messages = [
+    { label: "msg₁",   tokens: 120 },
+    { label: "reply₁", tokens: 420 },
+    { label: "msg₂",   tokens: 90  },
+    { label: "reply₂", tokens: 680 },
+    { label: "msg₃",   tokens: 110 },
+    { label: "reply₃", tokens: 540 },
+    { label: "msg₄",   tokens: 140 },
+    { label: "reply₄", tokens: 820 },
+    { label: "msg₅",   tokens: 100 },
+    { label: "reply₅", tokens: 610 },
+    { label: "msg₆",   tokens: 130 }
+  ];
+  // Turn N sends: previous replies + messages + new user msg
+  // Structure: turn i sends messages[0..(2i-2)] (inclusive)
+  const MAX_TURNS = 6;
+
+  const container = document.getElementById('sl-turns');
+  const nextBtn   = document.getElementById('sl-next');
+  const resetBtn  = document.getElementById('sl-reset');
+  const thisTurn  = document.getElementById('sl-this-turn');
+  const totalEl   = document.getElementById('sl-total');
+
+  let turnCount = 0;
+  let cumulative = 0;
+
+  function fmt(n) {
+    return n >= 1000 ? (n/1000).toFixed(2) + 'k' : n.toString();
+  }
+
+  function renderTurn(n) {
+    // Turn n sends items messages[0..(2n-2)]
+    const endIdx = 2 * n - 1; // exclusive
+    const items = messages.slice(0, endIdx);
+    const tokensThisTurn = items.reduce((s, m) => s + m.tokens, 0);
+    cumulative += tokensThisTurn;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'padding: 12px 16px; background: var(--light-blue); border-radius: 6px; border-left: 3px solid var(--pink); opacity: 0; transform: translateY(-6px); transition: opacity 0.3s ease, transform 0.3s ease;';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
+    header.innerHTML =
+      `<span class="mono" style="font-size: 0.7rem; color: var(--pink); letter-spacing: 0.08em;">TURNO ${n} · REQUISIÇÃO</span>` +
+      `<span class="mono" style="font-size: 0.78rem; color: var(--charcoal); font-weight: 600;">${fmt(tokensThisTurn)} tok</span>`;
+    row.appendChild(header);
+
+    const chips = document.createElement('div');
+    chips.style.cssText = 'display: flex; gap: 5px; flex-wrap: wrap;';
+    items.forEach((m, i) => {
+      const isNew = i === endIdx - 1;
+      const chip = document.createElement('span');
+      chip.textContent = m.label;
+      chip.style.cssText = `padding: 3px 9px; border-radius: 3px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; ` +
+        (isNew
+          ? 'background: rgba(220,54,192,0.18); color: var(--pink); font-weight: 600;'
+          : 'background: var(--gray); color: var(--charcoal);');
+      chips.appendChild(chip);
+    });
+    row.appendChild(chips);
+    container.appendChild(row);
+    requestAnimationFrame(() => {
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+    });
+
+    thisTurn.textContent = fmt(tokensThisTurn);
+    totalEl.textContent = fmt(cumulative);
+  }
+
+  function advance() {
+    if (turnCount >= MAX_TURNS) {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— e assim por diante —';
+      return;
+    }
+    turnCount++;
+    renderTurn(turnCount);
+    if (turnCount >= MAX_TURNS) {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— e assim por diante —';
+    }
+  }
+
+  function reset() {
+    turnCount = 0;
+    cumulative = 0;
+    container.innerHTML = '';
+    thisTurn.textContent = '—';
+    totalEl.textContent = '0';
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    nextBtn.textContent = '▶ Próximo turno';
+  }
+
+  nextBtn.addEventListener('click', advance);
+  resetBtn.addEventListener('click', reset);
+})();
+</script>
+
+<!-- ============ SLIDE 5 — YOU PAY FOR EVERY TOKEN, EVERY TURN ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">02 · Fundamentos</div>
+  <h1 style="color: var(--white);">Você paga por <span style="color: var(--pink);">cada token</span>, <span style="color: var(--pink);">a cada turno</span></h1>
+  <p class="subtitle" style="color: var(--gray);">Seja uso via API ou assinatura — o contador corre no que você envia <em>e</em> no que volta. Incluindo todo o histórico que você acabou de replicar.</p>
+
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: cumulative bar chart -->
+    <div>
+      <div class="eyebrow" style="color: var(--yellow);">Tokens cobrados acumulados em uma sessão de 10 turnos</div>
+
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 1</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 6%; height: 100%; background: var(--success); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">0.5k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 2</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 14%; height: 100%; background: var(--success); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">1.2k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 3</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 24%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">2.1k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 4</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 36%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">3.2k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 5</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 48%; height: 100%; background: #ffb92a; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">4.4k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 6</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 60%; height: 100%; background: #f97316; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">5.6k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 7</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 72%; height: 100%; background: #f97316; border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">6.9k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 8</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 82%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">8.3k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--gray); font-size: 0.78rem;">turno 9</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 92%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--white); font-size: 0.82rem; text-align: right;">9.8k</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 56px 1fr 90px; gap: 10px; align-items: center;">
+          <span class="mono" style="color: var(--white); font-size: 0.78rem; font-weight: 600;">turno 10</span>
+          <div style="height: 20px; background: var(--charcoal); border-radius: 3px;">
+            <div style="width: 100%; height: 100%; background: var(--pink); border-radius: 3px;"></div>
+          </div>
+          <span class="mono" style="color: var(--yellow); font-size: 0.82rem; text-align: right; font-weight: 600;">11.4k</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--charcoal); display: flex; justify-content: space-between; align-items: center;">
+        <span class="mono" style="color: var(--gray); font-size: 0.78rem; letter-spacing: 0.06em;">TOTAL COBRADO NA SESSÃO</span>
+        <span class="mono" style="color: var(--yellow); font-size: 1.6rem; font-weight: 700;">53.4k tokens</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: explainer -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card dark" style="background: var(--charcoal); padding: 22px;">
+        <h3 style="color: var(--yellow);">A nota fiscal não lista "conteúdo novo"</h3>
+        <p style="color: var(--light-blue); margin-top: 6px;">Ela lista <strong style="color: var(--white);">cada token em cada requisição</strong>, mais <strong style="color: var(--white);">cada token em cada resposta</strong>. Sua pergunta de 10 palavras no turno 10 vem com uma nota fiscal de ~11k tokens — porque foi exatamente isso que foi processado.</p>
+      </div>
+
+      <div class="card dark" style="background: var(--charcoal); padding: 22px;">
+        <h3 style="color: var(--yellow);">Input vs output</h3>
+        <ul style="margin-top: 4px;">
+          <li><strong style="color: var(--white);">Input</strong> — o que você envia (prompt + histórico completo + resultados de ferramentas)</li>
+          <li><strong style="color: var(--white);">Output</strong> — o que Claude gera de volta</li>
+          <li>Output é ~5× mais caro por token — mas o volume de input é muito maior, então input geralmente domina a conta</li>
+        </ul>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">USUÁRIOS DE ASSINATURA</div>
+        <p style="color: var(--light-blue);">Você não vê uma conta em dólares — mas a janela de 5 horas e o limite semanal do seu plano são ambos medidos em tokens. Cada byte reenviado consome igual.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span style="color: var(--gray);">7 / 26</span><span style="color: var(--gray);">Cobrado em todos os tokens, nas duas direções</span></div>
+</section>
+
+<!-- ============ SLIDE 5 — THE $20 CONVERSATION ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">03 · Verificação da realidade</div>
+  <h1 style="color: var(--white);">A conversa de $20</h1>
+  <p class="subtitle">Uma sessão real do Claude Code, sem edição.</p>
+
+  <div class="grid-2" style="gap: 48px;">
+    <div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Tarefa</span><span class="kv-val" style="color: var(--white);">Refatorar módulo de auth</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Duração</span><span class="kv-val" style="color: var(--white);">2h 14min</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Turnos</span><span class="kv-val" style="color: var(--white);">47</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Tokens de input</span><span class="kv-val" style="color: var(--yellow);">3.2M</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Tokens de output</span><span class="kv-val" style="color: var(--yellow);">180k</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Custo via API (sem cache)</span><span class="kv-val" style="color: var(--pink);">~$22</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Com caching</span><span class="kv-val" style="color: var(--success);">~$4</span></div>
+    </div>
+    <div class="card dark">
+      <h3>A conclusão</h3>
+      <p style="color: var(--light-blue); margin-bottom: 16px;">A mesma sessão, com boa higiene, custa <strong style="color: var(--yellow);">5× menos</strong> e roda mais rápido.</p>
+      <p style="color: var(--gray); font-size: 0.9rem;">Essa diferença é o tema deste workshop.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">8 / 26</span><span style="color: var(--gray);">Realidade de custos</span></div>
+</section>
+
+<!-- ============ SLIDE 5 — CONTEXT WINDOWS ============ -->
+<section class="slide">
+  <div class="slide-number">04 · Contexto</div>
+  <h1>Context windows são memória de trabalho</h1>
+  <p class="subtitle">Tudo que o modelo "lembra" vive na janela. Quando ela enche, as coisas quebram.</p>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="card">
+      <h3>200k tokens</h3>
+      <p>Janela padrão. ~500 páginas de texto. Suficiente para a maioria das tarefas.</p>
+    </div>
+    <div class="card">
+      <h3>1M tokens</h3>
+      <p>Disponível no Opus 4.6. Para bases de código muito grandes ou análises longas — mas caro e mais lento.</p>
+    </div>
+    <div class="card highlight">
+      <h3>Sinais de inchaço</h3>
+      <p>Respostas mais lentas, instruções esquecidas, caminhos de arquivos alucinados, o modelo pedindo coisas que você já deu.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 16px;">Três ferramentas, três regras</h3>
+  <table>
+    <thead>
+      <tr><th>Comando</th><th>O que faz</th><th>Use quando</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/clear</code></td><td>Apaga o contexto, recomeça do zero</td><td>Mudando para uma tarefa sem relação</td></tr>
+      <tr><td><code>/compact</code></td><td>Resume o histórico para economizar espaço</td><td>Sessão longa, ainda na mesma tarefa</td></tr>
+      <tr><td><strong>Nova sessão</strong></td><td>Lousa limpa, cache limpo</td><td>Padrão — uma sessão por tarefa</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>9 / 26</span><span>Gerenciamento de contexto</span></div>
+</section>
+
+<!-- ============ SLIDE 6 — INTERACTIVE CONTEXT SIMULATION ============ -->
+<section class="slide" id="sim-slide">
+  <div class="slide-number">04 · Contexto em movimento</div>
+  <h1>Veja o contexto <span style="color: var(--pink);">crescer</span> — turno a turno</h1>
+  <p class="subtitle">Cada turno re-cobra o contexto completo. Clique em <strong>Próximo turno</strong> e veja tanto a janela <em>quanto</em> o custo por turno subirem.</p>
+
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; flex: 1;">
+    <!-- LEFT: meter + controls -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Meter -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+          <span class="mono" style="font-size: 0.78rem; color: var(--dark-gray); letter-spacing: 0.08em;">CONTEXTO USADO · JANELA DE 200k</span>
+          <span id="sim-pct" class="mono" style="font-size: 1rem; font-weight: 600; color: var(--charcoal);">0%</span>
+        </div>
+        <div style="position: relative; height: 32px; background: var(--light-blue); border-radius: 6px; overflow: hidden;">
+          <div id="sim-bar" style="height: 100%; width: 0%; background: var(--success); transition: width 0.45s ease, background 0.45s ease;"></div>
+          <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 2px; background: var(--pink); opacity: 0.6;"></div>
+          <div style="position: absolute; top: -22px; left: 80%; transform: translateX(-50%); font-size: 0.68rem; color: var(--pink); font-family: 'JetBrains Mono', monospace; font-weight: 600;">compact @ 80%</div>
+        </div>
+        <div id="sim-status" style="margin-top: 14px; padding: 10px 14px; border-radius: 6px; background: var(--light-blue); font-size: 0.88rem; color: var(--charcoal); min-height: 44px;">
+          Sessão nova — baseline de ~24k tokens carregados (system prompt, ferramentas, CLAUDE.md).
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid-4" style="gap: 10px;">
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-turn" class="stat-value" style="font-size: 1.9rem;">0</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Turno</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-total" class="stat-value" style="font-size: 1.9rem;">24k</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Contexto total</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-last-cost" class="stat-value" style="font-size: 1.9rem; color: var(--pink);">$0.00</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Custo deste turno</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 8px;">
+          <div id="sim-cum-cost" class="stat-value" style="font-size: 1.9rem;">$0.00</div>
+          <div class="stat-label" style="font-size: 0.7rem;">Total da sessão</div>
+        </div>
+      </div>
+
+      <!-- Cost growth hint -->
+      <div id="sim-growth" style="padding: 10px 14px; border-radius: 6px; background: var(--light-blue); font-size: 0.82rem; color: var(--dark-gray); line-height: 1.5; display: none;">
+        <span style="color: var(--pink); font-weight: 600;">Observe:</span>
+        <span id="sim-growth-text">—</span>
+      </div>
+
+      <!-- Controls -->
+      <div style="display: flex; gap: 12px; margin-top: auto;">
+        <button id="sim-next" style="flex: 1; padding: 16px 24px; background: var(--pink); color: var(--white); border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; letter-spacing: 0.02em;">
+          ▶ Próximo turno
+        </button>
+        <button id="sim-reset" style="padding: 16px 20px; background: var(--white); color: var(--charcoal); border: 2px solid var(--gray); border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit;">
+          ↺ Reiniciar
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: turn log -->
+    <div style="display: flex; flex-direction: column;">
+      <div class="eyebrow">Log de turnos</div>
+      <div id="sim-log" style="flex: 1; background: var(--black); color: var(--light-blue); border-radius: 8px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; overflow-y: auto; max-height: 460px; border-left: 3px solid var(--pink);">
+        <div style="color: var(--gray);">// pressione Próximo turno para começar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>10 / 26</span><span>Contexto em movimento · custos nas tarifas API do Sonnet ($3 / $15 por M · sem cache)</span></div>
+</section>
+
+<script>
+(function() {
+  const BASELINE = 24000;
+  const MAX = 200000;
+  const COMPACT_AT = 160000;
+
+  const turns = [
+    { who: "user",      desc: "Como auth é tratado neste repo?",                          cost: 0.2 },
+    { who: "assistant", desc: "Grep em src/ por palavras-chave 'auth'",                   cost: 8,   tool: "Grep" },
+    { who: "assistant", desc: "Ler src/auth/middleware.ts (arquivo completo)",            cost: 6,   tool: "Read" },
+    { who: "user",      desc: "Agora rastreie onde as sessões são armazenadas",           cost: 0.2 },
+    { who: "assistant", desc: "Ler src/auth/session.ts + session.test.ts",               cost: 9,   tool: "Read×2" },
+    { who: "assistant", desc: "Grep por 'session' na base de código (saída grande)",      cost: 14,  tool: "Grep" },
+    { who: "user",      desc: "Adicionar tratamento de erro ao fluxo de login",           cost: 0.3 },
+    { who: "assistant", desc: "Ler src/auth/login.ts",                                   cost: 5,   tool: "Read" },
+    { who: "assistant", desc: "Editar login.ts + escrever testes",                       cost: 3,   tool: "Edit" },
+    { who: "assistant", desc: "Executar suite de testes — stack trace completo colado",   cost: 22,  tool: "Bash" },
+    { who: "user",      desc: "Corrigir o teste falhando",                               cost: 0.2 },
+    { who: "assistant", desc: "Ler arquivo de teste + 3 arquivos-fonte relacionados",     cost: 18,  tool: "Read×4" },
+    { who: "assistant", desc: "Editar e re-executar testes",                             cost: 12,  tool: "Edit+Bash" },
+    { who: "user",      desc: "Também refatorar a lógica de refresh de token",           cost: 0.3 },
+    { who: "assistant", desc: "Ler mais 3 arquivos, saída bash grande",                  cost: 28,  tool: "Read+Bash" },
+    { who: "assistant", desc: "Explorar com subagent (iniciado mas resultados inline)",  cost: 32,  tool: "Agent" },
+    { who: "user",      desc: "Resumir tudo que foi alterado",                           cost: 0.2 },
+    { who: "assistant", desc: "Resposta longa de síntese",                              cost: 6 }
+  ];
+
+  // Pricing (approx Claude Sonnet API rates — uncached)
+  // Input: $3 / 1M tokens · Output: $15 / 1M tokens
+  const INPUT_PER_TOK  = 3  / 1_000_000;
+  const OUTPUT_PER_TOK = 15 / 1_000_000;
+
+  let idx = 0;
+  let total = BASELINE;
+  let cumCost = 0;
+  let firstTurnCost = null;
+
+  const bar      = document.getElementById('sim-bar');
+  const pctEl    = document.getElementById('sim-pct');
+  const turnEl   = document.getElementById('sim-turn');
+  const totalEl  = document.getElementById('sim-total');
+  const lastCost = document.getElementById('sim-last-cost');
+  const cumEl    = document.getElementById('sim-cum-cost');
+  const growth   = document.getElementById('sim-growth');
+  const growthTx = document.getElementById('sim-growth-text');
+  const log      = document.getElementById('sim-log');
+  const status   = document.getElementById('sim-status');
+  const nextBtn  = document.getElementById('sim-next');
+  const resetBtn= document.getElementById('sim-reset');
+
+  function fmt(tokens) {
+    if (tokens >= 1000) return (tokens/1000).toFixed(tokens >= 10000 ? 0 : 1) + 'k';
+    return tokens.toString();
+  }
+
+  function money(n) {
+    if (n < 0.01) return '$' + n.toFixed(4);
+    if (n < 1)    return '$' + n.toFixed(3);
+    return '$' + n.toFixed(2);
+  }
+
+  function colorFor(pct) {
+    if (pct < 50)  return '#10b981';
+    if (pct < 70)  return '#ffb92a';
+    if (pct < 85)  return '#f97316';
+    return '#dc36c0';
+  }
+
+  function updateStatus(pct) {
+    if (pct < 50) {
+      status.innerHTML = '<strong style="color: var(--success);">Saudável.</strong> Bastante espaço — respostas do modelo são precisas.';
+      status.style.background = 'rgba(16, 185, 129, 0.1)';
+    } else if (pct < 70) {
+      status.innerHTML = '<strong style="color: #ffb92a;">Aquecendo.</strong> Ainda ok, mas as saídas de ferramentas estão começando a inchar o histórico.';
+      status.style.background = 'rgba(255, 185, 42, 0.15)';
+    } else if (pct < 85) {
+      status.innerHTML = '<strong style="color: #f97316;">Inchado.</strong> Respostas mais lentas. Instruções podem se perder. Considere encerrar a sessão após esta tarefa.';
+      status.style.background = 'rgba(249, 115, 22, 0.15)';
+    } else if (pct < 100) {
+      status.innerHTML = '<strong style="color: var(--pink);">Crítico.</strong> /compact será acionado automaticamente em breve. A qualidade está visivelmente se degradando.';
+      status.style.background = 'rgba(220, 54, 192, 0.15)';
+    } else {
+      status.innerHTML = '<strong style="color: var(--pink);">Overflow — compactado automaticamente.</strong> Histórico resumido para ~40k. Contexto sobreviveu, mas os detalhes se perderam.';
+      status.style.background = 'rgba(220, 54, 192, 0.2)';
+    }
+  }
+
+  function render() {
+    const pct = Math.min(100, Math.round((total / MAX) * 100));
+    bar.style.width = pct + '%';
+    bar.style.background = colorFor(pct);
+    pctEl.textContent = pct + '%';
+    turnEl.textContent = idx;
+    totalEl.textContent = fmt(total);
+    updateStatus(pct);
+  }
+
+  function addTurn() {
+    if (idx >= turns.length) {
+      const before = total;
+      total = 40000;
+      idx++;
+      const line = document.createElement('div');
+      line.style.color = '#dc36c0';
+      line.style.margin = '8px 0';
+      line.style.padding = '8px 10px';
+      line.style.background = 'rgba(220,54,192,0.12)';
+      line.style.borderLeft = '2px solid #dc36c0';
+      line.innerHTML = `<strong>// /compact acionado</strong><br>` +
+        `<span style="color: var(--gray);">${fmt(before)} → ${fmt(total)} · histórico resumido · turnos futuros serão mais baratos novamente</span>`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+      lastCost.textContent = '—';
+      lastCost.style.color = 'var(--success)';
+      render();
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.textContent = '— fim da demonstração —';
+      return;
+    }
+
+    const turn = turns[idx];
+    const newTokens = Math.round(turn.cost * 1000);
+    total += newTokens;
+    idx++;
+
+    const outputTokens = turn.who === 'assistant' ? Math.round(newTokens * 0.25) : 0;
+    const inputTokens  = total - outputTokens;
+    const turnCost = inputTokens * INPUT_PER_TOK + outputTokens * OUTPUT_PER_TOK;
+    cumCost += turnCost;
+    if (firstTurnCost === null) firstTurnCost = turnCost;
+
+    const placeholder = log.querySelector('div[style*="gray"]');
+    if (placeholder && placeholder.textContent.includes('pressione')) placeholder.remove();
+
+    const line = document.createElement('div');
+    line.style.marginBottom = '6px';
+    const badge = turn.who === 'user'
+      ? '<span style="color: var(--yellow);">[user]</span>'
+      : '<span style="color: var(--pink);">[asst]</span>';
+    const toolBadge = turn.tool
+      ? ` <span style="color: var(--gray); font-size: 0.78rem;">(${turn.tool})</span>`
+      : '';
+    line.innerHTML =
+      `<span style="color: var(--gray);">t${String(idx).padStart(2,'0')}</span> ` +
+      `${badge} ${turn.desc}${toolBadge} ` +
+      `<span style="float:right;">` +
+        `<span style="color: var(--yellow);">+${fmt(newTokens)}</span> ` +
+        `<span style="color: #f97316; margin-left: 10px;">${money(turnCost)}</span>` +
+      `</span>`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+
+    lastCost.textContent = money(turnCost);
+    cumEl.textContent = money(cumCost);
+
+    if (idx >= 3 && firstTurnCost > 0) {
+      const multiple = turnCost / firstTurnCost;
+      growth.style.display = 'block';
+      growthTx.innerHTML =
+        `Este turno custa <strong>${multiple.toFixed(1)}×</strong> mais do que o turno 1 — ` +
+        `mesmo tipo de mensagem, mas Claude agora precisa reler <strong>${fmt(total)}</strong> de histórico.`;
+    }
+
+    render();
+  }
+
+  function reset() {
+    idx = 0;
+    total = BASELINE;
+    cumCost = 0;
+    firstTurnCost = null;
+    log.innerHTML = '<div style="color: var(--gray);">// pressione Próximo turno para começar</div>';
+    lastCost.textContent = '$0.00';
+    lastCost.style.color = 'var(--pink)';
+    cumEl.textContent = '$0.00';
+    growth.style.display = 'none';
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    nextBtn.textContent = '▶ Próximo turno';
+    render();
+  }
+
+  nextBtn.addEventListener('click', addTurn);
+  resetBtn.addEventListener('click', reset);
+  render();
+})();
+</script>
+
+<!-- ============ NEW SLIDE — CONTEXT DEGRADATION ============ -->
+<section class="slide">
+  <div class="slide-number">04 · Degradação de contexto</div>
+  <h1>Mais contexto ≠ melhores respostas</h1>
+  <p class="subtitle">A partir de certo ponto, encher a janela não ajuda o modelo — <em>prejudica</em>. Instruções se perdem, restrições são ignoradas, respostas se degradam.</p>
+
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: needle-in-haystack visual (proportional) -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+        <div class="eyebrow">Encontrando uma instrução de tamanho fixo</div>
+        <span class="mono" style="font-size: 0.72rem; color: var(--dark-gray);">janela de 200k →</span>
+      </div>
+      <p style="margin-top: 2px; margin-bottom: 14px; font-size: 0.86rem; color: var(--dark-gray);">
+        A <strong style="color: var(--pink);">agulha rosa</strong> tem sempre os <strong>mesmos ~200 tokens</strong> em cada linha. O que muda é o palheiro ao redor.
+      </p>
+
+      <div style="position: relative; height: 4px; background: var(--light-blue); border-radius: 2px; margin-bottom: 6px;">
+        <div style="position: absolute; right: 0; top: -18px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--dark-gray);">limite de 200k</div>
+      </div>
+
+      <!-- 20k -->
+      <div style="margin-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">20k · início da sessão</span>
+          <span class="mono" style="font-size: 0.76rem; color: var(--success); font-weight: 600;">~98% de recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 10%; height: 100%; background: var(--gray); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 40%; width: 6px; height: 100%; background: var(--pink); box-shadow: 0 0 6px rgba(220,54,192,0.6);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 80k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">80k · meio da sessão</span>
+          <span class="mono" style="font-size: 0.76rem; color: #ffb92a; font-weight: 600;">~90% de recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 40%; height: 100%; background: var(--dark-gray); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 55%; width: 6px; height: 100%; background: var(--pink); opacity: 0.85; box-shadow: 0 0 5px rgba(220,54,192,0.5);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 150k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--dark-gray);">150k · sessão longa</span>
+          <span class="mono" style="font-size: 0.76rem; color: #f97316; font-weight: 600;">~72% de recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 75%; height: 100%; background: var(--charcoal); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 60%; width: 6px; height: 100%; background: var(--pink); opacity: 0.65; box-shadow: 0 0 4px rgba(220,54,192,0.35);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 190k -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 0.76rem; color: var(--charcoal); font-weight: 600;">190k · próximo do limite</span>
+          <span class="mono" style="font-size: 0.76rem; color: var(--pink); font-weight: 600;">~55% de recall</span>
+        </div>
+        <div style="position: relative; width: 100%; height: 24px; background: transparent;">
+          <div style="position: absolute; left: 0; top: 0; width: 95%; height: 100%; background: var(--black); border-radius: 3px; display: flex; align-items: center;">
+            <div style="margin-left: 62%; width: 6px; height: 100%; background: var(--pink); opacity: 0.45;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 22px; padding: 14px 16px; background: var(--light-blue); border-radius: 6px; border-left: 3px solid var(--pink);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+          <div>
+            <div class="mono" style="font-size: 0.72rem; color: var(--dark-gray); letter-spacing: 0.06em; margin-bottom: 4px;">AGULHA EM 20k</div>
+            <div class="mono" style="font-size: 1rem; color: var(--success); font-weight: 600;">1 parte em 100</div>
+          </div>
+          <div>
+            <div class="mono" style="font-size: 0.72rem; color: var(--dark-gray); letter-spacing: 0.06em; margin-bottom: 4px;">AGULHA EM 190k</div>
+            <div class="mono" style="font-size: 1rem; color: var(--pink); font-weight: 600;">1 parte em 950</div>
+          </div>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.82rem; color: var(--dark-gray);">
+          A instrução é a mesma — mas ao final de uma sessão longa, ela é ~10× mais difícil de encontrar no meio de tudo o que o modelo precisa atender.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 18px; margin-top: 16px; font-size: 0.76rem; color: var(--dark-gray);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 6px; height: 14px; background: var(--pink); border-radius: 1px; display: inline-block;"></span>
+          <span>sua instrução · ~200 tokens · fixo</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 14px; height: 14px; background: var(--charcoal); border-radius: 2px; display: inline-block;"></span>
+          <span>histórico ao redor · crescendo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: what degradation looks like -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card highlight">
+        <h3>Como a degradação aparece na prática</h3>
+        <ul style="margin-top: 4px;">
+          <li>Esquece uma restrição que você definiu 15 turnos atrás</li>
+          <li>Pede novamente um caminho de arquivo que você já deu</li>
+          <li>Contradiz decisões anteriores silenciosamente</li>
+          <li>Perde detalhes no meio de um arquivo longo</li>
+          <li>Segue a instrução <em>mais recente</em> mesmo que conflite com regras estabelecidas</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Por que acontece</h3>
+        <p>Atenção é finita. Com mais tokens para atender, cada um recebe uma fatia menor. Modelos também têm <strong>viés posicional</strong> — eles lembram o início e o fim do contexto muito melhor do que o meio.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">REGRA PRÁTICA</div>
+        <p>Não julgue a qualidade da resposta do Claude pelo turno 2 de uma sessão longa. No turno 40, é um modelo diferente (pior) respondendo. Quando as respostas começarem a se degradar, <strong>inicie uma nova sessão</strong> — quase sempre é mais rápido do que lutar com uma sessão inchada.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>11 / 26</span><span>Degradação de contexto · "perdido no meio"</span></div>
+</section>
+
+<!-- ============ SLIDE 7 — PROMPT CACHING INTRO ============ -->
+<section class="slide">
+  <div class="slide-number">05 · Caching</div>
+  <h1>Prompt caching — <span class="text-pink" style="color: var(--pink);">a maior alavanca</span></h1>
+  <p class="subtitle">Claude faz cache da parte estática do seu prompt. Se o próximo turno corresponder, você paga ~10% do custo de input.</p>
+
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="card highlight">
+      <h3>A regra de 1 hora</h3>
+      <p>Entradas de cache vivem <strong>até 1 hora</strong>. Cada turno dentro dessa janela renova o cache. Fique ocioso além disso → cache miss → custo cheio novamente.</p>
+    </div>
+    <div class="card">
+      <h3>O que Claude Code faz cache para você</h3>
+      <ul style="margin-top: 4px;">
+        <li>System prompt</li>
+        <li>Arquivos CLAUDE.md</li>
+        <li>Definições de ferramentas</li>
+        <li>Turnos anteriores da conversa</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="decision-box">
+    <h3 style="color: var(--pink); margin-bottom: 10px;">Modelo mental</h3>
+    <p>Pense no cache como um <strong>motor quente</strong>. Continue enviando turnos → motor fica quente → barato. Fique parado por uma hora → motor esfria → o próximo turno paga o preço cheio para religar.</p>
+  </div>
+  <div class="slide-footer"><span>12 / 26</span><span>Caching</span></div>
+</section>
+
+<!-- ============ SLIDE 7 — CACHE VISUAL (ANATOMY OF A PROMPT) ============ -->
+<section class="slide">
+  <div class="slide-number">05 · Anatomia de um prompt</div>
+  <h1>O que está no prompt — e o que fica em <span style="color: var(--pink);">cache</span></h1>
+  <p class="subtitle">Cada turno envia a pilha inteira. Caching significa que você paga o preço cheio apenas pela parte nova no final.</p>
+
+  <div class="grid-2" style="gap: 40px; flex: 1;">
+    <!-- LEFT: Stacked prompt diagram -->
+    <div>
+      <div class="eyebrow">Turno N — prompt completo enviado ao Claude</div>
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
+
+        <div style="background: var(--charcoal); color: var(--white); border-radius: 6px 6px 0 0; padding: 14px 18px; border-left: 4px solid var(--yellow); position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">SYSTEM PROMPT</div>
+              <div style="font-size: 0.92rem;">Instruções do Claude Code, regras de segurança, protocolo de uso de ferramentas</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~8k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">DEFINIÇÕES DE FERRAMENTAS</div>
+              <div style="font-size: 0.92rem;">Read, Edit, Bash, Grep, Glob, Agent, … + ferramentas MCP</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~12k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">CLAUDE.md + MEMÓRIA</div>
+              <div style="font-size: 0.92rem;">Convenções do projeto, preferências do usuário, memórias salvas</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~4k tok</div>
+          </div>
+        </div>
+
+        <div style="background: var(--charcoal); color: var(--white); padding: 14px 18px; border-left: 4px solid var(--yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.08em;">CONVERSA ANTERIOR</div>
+              <div style="font-size: 0.92rem;">Todas as mensagens anteriores do usuário, turnos do assistente, resultados de ferramentas</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--gray);">~35k tok</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(220, 54, 192, 0.12); color: var(--black); padding: 16px 18px; border-left: 4px solid var(--pink); border-radius: 0 0 6px 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="mono" style="font-size: 0.72rem; color: var(--pink); letter-spacing: 0.08em;">NOVA MENSAGEM DO USUÁRIO</div>
+              <div style="font-size: 0.92rem; color: var(--black);">"agora adicione tratamento de erro ao fluxo de login"</div>
+            </div>
+            <div class="mono" style="font-size: 0.8rem; color: var(--pink);">~80 tok</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+          <span style="width: 14px; height: 14px; background: var(--yellow); border-radius: 3px; display: inline-block;"></span>
+          <span style="font-size: 0.85rem; color: var(--dark-gray);">Em cache · cobrado a ~10%</span>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+          <span style="width: 14px; height: 14px; background: var(--pink); border-radius: 3px; display: inline-block;"></span>
+          <span style="font-size: 0.85rem; color: var(--dark-gray);">Novo · cobrado a 100%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: the math + explanation -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="card highlight">
+        <h3>A matemática</h3>
+        <div class="kv-row"><span class="kv-key">Tamanho total do prompt</span><span class="kv-val">~59.080 tok</span></div>
+        <div class="kv-row"><span class="kv-key">Porção em cache</span><span class="kv-val" style="color: var(--success);">59.000 tok</span></div>
+        <div class="kv-row"><span class="kv-key">Porção nova</span><span class="kv-val" style="color: var(--pink);">80 tok</span></div>
+        <div class="kv-row"><span class="kv-key">Você paga como se enviasse</span><span class="kv-val" style="color: var(--success);">~6.000 tok</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Por que funciona</h3>
+        <p>Claude faz hash do <strong>prefixo</strong> do seu prompt. Se o prefixo do próximo turno corresponder a um em cache, Claude reutiliza o estado computado em vez de reprocessar do zero.</p>
+        <p style="margin-top: 12px;">O cache é reutilizado se você enviar outro turno dentro de <strong>1 hora</strong>.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">IDEIA CENTRAL</div>
+        <p>O prefixo precisa corresponder <strong>exatamente</strong>. Altere o CLAUDE.md, adicione uma ferramenta ou edite um turno anterior → todo o cache a partir desse ponto é invalidado.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>13 / 26</span><span>Anatomia do prompt</span></div>
+</section>
+
+<!-- ============ SLIDE 8 — CACHE DEMO ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">06 · Demo</div>
+  <h1 style="color: var(--white);">Com cache vs sem cache — mesma pergunta</h1>
+
+  <div class="grid-2" style="gap: 32px; margin-top: 16px;">
+    <div class="vs-col bad" style="background: var(--charcoal);">
+      <div class="eyebrow" style="color: var(--yellow);">Frio · primeiro turno</div>
+      <h3 style="color: var(--white); margin-top: 8px;">"Resuma este arquivo"</h3>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Input cobrado</span><span class="kv-val" style="color: var(--white);">42.000 tok</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Latência</span><span class="kv-val" style="color: var(--white);">8.2s</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Custo</span><span class="kv-val" style="color: var(--pink);">$0.126</span></div>
+    </div>
+    <div class="vs-col good" style="background: rgba(255,185,42,0.08); border-top-color: var(--yellow);">
+      <div class="eyebrow" style="color: var(--yellow);">Quente · próximo turno</div>
+      <h3 style="color: var(--white); margin-top: 8px;">"Agora resuma em bullets"</h3>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Input cobrado</span><span class="kv-val" style="color: var(--yellow);">4.200 tok</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Latência</span><span class="kv-val" style="color: var(--yellow);">2.1s</span></div>
+      <div class="kv-row"><span class="kv-key" style="color: var(--gray);">Custo</span><span class="kv-val" style="color: var(--success);">$0.013</span></div>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 32px;">
+    <div class="rule-num">ANTI-PADRÕES</div>
+    <p><strong>Não</strong> fique ocioso por 10 minutos no meio de uma sessão — você pagará o preço cheio ao voltar.<br>
+    <strong>Não</strong> edite o CLAUDE.md durante a sessão — isso invalida todo o cache para todos os turnos seguintes.</p>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">14 / 26</span><span style="color: var(--gray);">Demo de cache</span></div>
+</section>
+
+<!-- ============ SLIDE 8 — SUBSCRIPTION LIMITS ============ -->
+<section class="slide">
+  <div class="slide-number">07 · Seu plano</div>
+  <h1>Como sua <span style="color: var(--pink);">assinatura</span> realmente mede seu uso</h1>
+  <p class="subtitle">Todos vocês estão no Pro ou Max. O custo não é em dólares — são dois limites sobrepostos e uma válvula de segurança.</p>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="card highlight">
+      <div class="eyebrow">Limite 1</div>
+      <h3>Janela rolante de 5 horas</h3>
+      <p>Cada mensagem que você envia inicia (ou renova) uma janela de 5 horas. Dentro dessa janela você tem um balde de uso — atinja o limite e você fica pausado até a janela expirar.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">reinicia continuamente · não na hora em ponto</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Limite 2</div>
+      <h3>Teto de uso semanal</h3>
+      <p>Além das janelas de 5 horas, há um <strong>teto rolante de 7 dias</strong>. É o orçamento real — o limite de 5 horas apenas impede que você queime a semana em uma tarde.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">maior no Max · muito maior no Max 20x</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Válvula de segurança</div>
+      <h3>Créditos extras</h3>
+      <p>Atingiu um limite? Você pode recarregar com <strong>créditos pay-as-you-go</strong> para continuar. Mas estes são cobrados às tarifas de API — <strong style="color: var(--pink);">visivelmente mais caros por token</strong> do que o que sua assinatura oferece. Uma rede de segurança, não um plano.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">ativar no console · definir um limite de gasto</p>
+    </div>
+  </div>
+
+  <div class="decision-box" style="margin-top: 16px; background: rgba(255, 185, 42, 0.12); border-left-color: var(--yellow);">
+    <h3 style="color: var(--charcoal); margin-bottom: 10px;">
+      <span style="color: var(--yellow); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.1em; display: block; margin-bottom: 6px;">DICA · DISTRIBUA A CARGA</span>
+      Use suas janelas — não as queime
+    </h3>
+    <p>Sessões pesadas seguidas durante a manhã toda → você atinge o limite de 5 horas no almoço e fica parado o resto do dia. Distribua o trabalho ao longo do dia para que cada janela de 5 horas produza resultado real. Uma sessão rápida depois do almoço mantém a janela ativa sem bloquear você mais tarde.</p>
+  </div>
+
+  <div class="rule-card" style="margin-top: 16px;">
+    <div class="rule-num">POR QUE HIGIENE IMPORTA</div>
+    <p>Cada regra neste workshop — caching, skills, scripts, subagents — <strong>estende diretamente sua janela de 5 horas e sua semana</strong>. Boa higiene = mais trabalho antes do limite, e menos recargas forçadas às tarifas de API.</p>
+  </div>
+  <div class="slide-footer"><span>15 / 26</span><span>Limites de assinatura</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — MODEL CHOICE ============ -->
+<section class="slide">
+  <div class="slide-number">07 · Escolha de modelo</div>
+  <h1>Escolha o <span style="color: var(--pink);">modelo certo</span> para o trabalho</h1>
+  <p class="subtitle">Mesma tarefa, três modelos → custo, velocidade e qualidade completamente diferentes. Hábitos padrão deixam dinheiro real na mesa.</p>
+
+  <div class="grid-3" style="gap: 20px;">
+    <div class="card">
+      <div class="eyebrow">Rápido &amp; barato</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Haiku 4.5</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Custo</span><span class="kv-val" style="color: var(--success);">1×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Velocidade</span><span class="kv-val" style="color: var(--success);">mais rápido</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Teto de qualidade</span><span class="kv-val">bom</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use para:</strong> edições simples, classificação, boilerplate, explicações curtas, pré-filtragem antes de um modelo maior.</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="eyebrow">Padrão equilibrado</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Sonnet 4.6</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Custo</span><span class="kv-val" style="color: #ffb92a;">~3×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Velocidade</span><span class="kv-val">rápido</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Teto de qualidade</span><span class="kv-val" style="color: var(--success);">forte</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use para:</strong> a maioria dos trabalhos com Claude Code — refatorações, debugging, mudanças em múltiplos arquivos, revisões, escrita. O padrão certo para 80% das sessões.</p>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Raciocínio pesado</div>
+      <h3 style="font-size: 1.3rem; margin-top: 4px;">Opus 4.6</h3>
+      <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Custo</span><span class="kv-val" style="color: var(--pink);">~15×</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Velocidade</span><span class="kv-val">mais lento</span></div>
+        <div class="kv-row" style="padding: 6px 0;"><span class="kv-key">Teto de qualidade</span><span class="kv-val" style="color: var(--success);">mais alto</span></div>
+      </div>
+      <p style="font-size: 0.88rem;"><strong>Use para:</strong> decisões difíceis de arquitetura, bugs complicados, análises longas, qualquer coisa onde uma resposta errada custa mais do que o modelo.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap: 24px; margin-top: 24px;">
+    <div class="card" style="background: var(--charcoal); color: var(--white); padding: 22px;">
+      <h3 style="color: var(--yellow);">Esforço ajustável (extended thinking)</h3>
+      <p style="color: var(--light-blue); margin-top: 6px;">
+        Mesmo modelo, diferentes <strong>orçamentos de raciocínio</strong>. Pouco esforço = resposta rápida. Muito esforço = o modelo gasta mais tokens raciocinando internamente antes de responder — melhor em problemas complexos, mas mais lento e mais caro.
+      </p>
+      <p style="color: var(--gray); margin-top: 10px; font-size: 0.88rem;">
+        Trate como um segundo dial ao lado da escolha de modelo: <strong style="color: var(--white);">Sonnet + alto esforço</strong> muitas vezes supera <strong style="color: var(--white);">Opus + padrão</strong> a uma fração do custo.
+      </p>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-num">REGRA PRÁTICA</div>
+      <p>Inicie sessões com <strong>Sonnet</strong>. Desça para <strong>Haiku</strong> em trabalhos repetitivos. Escale para <strong>Opus</strong> (ou aumente o esforço) apenas quando a qualidade justifica pagar 5–15× mais. Troque modelos dentro do Claude Code com <code style="color: var(--yellow);">/model</code>.</p>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>16 / 26</span><span>Multiplicadores de custo são aproximados, relativos ao Haiku</span></div>
+</section>
+
+<!-- ============ NEW SLIDE — PLAN FIRST ============ -->
+<section class="slide">
+  <div class="slide-number">08 · Planeje primeiro</div>
+  <h1>Para tarefas complexas, <span style="color: var(--pink);">planeje antes de executar</span></h1>
+  <p class="subtitle">Uma virada errada em uma tarefa longa queima tokens, limite e tempo. Faça o agente explicar sua intenção <em>antes</em> de começar a escrever código.</p>
+
+  <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; flex: 1;">
+    <!-- LEFT: 4-step flow -->
+    <div>
+      <div class="eyebrow">O fluxo de planejamento antecipado</div>
+
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px;">
+        <!-- Step 1 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">1</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Peça um plano — não execução</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">"Não altere nada ainda. Explique o que você faria, quais arquivos você tocaria e por quê." Use o modo de planejamento (<code style="color: var(--pink);">shift+tab</code>) para fixar isso.</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">2</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Revise &amp; corrija o plano</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">Questione. Corrija suposições erradas. Ajuste o escopo. Itere até o plano estar <em>aprovado por você</em> — este é o momento mais barato para corrigir o rumo.</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">3</div>
+          <div class="card" style="padding: 14px 18px; background: var(--light-blue); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Salve o plano como documento</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">"Escreva este plano em <code>PLAN.md</code>." Um artefato durável — sobrevive à sessão, revisável por um colega, reutilizável se você tentar novamente.</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div style="display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;">
+          <div style="width: 36px; height: 36px; background: var(--pink); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;">4</div>
+          <div class="card" style="padding: 14px 18px; background: rgba(220,54,192,0.08); border-left: 3px solid var(--pink);">
+            <h3 style="font-size: 1rem; margin-bottom: 4px;">Nova sessão → execute a partir do plano</h3>
+            <p style="font-size: 0.88rem; color: var(--charcoal); margin: 0;">Contexto limpo. Carregue apenas o <code>PLAN.md</code>. O modelo começa com a cabeça limpa e um briefing focado — sem arrastar toda a sessão de brainstorm.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: why + anti-pattern + rule -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card highlight">
+        <h3>Por que isso vale a pena</h3>
+        <p>Viradas erradas em tarefas longas se compõem. Quando você percebe, 40k tokens de direção errada estão no contexto — e corrigi-los significa mais turnos, mais tokens e um agente mais confuso. Uma revisão de plano de 5 minutos previne uma hora de limpeza.</p>
+      </div>
+
+      <div class="card" style="background: var(--charcoal); color: var(--white); padding: 22px; border-left: 4px solid #f97316;">
+        <div class="eyebrow" style="color: #f97316;">Anti-padrão</div>
+        <h3 style="color: var(--white); margin-top: 4px;">"Só faz" em uma tarefa complexa</h3>
+        <p style="color: var(--light-blue); margin-top: 6px;">Você digita uma linha. O agente roda por 20 minutos, edita 14 arquivos, e então você percebe que ele entendeu errado o requisito. Agora a sessão está inchada, o diff é uma bagunça, e você está pagando para desfazer tudo.</p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">REGRA GERAL</div>
+        <p>Se a tarefa toca &gt; 3 arquivos ou leva &gt; 10 minutos para executar, <strong>planeje primeiro</strong>. A própria sessão de planejamento é barata — o modo de planejamento não faz chamadas de ferramentas, não faz edições, não desperdiça nada.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>17 / 26</span><span>Modo de planejamento → revisar → salvar → nova sessão</span></div>
+</section>
+
+<!-- ============ SLIDE 10 — CAPSTONE INTRO ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">09 · Capstone</div>
+  <h1 style="color: var(--white); font-size: 3rem;">Análise longa, <span style="color: var(--pink);">do jeito certo</span></h1>
+
+  <p class="subtitle" style="color: var(--gray); max-width: 760px;">
+    Um cenário real onde tokens, contexto e caching importam ao mesmo tempo — e onde a higiene se paga imediatamente.
+  </p>
+
+  <div class="card dark" style="margin-top: 24px; background: var(--charcoal); border-left: 4px solid var(--pink); padding: 32px;">
+    <div class="eyebrow" style="color: var(--yellow);">Cenário</div>
+    <h3 style="color: var(--white); font-size: 1.4rem; margin-top: 8px;">
+      "Analise 18 meses de tickets de suporte ao cliente. Encontre os principais motivos de churn e proponha correções de produto."
+    </h3>
+    <p style="color: var(--gray); margin-top: 16px;">~12.000 tickets · misto de estruturado + texto livre · entregável é uma proposta para a liderança de produto.</p>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">18 / 26</span><span style="color: var(--gray);">Configuração do capstone</span></div>
+</section>
+
+<!-- ============ SLIDE 11 — NAIVE VS STRUCTURED ============ -->
+<section class="slide">
+  <div class="slide-number">10 · Capstone · a bifurcação</div>
+  <h1>Duas formas de conduzir isso</h1>
+
+  <div class="vs-split" style="flex: 1;">
+    <div class="vs-col bad">
+      <div class="eyebrow" style="color: var(--yellow);">Ingênuo</div>
+      <h3 style="font-size: 1.2rem;">Uma sessão longa</h3>
+      <ul>
+        <li>Jogar todos os 12k tickets no contexto</li>
+        <li>Pedir ao modelo para "analisar tudo"</li>
+        <li>Continuar fazendo follow-ups por 4 horas</li>
+        <li>Contexto colapsa por volta do turno 30</li>
+        <li>Re-colar dados, perder consistência</li>
+      </ul>
+      <div class="kv-row" style="margin-top: 20px;"><span class="kv-key">Custo estimado</span><span class="kv-val" style="color: var(--pink);">~$18</span></div>
+      <div class="kv-row"><span class="kv-key">Qualidade</span><span class="kv-val" style="color: var(--pink);">Degradando</span></div>
+      <div class="kv-row"><span class="kv-key">Reutilizável?</span><span class="kv-val" style="color: var(--pink);">Não</span></div>
+    </div>
+
+    <div class="vs-mid">vs</div>
+
+    <div class="vs-col good">
+      <div class="eyebrow">Estruturado</div>
+      <h3 style="font-size: 1.2rem;">Quatro sessões curtas, artefatos entre elas</h3>
+      <ul>
+        <li>Planejar primeiro, sem carregar dados</li>
+        <li>Script faz a extração pesada</li>
+        <li>Subagents fazem as leituras profundas</li>
+        <li>Sessão final fica pequena e precisa</li>
+        <li>Skills + script são reutilizáveis no próximo trimestre</li>
+      </ul>
+      <div class="kv-row" style="margin-top: 20px;"><span class="kv-key">Custo estimado</span><span class="kv-val" style="color: var(--success);">~$3</span></div>
+      <div class="kv-row"><span class="kv-key">Qualidade</span><span class="kv-val" style="color: var(--success);">Mais precisa</span></div>
+      <div class="kv-row"><span class="kv-key">Reutilizável?</span><span class="kv-val" style="color: var(--success);">Sim</span></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>19 / 26</span><span>Ingênuo vs estruturado</span></div>
+</section>
+
+<!-- ============ SLIDE 12 — THE FOUR SESSIONS ============ -->
+<section class="slide">
+  <div class="slide-number">11 · Capstone · o detalhamento</div>
+  <h1>Quatro sessões, quatro artefatos</h1>
+  <p class="subtitle">Cada sessão termina com um arquivo que a próxima pode ler em menos de 5k tokens.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 6%;">#</th>
+        <th style="width: 20%;">Sessão</th>
+        <th>O que acontece dentro</th>
+        <th style="width: 22%;">Artefato produzido</th>
+        <th style="width: 18%;">Por que separar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color: var(--pink);">1</strong></td>
+        <td><strong>Planejar</strong><br><span class="badge badge-muted">Apenas modo de planejamento</span></td>
+        <td>Definir as perguntas. Descrever o formato dos dados. Alinhar os entregáveis. Nenhum dado carregado.</td>
+        <td><code>analysis/PLAN.md</code></td>
+        <td>Barato. Revisão humana antes de gastar tokens de verdade.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">2</strong></td>
+        <td><strong>Extrair</strong><br><span class="badge badge-accent">Escrever um script</span></td>
+        <td>LLM escreve <code>extract_tickets.py</code>. Limpa, categoriza, agrega. Execute deterministicamente.</td>
+        <td><code>data/tickets.parquet</code><br><code>scripts/extract_tickets.py</code></td>
+        <td>Script roda 100× por $0. LLM escreve uma vez.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">3</strong></td>
+        <td><strong>Analisar</strong><br><span class="badge badge-accent">Subagents</span></td>
+        <td>Carregue <strong>apenas estatísticas resumidas</strong>. Identifique padrões. Lance subagents Explore para análises profundas por categoria.</td>
+        <td><code>analysis/FINDINGS.md</code></td>
+        <td>Subagents mantêm amostras de 50k tokens de tickets fora do seu contexto principal.</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--pink);">4</strong></td>
+        <td><strong>Sintetizar</strong><br><span class="badge badge-muted">Sessão nova</span></td>
+        <td>Lê apenas <code>PLAN.md</code> + <code>FINDINGS.md</code>. Escreve a proposta final para a liderança.</td>
+        <td><code>analysis/PROPOSAL.md</code></td>
+        <td>Contexto limpo = escrita mais precisa. Sem ruído de exploração.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>20 / 26</span><span>Detalhamento das sessões</span></div>
+</section>
+
+<!-- ============ SLIDE 13 — REUSABLE ARTIFACTS ============ -->
+<section class="slide">
+  <div class="slide-number">12 · Capstone · o efeito composto</div>
+  <h1>O que fica <span style="color: var(--pink);">reutilizável</span></h1>
+  <p class="subtitle">Na segunda vez que você rodar esta análise, a maior parte é gratuita.</p>
+
+  <div class="grid-3" style="flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3><code>/ticket-extract</code></h3>
+      <p>Empacotado da sessão 2. Aponte para um novo intervalo de datas → script roda, parquet aparece.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">~200 tokens para invocar</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3><code>/churn-analyze</code></h3>
+      <p>Carrega apenas o resumo do parquet, nunca o texto bruto dos tickets. Re-executa o enquadramento analítico da sessão 3.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">~3k tokens para invocar</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Hook</div>
+      <h3>Auto-extração ao receber arquivo</h3>
+      <p>Novo CSV cai em <code>data/raw/</code> → hook executa o script de extração. Zero tokens. Ninguém precisou pensar nisso.</p>
+      <p class="mono" style="margin-top: 12px; font-size: 0.8rem; color: var(--dark-gray);">0 tokens</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 24px;">
+    <div class="rule-num">O PONTO</div>
+    <p>A execução estruturada não é apenas mais barata — ela cria <strong>alavancagem</strong>. A análise do próximo trimestre leva 20 minutos, não duas horas.</p>
+  </div>
+  <div class="slide-footer"><span>21 / 26</span><span>Artefatos reutilizáveis</span></div>
+</section>
+
+<!-- ============ SLIDE 9 — SKILLS / SUBAGENTS / SCRIPTS / HOOKS ============ -->
+<section class="slide">
+  <div class="slide-number">08 · Ferramentas para economizar tokens</div>
+  <h1>Quatro primitivos. Cada um economiza tokens de forma diferente.</h1>
+
+  <div class="grid-4" style="flex: 1;">
+    <div class="card highlight">
+      <div class="eyebrow">Skill</div>
+      <h3>Prompt reutilizável</h3>
+      <p style="font-size: 0.92rem;">Carregado apenas quando acionado. Um conjunto de instruções de 2 páginas não fica em toda sessão — aparece quando necessário.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">/review-pr 123</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Subagent</div>
+      <h3>Isole buscas pesadas</h3>
+      <p style="font-size: 0.92rem;">Inicie um auxiliar para uma tarefa de pesquisa confusa. Ele processa 200k tokens; sua sessão principal vê apenas o resumo.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">Agent(Explore)</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Script</div>
+      <h3>Trabalho determinístico</h3>
+      <p style="font-size: 0.92rem;">LLM escreve uma vez. Roda 1000× por $0. Se você pode expressar como código, não deveria pagar tokens para refazer.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">python extract.py</p>
+    </div>
+    <div class="card highlight">
+      <div class="eyebrow">Hook</div>
+      <h3>Automação</h3>
+      <p style="font-size: 0.92rem;">Comandos shell que o harness executa em eventos. Zero tokens — sempre. Para verificações repetidas, testes, lint.</p>
+      <p class="mono" style="margin-top: 12px; color: var(--pink); font-size: 0.82rem;">PostToolUse → test</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top: 24px;">
+    <div class="rule-num">HEURÍSTICA</div>
+    <p>Se você se pega repetindo um prompt → <strong>skill</strong>. Repetindo uma ação → <strong>hook</strong>. Busca pesada → <strong>subagent</strong>. Processamento de dados → <strong>script</strong>.</p>
+  </div>
+  <div class="slide-footer"><span>22 / 26</span><span>Primitivos</span></div>
+</section>
+
+<!-- ============ SLIDE 14 — TAKEAWAY RULES ============ -->
+<section class="slide">
+  <div class="slide-number">13 · Aprendizados</div>
+  <h1>Quatro regras para levar daqui</h1>
+  <p class="subtitle">Se você não lembrar de mais nada, lembre-se destas.</p>
+
+  <div class="grid-2" style="gap: 24px; flex: 1;">
+    <div class="rule-card">
+      <div class="rule-num">REGRA 01</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Se os dados brutos &gt; sua resposta, escreva um script primeiro</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">O LLM não deveria processar o que Python pode. Pague uma vez para gerar o script, reutilize para sempre.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">REGRA 02</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Toda sessão termina com um artefato</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">A próxima sessão deve conseguir lê-lo em menos de 5k tokens. Se sua transição precisa do transcript completo, você não terminou a sessão.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">REGRA 03</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Subagents para busca, contexto principal para síntese</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">Não polua o thread principal com exploração. Envie o trabalho bagunçado para fora; mantenha seu contexto limpo para o raciocínio.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">REGRA 04</div>
+      <h3 style="color: var(--white); font-size: 1.2rem;">Modo de planejamento é gratuito — use-o primeiro</h3>
+      <p style="color: var(--light-blue); margin-top: 8px;">Antes de qualquer sessão tocando &gt;10 arquivos, planeje. Alinhamento antecipado não custa nada e economiza horas de trabalho na direção errada.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>23 / 26</span><span>Regras de aprendizado</span></div>
+</section>
+
+<!-- ============ SLIDE 16 — CHEAT SHEET ============ -->
+<section class="slide">
+  <div class="slide-number">14 · Guia de referência</div>
+  <h1>Comandos que você realmente vai usar</h1>
+
+  <div class="grid-2" style="gap: 32px;">
+    <div>
+      <h3 style="color: var(--pink);">Controle de sessão</h3>
+      <table style="margin-top: 12px;">
+        <tbody>
+          <tr><td><code>/context</code></td><td>Veja o que está ocupando seu contexto</td></tr>
+          <tr><td><code>/clear</code></td><td>Apaga o contexto, mantém a sessão</td></tr>
+          <tr><td><code>plan mode</code></td><td>Projete antes de tocar no código</td></tr>
+          <tr><td><code>/resume</code></td><td>Retoma uma sessão anterior</td></tr>
+          <tr><td><code>/rewind</code></td><td>Volta para um ponto anterior da conversa</td></tr>
+          <tr><td><code>/model</code></td><td>Troca o modelo em uso</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="color: var(--pink);">Higiene de cache</h3>
+      <ul style="margin-top: 4px;">
+        <li>Não fique ocioso &gt; 1 hora no meio de uma tarefa</li>
+        <li>Não edite o CLAUDE.md durante a sessão</li>
+        <li>Uma tarefa = uma sessão</li>
+        <li>Feche sessões que você terminou</li>
+      </ul>
+      <h3 style="color: var(--pink); margin-top: 24px;">Sinais de alerta</h3>
+      <ul style="margin-top: 4px;">
+        <li>Modelo pedindo coisas que você já deu</li>
+        <li>Caminhos de arquivos alucinados</li>
+        <li>Respostas ficando mais lentas com o tempo</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>24 / 26</span><span>Guia de referência</span></div>
+</section>
+
+<!-- ============ SLIDE 17 — Q&A ============ -->
+<section class="slide dark">
+  <div class="slide-number" style="color: var(--yellow);">15 · Perguntas</div>
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <div class="big-number" style="color: var(--yellow);">15:00</div>
+    <h1 style="color: var(--white); font-size: 3rem; margin-top: 16px;">Perguntas</h1>
+    <p class="subtitle" style="color: var(--gray); max-width: 720px;">
+      Espaço aberto para dúvidas sobre os conceitos do workshop.
+    </p>
+  </div>
+  <div class="slide-footer"><span style="color: var(--gray);">25 / 26</span><span style="color: var(--gray);">Abertura para perguntas</span></div>
+</section>
+
+<!-- ============ SLIDE 18 — END ============ -->
+<section class="slide">
+  <div class="slide-number">16 · Obrigado</div>
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <h1 style="font-size: 3.5rem;">Use tokens como se<br><span style="color: var(--pink);">fossem seu próprio dinheiro.</span></h1>
+    <p class="subtitle" style="max-width: 640px;">
+      Porque se você está na API — eles são. E se você está em um plano, boa higiene ainda significa que você termina mais trabalho antes do limite.
+    </p>
+
+    <div class="decision-box" style="margin-top: 24px; max-width: 720px;">
+      <h3 style="color: var(--pink); margin-bottom: 8px;">Antes da próxima semana</h3>
+      <ul>
+        <li>Execute <code>/cost</code> após cada sessão por uma semana — sinta os números</li>
+        <li>Escolha um prompt que você repete → transforme em uma skill</li>
+        <li>Escolha uma sessão longa que você se arrepende → planeje como você a dividiria da próxima vez</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="cienty-logo" style="font-size: 1.2rem;">ci<span>en</span>ty</span>
+    <span>26 / 26 · Covalenty AI Strategy</span>
+  </div>
+</section>
+
+</body>
+</html>
